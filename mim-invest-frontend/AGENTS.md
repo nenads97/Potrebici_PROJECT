@@ -27,6 +27,9 @@ The website should also contain a dedicated section/page for land acquisition:
 
 `/kupujemo-placeve`
 
+Land acquisition page:
+`/src/views/pages/LandBuyPage.tsx`
+
 This section should present M & M Gradnja as a company interested in purchasing attractive land plots for future residential projects in Novi Sad and surrounding areas.
 
 The tone should remain professional, modern, and trustworthy.
@@ -55,35 +58,44 @@ Potential future integrations:
 
 Use clean frontend architecture.
 
+Route-level pages are placed under:
+
+`src/views/pages/`
+
+Do not create a separate `src/pages/` directory for this project.
+
 Recommended structure:
 
 src/
-app/
-router/
-providers/
+  app/
+    router/
+    providers/
 
-pages/
-home/
-projects/
-land-acquisition/
+  views/
+    pages/
+      HomePage.tsx
+      LandBuyPage.tsx
+      projects/
+        HerojaPinkija13/
+    layout/
 
-features/
-projects/
-components/
-data/
-types/
+  features/
+    projects/
+      components/
+      data/
+      types/
 
     land-acquisition/
       components/
       data/
       types/
 
-shared/
-components/
-layouts/
-styles/
-utils/
-types/
+  shared/
+    components/
+    layouts/
+    styles/
+    utils/
+    types/
 
 ---
 

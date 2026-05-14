@@ -302,4 +302,9 @@ $site-muted: #d9cfc7;
 $site-accent: #c9b59c;
 $site-text: #1f1f1f;
 $site-text-muted: #6f6a64;
+--site-ink: #1d1c19;
+--site-ink-muted: #625b51;
+--site-card: var(--site-bg);
+--site-footer: #363d46;
+--site-footer-ink: #F9F8F6;
 ```
