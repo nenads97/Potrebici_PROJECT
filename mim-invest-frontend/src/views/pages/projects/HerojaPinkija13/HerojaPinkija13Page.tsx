@@ -22,8 +22,6 @@ import {
   projectStats,
 } from "../../../../features/projects/data/herojaPinkija13.data";
 
-import "./HerojaPinkija13Page.scss";
-
 const projectImages = {
   main: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=85",
   exteriorOne:
