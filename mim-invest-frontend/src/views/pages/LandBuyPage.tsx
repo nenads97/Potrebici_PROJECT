@@ -1,4 +1,5 @@
 import type { FormEvent } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowUpRight,
@@ -14,9 +15,9 @@ import {
 } from "lucide-react";
 
 import { contactEmail, contactPhone } from "../../features/projects/data/herojaPinkija13.data";
+import { submitLandOffer } from "../../features/inquiries/api/inquiryFunctions.api";
 
-const landHeroImage =
-  "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2200&q=85";
+const landHeroImage = "/images/kupovina-placeva-hero.png";
 
 const heroHighlights = [
   { value: "Novi Sad", label: "fokus lokacije" },
@@ -251,28 +252,39 @@ export const LandBuyPage = () => {
 };
 
 const PropertyOfferForm = () => {
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const [formStatus, setFormStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [formMessage, setFormMessage] = useState("");
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const formData = new FormData(event.currentTarget);
-    const getValue = (name: string) => String(formData.get(name) ?? "").trim();
-    const subject = encodeURIComponent("Ponuda placa za M & M Gradnja");
-    const body = encodeURIComponent(
-      [
-        "Nova ponuda nekretnine",
-        "",
-        `Ime: ${getValue("name")}`,
-        `Telefon: ${getValue("phone")}`,
-        `E-mail: ${getValue("email")}`,
-        `Adresa nekretnine: ${getValue("address") || "-"}`,
-        `Povrsina parcele (m2): ${getValue("plotArea") || "-"}`,
-        "",
-        "Dodatne informacije:",
-        getValue("details") || "-",
-      ].join("\n"),
-    );
+    const form = event.currentTarget;
+    setFormStatus("sending");
+    setFormMessage("");
 
-    window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
+    const formData = new FormData(form);
+    const getValue = (name: string) => String(formData.get(name) ?? "").trim();
+
+    try {
+      await submitLandOffer({
+        fullName: getValue("name"),
+        phone: getValue("phone"),
+        email: getValue("email"),
+        propertyAddress: getValue("address"),
+        plotAreaM2: getValue("plotArea"),
+        details: getValue("details"),
+        sourcePage: window.location.pathname,
+        consentAccepted: formData.get("consent") === "on",
+        website: getValue("website"),
+      });
+
+      form.reset();
+      setFormStatus("success");
+      setFormMessage("Hvala. Ponuda je poslata i javicemo vam se nakon pocetne provere.");
+    } catch (error) {
+      setFormStatus("error");
+      setFormMessage(error instanceof Error ? error.message : "Slanje nije uspelo.");
+    }
   };
 
   return (
@@ -308,6 +320,11 @@ const PropertyOfferForm = () => {
         </div>
 
         <div className="form-field inquiry-form__textarea">
+          <label className="form-field form-field--hidden" htmlFor="land-website">
+            Website
+            <input id="land-website" name="website" tabIndex={-1} type="text" autoComplete="off" />
+          </label>
+
           <label className="form-label" htmlFor="land-details">
             Dodatne informacije
           </label>
@@ -320,9 +337,20 @@ const PropertyOfferForm = () => {
           />
         </div>
 
-        <button className="site-button site-button--dark" type="submit">
+        <label className="form-consent">
+          <input name="consent" required type="checkbox" />
+          <span>Saglasan/saglasna sam da me kontaktirate povodom poslate ponude.</span>
+        </label>
+
+        {formMessage ? (
+          <p className={`form-feedback form-feedback--${formStatus}`} role="status">
+            {formMessage}
+          </p>
+        ) : null}
+
+        <button className="site-button site-button--dark" type="submit" disabled={formStatus === "sending"}>
           <MessageCircle />
-          Posaljite podatke
+          {formStatus === "sending" ? "Slanje..." : "Posaljite podatke"}
           <ArrowUpRight />
         </button>
       </div>

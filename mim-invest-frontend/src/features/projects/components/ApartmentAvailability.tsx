@@ -16,6 +16,7 @@ type ApartmentAvailabilityProps = {
 };
 
 type StatusFilter = "All" | ApartmentStatus;
+type StructureFilter = "All" | string;
 
 const statusTabs: Array<{ label: string; value: StatusFilter }> = [
   { label: "Svi stanovi", value: "All" },
@@ -29,14 +30,27 @@ export const ApartmentAvailability = ({
   compactHeading = false,
 }: ApartmentAvailabilityProps) => {
   const [status, setStatus] = useState<StatusFilter>("All");
+  const [structure, setStructure] = useState<StructureFilter>("All");
+
+  const structureTabs = useMemo(
+    () => [
+      { label: "Sve strukture", value: "All" },
+      ...Array.from(new Set(apartments.map((apartment) => apartment.rooms))).map((rooms) => ({
+        label: rooms,
+        value: rooms,
+      })),
+    ],
+    [apartments],
+  );
 
   const filteredApartments = useMemo(() => {
-    if (status === "All") {
-      return apartments;
-    }
+    return apartments.filter((apartment) => {
+      const matchesStatus = status === "All" || apartment.status === status;
+      const matchesStructure = structure === "All" || apartment.rooms === structure;
 
-    return apartments.filter((apartment) => apartment.status === status);
-  }, [apartments, status]);
+      return matchesStatus && matchesStructure;
+    });
+  }, [apartments, status, structure]);
 
   return (
     <section className="page-section page-section--surface apartments-section" id="stanovi">
@@ -63,6 +77,24 @@ export const ApartmentAvailability = ({
               className={status === tab.value ? "is-active" : ""}
               key={tab.value}
               onClick={() => setStatus(tab.value)}
+              role="tab"
+              type="button"
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div
+          className="portfolio-tabs apartments-section__tabs"
+          role="tablist"
+        >
+          {structureTabs.map((tab) => (
+            <button
+              aria-selected={structure === tab.value}
+              className={structure === tab.value ? "is-active" : ""}
+              key={tab.value}
+              onClick={() => setStructure(tab.value)}
               role="tab"
               type="button"
             >
@@ -122,7 +154,7 @@ export const ApartmentAvailability = ({
 
         {filteredApartments.length === 0 ? (
           <div className="apartments-empty">
-            <p>Trenutno nema stanova u ovom statusu.</p>
+            <p>Trenutno nema stanova za izabrane filtere.</p>
             <a className="site-button site-button--dark" href={`tel:${contactPhone}`}>
               Pozovite prodaju
             </a>

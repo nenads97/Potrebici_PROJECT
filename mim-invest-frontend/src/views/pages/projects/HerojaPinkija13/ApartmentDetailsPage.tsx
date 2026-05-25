@@ -25,7 +25,10 @@ import {
   statusLabel,
   statusVariant,
 } from "../../../../features/projects/data/herojaPinkija13.data";
-import type { Apartment } from "../../../../features/projects/types/project.types";
+import type {
+  Apartment,
+  ApartmentRoomArea,
+} from "../../../../features/projects/types/project.types";
 
 export const ApartmentDetailsPage = () => {
   const { apartmentNumber } = useParams();
@@ -109,13 +112,7 @@ export const ApartmentDetailsPage = () => {
               ))}
             </div>
 
-            <div className="apartment-plan__drawing">
-              <div>Dnevni boravak</div>
-              <div>Kuhinja</div>
-              <div>Spavaca soba</div>
-              <div>Kupatilo</div>
-              <div>Terasa</div>
-            </div>
+            <ApartmentPlanDrawing apartment={apartment} />
           </div>
 
           <div className="apartment-side">
@@ -199,6 +196,153 @@ export const ApartmentDetailsPage = () => {
         </div>
       </section>
     </main>
+  );
+};
+
+const ApartmentPlanDrawing = ({ apartment }: { apartment: Apartment }) => {
+  if (apartment.planVariant === "stack-1-6-11") {
+    return <ApartmentStackPlan rooms={apartment.roomAreas} />;
+  }
+
+  return (
+    <div className="apartment-plan__drawing">
+      {apartment.roomAreas.map((room) => (
+        <button
+          key={room.id}
+          className="apartment-plan__room"
+          type="button"
+          aria-label={`${room.label}: ${room.area}`}
+        >
+          <span>{room.label}</span>
+          <strong>{room.area}</strong>
+        </button>
+      ))}
+    </div>
+  );
+};
+
+type PlanSpace = {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+const stackPlanSpaces: PlanSpace[] = [
+  {
+    id: "entry",
+    x: 0,
+    y: 240,
+    width: 160,
+    height: 150,
+  },
+  {
+    id: "living",
+    x: 0,
+    y: 0,
+    width: 280,
+    height: 240,
+  },
+  {
+    id: "loggia",
+    x: 280,
+    y: 0,
+    width: 140,
+    height: 100,
+  },
+  {
+    id: "kitchen",
+    x: 280,
+    y: 100,
+    width: 140,
+    height: 140,
+  },
+  {
+    id: "bedroom-primary",
+    x: 160,
+    y: 240,
+    width: 260,
+    height: 150,
+  },
+  {
+    id: "bedroom-secondary",
+    x: 170,
+    y: 390,
+    width: 250,
+    height: 170,
+  },
+  {
+    id: "bathroom",
+    x: 0,
+    y: 390,
+    width: 110,
+    height: 170,
+  },
+  {
+    id: "wc",
+    x: 110,
+    y: 390,
+    width: 60,
+    height: 170,
+  },
+];
+
+const ApartmentStackPlan = ({ rooms }: { rooms: ApartmentRoomArea[] }) => {
+  const [activeRoomId, setActiveRoomId] = useState<string | null>(null);
+  const roomById = new Map(rooms.map((room) => [room.id, room]));
+
+  return (
+    <div className="apartment-plan__scaled" aria-label="Raspored prostorija za stanove 1, 6 i 11">
+      <svg viewBox="0 0 420 560" role="img" aria-labelledby="stack-plan-title">
+        <title id="stack-plan-title">Raspored prostorija skaliran prema kvadraturi</title>
+        {stackPlanSpaces.map((space) => {
+          const room = roomById.get(space.id);
+
+          if (!room) {
+            return null;
+          }
+
+          return (
+            <g
+              key={space.id}
+              className={`apartment-plan__space${activeRoomId === space.id ? " is-active" : ""}`}
+              role="button"
+              tabIndex={0}
+              aria-label={`${room.number ? `${room.number}. ` : ""}${room.label}: ${room.area}`}
+              onBlur={() => setActiveRoomId(null)}
+              onClick={() => setActiveRoomId((currentId) => (currentId === space.id ? null : space.id))}
+              onFocus={() => setActiveRoomId(space.id)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  setActiveRoomId((currentId) => (currentId === space.id ? null : space.id));
+                }
+              }}
+              onMouseEnter={() => setActiveRoomId(space.id)}
+              onMouseLeave={() => setActiveRoomId(null)}
+            >
+              <title>{`${room.label}: ${room.area}`}</title>
+              <rect x={space.x} y={space.y} width={space.width} height={space.height} rx="8" />
+              <text
+                className="apartment-plan__space-label"
+                x={space.x + space.width / 2}
+                y={space.y + space.height / 2}
+              >
+                {room.label}
+              </text>
+              <text
+                className="apartment-plan__space-area"
+                x={space.x + space.width / 2}
+                y={space.y + space.height / 2 + 22}
+              >
+                {room.area}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
   );
 };
 
@@ -325,6 +469,8 @@ type DetailMetricProps = {
 };
 
 const DetailMetric = ({ icon: Icon, label, value }: DetailMetricProps) => {
+  const displayValue = value.replace(" m2", "\u00a0m2");
+
   return (
     <div>
       <span className="icon-bubble">
@@ -332,7 +478,7 @@ const DetailMetric = ({ icon: Icon, label, value }: DetailMetricProps) => {
       </span>
       <div>
         <span>{label}</span>
-        <strong>{value}</strong>
+        <strong>{displayValue}</strong>
       </div>
     </div>
   );

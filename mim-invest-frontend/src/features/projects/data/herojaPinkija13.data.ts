@@ -1,6 +1,7 @@
 import type {
   Apartment,
   ApartmentImage,
+  ApartmentRoomArea,
   ApartmentStatus,
   BuildingLevel,
   ConstructionUpdate,
@@ -162,6 +163,8 @@ type ApartmentStack = {
   description: string;
   features: string[];
   images: ApartmentImage[];
+  roomAreas: ApartmentRoomArea[];
+  planVariant?: "stack-1-6-11";
 };
 
 const commonFeatures = [
@@ -175,14 +178,14 @@ const apartmentStacks: ApartmentStack[] = [
   {
     numbers: ["1", "6", "11"],
     sizes: ["62.15 m2", "60.29 m2", "60.29 m2"],
-    rooms: "Dvoiposoban",
+    rooms: "Trosoban",
     bathrooms: "2 kupatila",
     terrace: "Terasa",
     highlight: "Veci stan sa dva kupatila, pogodan za porodicu.",
     description:
       "Dvoiposoban stan za kupce kojima je vazan dodatni komfor i funkcionalno odvajanje dnevne i spavace zone. Isti raspored se ponavlja kroz vertikalu, uz razliku u kvadraturi po etazi.",
     features: [
-      "Dvoiposobna struktura",
+      "Trosobna struktura",
       "Dva kupatila",
       "Terasa",
       ...commonFeatures,
@@ -191,6 +194,17 @@ const apartmentStacks: ApartmentStack[] = [
       { src: galleryImages.living, alt: "Dnevna zona dvoiposobnog stana" },
       { src: galleryImages.bathroom, alt: "Kupatilo u stanu" },
       { src: galleryImages.terrace, alt: "Terasa stana" },
+    ],
+    planVariant: "stack-1-6-11",
+    roomAreas: [
+      { id: "entry", number: "1", label: "Ulaz", area: "7.09 m2" },
+      { id: "kitchen", number: "2", label: "Kuhinja", area: "4.74 m2" },
+      { id: "bathroom", number: "3", label: "Kupatilo", area: "4.39 m2" },
+      { id: "living", number: "4", label: "Dnevna soba", area: "20.13 m2" },
+      { id: "loggia", number: "5", label: "Terasa", area: "3.52 m2" },
+      { id: "wc", number: "6", label: "WC", area: "1.67 m2" },
+      { id: "bedroom-primary", number: "7", label: "Spavaca soba", area: "9.64 m2" },
+      { id: "bedroom-secondary", number: "8", label: "Spavaca soba", area: "10.97 m2" },
     ],
   },
   {
@@ -213,6 +227,13 @@ const apartmentStacks: ApartmentStack[] = [
       { src: galleryImages.bedroom, alt: "Spavaca soba" },
       { src: galleryImages.bathroom, alt: "Kupatilo u stanu" },
     ],
+    roomAreas: [
+      { id: "living", label: "Dnevni boravak", area: "19.80 m2" },
+      { id: "kitchen", label: "Kuhinja", area: "5.90 m2" },
+      { id: "bedroom", label: "Spavaca soba", area: "12.10 m2" },
+      { id: "bathroom", label: "Kupatilo", area: "4.50 m2" },
+      { id: "terrace", label: "Terasa", area: "4.80 m2" },
+    ],
   },
   {
     numbers: ["3", "8", "13"],
@@ -233,6 +254,13 @@ const apartmentStacks: ApartmentStack[] = [
       { src: galleryImages.kitchen, alt: "Kompaktna dnevna zona" },
       { src: galleryImages.living, alt: "Garsonjera u neutralnim tonovima" },
       { src: galleryImages.lobby, alt: "Ulazni prostor zgrade" },
+    ],
+    roomAreas: [
+      { id: "living", label: "Dnevni boravak", area: "16.30 m2" },
+      { id: "kitchen", label: "Kuhinja", area: "4.20 m2" },
+      { id: "bedroom", label: "Spavaca soba", area: "U sklopu dnevne zone" },
+      { id: "bathroom", label: "Kupatilo", area: "4.10 m2" },
+      { id: "terrace", label: "Terasa", area: "Bez terase" },
     ],
   },
   {
@@ -255,6 +283,13 @@ const apartmentStacks: ApartmentStack[] = [
       { src: galleryImages.bedroom, alt: "Spavaca soba" },
       { src: galleryImages.terrace, alt: "Terasa stana" },
     ],
+    roomAreas: [
+      { id: "living", label: "Dnevni boravak", area: "17.90 m2" },
+      { id: "kitchen", label: "Kuhinja", area: "5.10 m2" },
+      { id: "bedroom", label: "Spavaca soba", area: "10.60 m2" },
+      { id: "bathroom", label: "Kupatilo", area: "4.30 m2" },
+      { id: "terrace", label: "Terasa", area: "4.40 m2" },
+    ],
   },
   {
     numbers: ["5", "10", "15"],
@@ -275,6 +310,13 @@ const apartmentStacks: ApartmentStack[] = [
       { src: galleryImages.dining, alt: "Dnevna zona jednoiposobnog stana" },
       { src: galleryImages.kitchen, alt: "Kuhinja u stanu" },
       { src: galleryImages.terrace, alt: "Terasa stana" },
+    ],
+    roomAreas: [
+      { id: "living", label: "Dnevni boravak", area: "16.80 m2" },
+      { id: "kitchen", label: "Kuhinja", area: "4.80 m2" },
+      { id: "bedroom", label: "Spavaca soba", area: "9.90 m2" },
+      { id: "bathroom", label: "Kupatilo", area: "4.00 m2" },
+      { id: "terrace", label: "Terasa", area: "4.20 m2" },
     ],
   },
 ];
@@ -333,6 +375,8 @@ export const apartments: Apartment[] = apartmentStacks.flatMap((stack) =>
       { label: "Kupatila", value: stack.bathrooms },
       { label: "Terasa", value: stack.terrace },
     ],
+    roomAreas: stack.roomAreas,
+    planVariant: stack.planVariant,
     features: stack.features,
   })),
 );

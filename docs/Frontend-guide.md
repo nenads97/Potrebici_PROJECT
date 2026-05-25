@@ -1,92 +1,92 @@
 # FRONTEND_GUIDE.md
 
-## 1. Frontend overview
+## AI context
 
-The frontend is a modern, responsive real estate website for the residential project:
+Frontend is the public website plus small admin panel for M & M Gradnja / Heroja Pinkija 13.
 
-**Heroja Pinkija 13, Novi Sad**
-
-The goal of the frontend is to present the building clearly, highlight the location value, show available units and make it easy for potential buyers to contact the investor.
-
-The frontend should be built with:
+## Stack
 
 - React
 - Vite
 - TypeScript
 - SCSS
-- shadcn/ui
 - Framer Motion
 - lucide-react
+- shadcn/ui only where it fits existing UI
+- Supabase JS client
 
-The application should be clean, elegant, buyer-focused and easy to maintain.
+## Architecture
 
----
+- Public app and admin live in same React/Vite project.
+- Admin routes live under `/admin`.
+- Keep code modular by feature: layout, pages, project data, forms, admin.
+- Local TypeScript data is acceptable during UI build, but shape it like future Supabase rows.
+- Do not add a separate backend/CMS layer in v1.
 
-## 2. Frontend goals
+## Supabase usage
 
-The main frontend goals are:
+Direct public reads:
 
-- present the project in a premium and trustworthy way
-- help users quickly understand the building structure
-- make apartment availability easy to scan
-- make contact actions visible and accessible
-- keep the codebase modular and reusable
-- avoid hardcoded repeated content
-- prepare the frontend for future API integration
+- published projects
+- published units
+- published page sections
+- public media/PDF metadata
 
-The most important user action is:
+Protected admin reads/writes:
 
-**Ask about an available apartment or unit.**
+- project/unit content
+- apartment statuses
+- inquiries and land offers
+- media/PDF metadata
+- uploads to Storage
 
----
+Edge Functions only:
 
-## 3. Design direction
+- contact form submit
+- apartment inquiry submit
+- land offer submit
+- server validation
+- spam/rate limiting
+- email sending
+- email delivery logging
 
-The design should feel:
+Never expose in browser:
 
-- modern
-- minimal
-- warm
-- premium
-- calm
-- elegant
-- trustworthy
+- Supabase service role key
+- email provider key
+- privileged admin secrets
 
-The website should look like a serious real estate presentation, not like a generic SaaS landing page.
+## UI rules
 
-Use:
+- Match existing warm premium real estate style.
+- Use existing global SCSS tokens/classes before inventing new patterns.
+- Use lucide icons when icons are needed.
+- Buttons must have stable dimensions and clear focus states.
+- Forms need visible labels.
+- Cards should be simple, scannable, and not nested inside other cards.
+- Mobile must have no horizontal scroll, overlap, or clipped button text.
+- Avoid generic SaaS hero sections, loud gradients, heavy decoration.
 
-- lots of whitespace
-- large project images or renders
-- clean typography
-- warm neutral colors
-- soft shadows
-- subtle borders
-- clear cards
-- strong but tasteful call-to-action sections
+## Admin UX
 
-Avoid:
+Admin navigation v1:
 
-- too many colors
-- aggressive animations
-- generic landing page blocks
-- corporate/SaaS look
-- cluttered apartment cards
-- too many icons
-- heavy gradients
-- unnecessary visual noise
+- Prijava
+- Upiti za stanove
+- Upiti za placeve
+- Stanovi i statusi
+- Projekat
+- Slike i PDF fajlovi
 
-Preferred visual reference:
+Admin priorities:
 
-- modenagradnja.com style direction
-- elegant real estate presentation
-- warm premium residential tone
+- fast status changes
+- readable inquiry lists
+- clear `new/contacted/closed` workflow
+- short internal notes
+- simple content/file updates
 
----
-
-## 4. Color palette
-
-Use SCSS variables for global colors.
+## Current visual tokens
 
 ```scss
 $site-bg: #f9f8f6;

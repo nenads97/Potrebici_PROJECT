@@ -1,0 +1,7 @@
+project_id = "kamwovkvhkurjvabbfks"
+
+[functions.submit-contact-inquiry]
+verify_jwt = false
+
+[functions.submit-land-offer]
+verify_jwt = false

@@ -10,6 +10,13 @@ export type ApartmentPlanItem = {
   value: string;
 };
 
+export type ApartmentRoomArea = {
+  id: string;
+  number?: string;
+  label: string;
+  area: string;
+};
+
 export type Apartment = {
   number: string;
   floor: string;
@@ -29,6 +36,8 @@ export type Apartment = {
   ceilingHeight: string;
   images: ApartmentImage[];
   plan: ApartmentPlanItem[];
+  roomAreas: ApartmentRoomArea[];
+  planVariant?: "stack-1-6-11";
   features: string[];
 };
 

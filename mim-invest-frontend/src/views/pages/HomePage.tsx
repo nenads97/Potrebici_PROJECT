@@ -1,6 +1,17 @@
 import { useRef, useState } from "react";
 import { AnimatePresence, motion, useScroll, useSpring, useTransform } from "framer-motion";
-import { ArrowUpRight, Building2, MapPin, MessageCircle, Phone, Sparkles } from "lucide-react";
+import {
+  ArrowUpRight,
+  Building2,
+  ClipboardCheck,
+  Home,
+  MapPin,
+  MessageCircle,
+  Phone,
+  Ruler,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { contactEmail, contactPhone } from "../../features/projects/data/herojaPinkija13.data";
@@ -73,6 +84,30 @@ const futureProjectSlots = [
     title: "Nova lokacija",
     text: "Buduci projekti bice dodati ovde, u istom preglednom formatu.",
   },
+];
+
+const landAcquisitionHighlights = [
+  {
+    icon: MapPin,
+    title: "Novi Sad i bliza okolina",
+    text: "Razmatramo lokacije sa dobrim pristupom, infrastrukturom i potencijalom za stambenu gradnju.",
+  },
+  {
+    icon: Home,
+    title: "Plac ili kuca za rusenje",
+    text: "Interesuju nas parcele i postojeci objekti pogodni za razvoj novih stambenih projekata.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Jasna dokumentacija",
+    text: "Najbrze reagujemo kada su vlasnistvo, osnovni podaci i uslovi prodaje spremni za proveru.",
+  },
+];
+
+const landAcquisitionFacts = [
+  { icon: Ruler, label: "Namena", value: "Stambena gradnja" },
+  { icon: ClipboardCheck, label: "Prvi korak", value: "Kratka procena" },
+  { icon: MessageCircle, label: "Kontakt", value: "Direktan razgovor" },
 ];
 
 type ProjectTab = "active" | "upcoming" | "completed";
@@ -201,6 +236,88 @@ export const HomePage = () => {
         </div>
       </section>
 
+      <section className="page-section home-land-acquisition">
+        <div className="page-container">
+          <motion.div
+            className="split-grid split-grid--end"
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={fadeUp}
+            transition={{ duration: 0.55 }}
+          >
+            <div>
+              <p className="section-eyebrow">Kupujemo placeve</p>
+              <h2 className="section-title section-title--medium">
+                Imate lokaciju za buduci stambeni projekat?
+              </h2>
+            </div>
+            <p className="section-copy">
+              Pored aktuelne novogradnje, M & M Gradnja razmatra nove parcele i
+              kuce za rusenje na kvalitetnim lokacijama. Posaljite osnovne podatke
+              i dobicete jasan prvi odgovor o potencijalu saradnje.
+            </p>
+          </motion.div>
+
+          <motion.article
+            className="land-preview-card"
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.25 }}
+            variants={fadeUp}
+            transition={{ duration: 0.55, delay: 0.08 }}
+          >
+            <div className="land-preview-card__copy">
+              <span className="icon-bubble">
+                <Building2 />
+              </span>
+              <h3>Trazimo parcele za plansku, kvalitetnu stambenu izgradnju.</h3>
+              <p>
+                Ako imate plac, stariji objekat ili lokaciju sa potencijalom,
+                mozemo brzo da proverimo osnovne uslove i predlozimo sledeci
+                korak bez komplikovane procedure.
+              </p>
+
+              <div className="land-preview-card__actions">
+                <Link className="site-button site-button--dark" to="/kupujemo-placeve">
+                  Detalji za vlasnike
+                  <ArrowUpRight />
+                </Link>
+                <Link className="site-button site-button--outline" to="/kontakt">
+                  Kontakt
+                </Link>
+              </div>
+            </div>
+
+            <div className="land-preview-card__details">
+              <div className="land-preview-card__facts">
+                {landAcquisitionFacts.map(({ icon: Icon, label, value }) => (
+                  <div key={label}>
+                    <Icon className="icon-inline" />
+                    <span>{label}</span>
+                    <strong>{value}</strong>
+                  </div>
+                ))}
+              </div>
+
+              <div className="land-preview-card__highlights">
+                {landAcquisitionHighlights.map(({ icon: Icon, title, text }) => (
+                  <div key={title} className="portfolio-feature">
+                    <span className="icon-bubble">
+                      <Icon />
+                    </span>
+                    <div>
+                      <h4>{title}</h4>
+                      <p>{text}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.article>
+        </div>
+      </section>
+
       <section className="home-contact">
         <motion.div
           className="page-container home-contact__grid"
@@ -243,6 +360,7 @@ export const HomePage = () => {
           </div>
         </motion.div>
       </section>
+
     </main>
   );
 };

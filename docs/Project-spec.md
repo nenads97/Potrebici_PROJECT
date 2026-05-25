@@ -1,310 +1,154 @@
 # PROJECT_SPEC.md
 
-## 1. Project overview
+## AI context
 
-This project is a modern real estate web application for presenting and selling apartments, business apartments, commercial spaces, parking spaces and storage units in a residential building.
+Real estate website for M & M Gradnja. First project: Heroja Pinkija 13, Novi Sad. Public site sells/presents units and collects inquiries. Admin panel is small and Serbian-language.
 
-The main project is located at:
+## Stack decision
 
-**Heroja Pinkija 13, Novi Sad**
+- Frontend: React + Vite + TypeScript + SCSS.
+- Backend platform: Supabase.
+- Admin: React routes under `/admin`.
+- Database: Supabase PostgreSQL.
+- Auth: Supabase Auth.
+- Files: Supabase Storage.
+- Secure form/mail logic: Supabase Edge Functions.
+- Email provider: Brevo by default.
+- Do not add a separate backend/CMS layer in v1.
 
-The website should help potential buyers quickly understand the project, browse available units and contact the investor.
+## Project facts
 
-The application is built as a **modular monolith**.
+- Investor: Marko Potrebic, Milan Potrebic.
+- Brand/company: M & M Gradnja.
+- Address: Heroja Pinkija 13, Novi Sad.
+- Area: beginning of Telep / Liman 5 context.
+- Structure: PO + P + 3.
+- Construction start: 2026-03-16.
+- Planned completion: 2027-11-15.
+- Basement: 15 storage units, 13 garage parking spaces.
+- Yard: 10 outdoor parking spaces.
+- Ground floor: 2 commercial spaces, 3 business apartments.
+- Floors 1-3: 5 residential apartments per floor.
+- Residential total: 15 apartments.
+- Per residential floor: 1 studio, 2 two-bedroom, 2 three-bedroom.
+- Prices: hidden publicly, show `Na upit`.
 
----
+## Target users
 
-## 2. Project goals
+- apartment buyers in Novi Sad.
+- buyers interested in Telep/Liman 5.
+- buyers interested in new construction.
+- commercial/business unit buyers.
+- land owners offering plots or old houses for future development.
 
-The main goals of the website are:
+## Primary actions
 
-- present the residential building in a modern and trustworthy way
-- highlight the location and lifestyle value
-- show available apartments clearly
-- make unit availability easy to understand
-- allow buyers to contact the investor quickly
-- keep the codebase clean, scalable and easy to maintain
+- Ask about a specific apartment/unit.
+- Submit general project inquiry.
+- Submit land/old-house offer.
+- Call or contact investor.
 
-The most important user action is:
+## Public routes
 
-**Contact the investor about a specific apartment or available unit.**
+- `/`
+- `/projekti`
+- `/projekti/heroja-pinkija-13`
+- `/projekti/heroja-pinkija-13/ponuda-stanova`
+- `/projekti/heroja-pinkija-13/spisak-stanova`
+- `/kupujemo-placeve`
+- `/kontakt`
 
----
+## Public content sections
 
-## 3. Business context
+Home:
 
-Investors:
+- hero
+- projects/current construction preview
+- apartment/project info preview
+- land acquisition preview
+- contact CTA
 
-- Marko Potrebić
-- Milan Potrebić
+Project detail:
 
-Project:
-
-- Building address: Heroja Pinkija 13, Novi Sad
-- Building structure: PO + P + 3
-- Construction start date: March 16, 2026
-- Planned completion date: November 15, 2027
-
-Building content:
-
-- Basement level:
-  - 15 storage units
-  - 13 garage parking spaces
-
-- Yard:
-  - 10 outdoor parking spaces
-
-- Ground floor:
-  - 2 commercial spaces
-  - 3 business apartments
-
-- Floors 1, 2 and 3:
-  - 5 apartments per floor
-  - same apartment layout repeated on each floor
-
-Total residential apartments:
-
-- 15 apartments
-
-Apartment mix per residential floor:
-
-- 1 studio apartment
-- 2 two-bedroom apartments
-- 2 three-bedroom apartments
-
----
-
-## 4. Target users
-
-The website is intended for:
-
-- people looking to buy an apartment in Novi Sad
-- buyers interested in Telep and surrounding areas
-- buyers looking for new construction
-- buyers who want direct contact with the investor
-- people interested in business apartments or commercial spaces
-
-Users should be able to quickly answer:
-
-- where the building is located
-- what types of units are available
-- which apartments are available, reserved or sold
-- what the planned completion date is
-- how to contact the investor
-
----
-
-## 5. Core website sections
-
-The website should include the following main sections.
-
-### 5.1 Home page
-
-The home page should quickly communicate:
-
-- project name
+- hero/project overview
+- key facts
 - location
-- building type
-- key numbers
-- available unit types
-- construction timeline
-- contact options
+- building structure
+- apartment availability
+- PDFs/plans where useful
+- CTA/contact
 
-Suggested home page sections:
+Apartments:
 
-1. Hero section
-2. Project overview
-3. Location section
-4. Available apartments preview
-5. Building structure / floor overview
-6. Construction timeline
-7. Contact CTA
+- filters by status and structure.
+- later optionally floor filter.
+- statuses: `available`, `reserved`, `sold`.
+- structures: studio, two-bedroom, three-bedroom.
 
----
+Land acquisition:
 
-### 5.2 Apartments section
+- explain that company buys plots/old houses.
+- form fields: full name, phone, email, property address, plot area, details.
 
-The apartments section is the most important part of the website.
+## Forms
 
-It should show all residential apartments with clear filtering and status information.
-
-Each apartment card should display:
-
-- apartment code or number
-- floor
-- size in m²
-- room structure
-- status
-- short description
-- CTA button
-
-Apartment statuses:
-
-- Available
-- Reserved
-- Sold
-
-Recommended filters:
-
-- floor
-- structure
-- status
-
-Possible structures:
-
-- Studio
-- Two-bedroom
-- Three-bedroom
-
----
-
-### 5.3 Commercial spaces and business apartments
-
-Commercial spaces and business apartments should be presented separately from standard residential apartments, unless a combined units section is used.
-
-Each unit should display:
-
-- unit code or number
-- floor
-- size in m²
-- type
-- status
-- CTA button
-
-Unit types:
-
-- Commercial space
-- Business apartment
-
----
-
-### 5.4 Parking and storage units
-
-Parking spaces and storage units can be presented as supporting information or as separate availability sections.
-
-Parking:
-
-- 13 garage parking spaces in the basement
-- 10 outdoor parking spaces in the yard
-
-Storage:
-
-- 15 storage units in the basement
-
-If individual availability is needed, each parking space and storage unit should have:
-
-- code
-- type
-- status
-- optional size
-- optional price
-- description
-
----
-
-### 5.5 Location section
-
-The location section should explain why the project location is attractive.
-
-Known location advantages:
-
-- Novi Sad
-- beginning of Telep
-- Heroja Pinkija 13
-- good connection to the city
-- nearby bus stop
-- bus line 12 connection to the city center
-- nearby Lidl
-- nearby Laza Kostić high school
-- close to walking and recreation areas
-- close to Kej, Ribarac, Šodroš and parks
-- planned bridge connection towards Fruška gora
-
-The copy should avoid overpromising and should sound elegant, clear and trustworthy.
-
----
-
-### 5.6 Construction timeline
-
-The website should show key construction information:
-
-- Construction start: March 16, 2026
-- Planned completion: November 15, 2027
-
-Possible timeline items:
-
-- Start of construction
-- Foundation phase
-- Structural works
-- Interior works
-- Planned completion
-
----
-
-### 5.7 Contact section
-
-The contact section should be visible and easy to use.
-
-Contact options:
-
-- phone call
-- contact form
-- inquiry for a specific apartment
-- inquiry for general availability
-
-Contact form fields:
+Contact/apartment inquiry fields:
 
 - full name
 - phone
 - email
 - message
-- selected unit, optional
+- selected project optional
+- selected unit optional
+- consent accepted
 
-The contact form should work both as:
+Land offer fields:
 
-- general project inquiry
-- specific unit inquiry
+- full name
+- phone
+- email
+- property address
+- plot area m2
+- details
+- consent accepted
 
----
+Form flow:
 
-## 6. Design direction
+- React submits to Supabase Edge Function.
+- Edge Function validates, checks honeypot/rate limit, inserts into database.
+- Edge Function sends user confirmation and sales notification email.
+- Edge Function logs email result.
 
-The design should feel:
+## Admin v1
 
-- modern
-- minimal
-- warm
-- premium
-- elegant
-- calm
-- trustworthy
+Admin is Serbian and task-focused.
 
-The website should look like a serious real estate presentation, not like a generic SaaS landing page.
+Required:
 
-Visual principles:
+- login
+- view apartment/contact inquiries
+- view land offers
+- update inquiry/offer status: `new`, `contacted`, `closed`
+- add admin note
+- update apartment status
+- update basic project/unit text
+- manage images/PDF metadata and uploads
 
-- lots of whitespace
-- neutral warm colors
-- large project images or renders
-- clear typography
-- soft cards
-- subtle borders
-- elegant buttons
-- readable apartment cards
-- visible CTAs
+Not needed in v1:
 
-Preferred color palette:
+- CRM conversations
+- price history
+- status history
+- multiple roles
+- individual public listing for each parking/storage unit
+- full CMS workflows
 
-```scss
-$site-bg: #f9f8f6;
-$site-surface: #efe9e3;
-$site-muted: #d9cfc7;
-$site-accent: #c9b59c;
-$site-text: #1f1f1f;
-$site-text-muted: #6f6a64;
---site-ink: #1d1c19;
---site-ink-muted: #625b51;
---site-card: var(--site-bg);
---site-footer: #363d46;
---site-footer-ink: #F9F8F6;
-```
+## Design rules
+
+- modern, warm, premium, calm, trustworthy.
+- real estate presentation, not SaaS landing page.
+- warm neutral palette, dark ink, subtle borders.
+- CTAs visible but not aggressive.
+- apartment cards must be scannable.
+- no fake claims about visuals.
+- mobile must avoid horizontal scroll and text overlap.

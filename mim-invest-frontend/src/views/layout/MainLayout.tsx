@@ -1,11 +1,20 @@
-import { ArrowLeft, ArrowUp, ChevronDown, ChevronRight, MessageCircle } from "lucide-react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { useRef, useState } from "react";
+import type { MouseEvent } from "react";
+import {
+  ArrowLeft,
+  ArrowUp,
+  ChevronDown,
+  ChevronRight,
+  Menu,
+  MessageCircle,
+  X,
+} from "lucide-react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { contactEmail, contactPhone } from "../../features/projects/data/herojaPinkija13.data";
 import { BrandLogo } from "../../shared/components/BrandLogo";
 
 const companyLinks = [
-  { to: "/kupujemo-placeve", label: "Kupujemo placeve" },
   { to: "/o-nama", label: "O Nama" },
   { to: "/politika-privatnosti", label: "Politika privatnosti" },
 ];
@@ -33,8 +42,10 @@ const projectLinks = [
 
 export const MainLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isHome = location.pathname === "/";
   const currentYear = new Date().getFullYear();
+  const [isNavOpen, setIsNavOpen] = useState(false);
 
   return (
     <div className="site-shell">
@@ -44,7 +55,27 @@ export const MainLayout = () => {
             <BrandLogo />
           </Link>
 
-          <nav className="site-nav" aria-label="Glavna navigacija">
+          <button
+            className="site-header__menu-toggle"
+            type="button"
+            aria-label={isNavOpen ? "Zatvori navigaciju" : "Otvori navigaciju"}
+            aria-expanded={isNavOpen}
+            aria-controls="site-navigation"
+            onClick={() => setIsNavOpen((isOpen) => !isOpen)}
+          >
+            {isNavOpen ? <X /> : <Menu />}
+          </button>
+
+          <nav
+            className={`site-nav${isNavOpen ? " site-nav--open" : ""}`}
+            id="site-navigation"
+            aria-label="Glavna navigacija"
+            onClick={(event) => {
+              if (event.target instanceof Element && event.target.closest("a")) {
+                setIsNavOpen(false);
+              }
+            }}
+          >
             <Link className="site-nav__link" to="/kupujemo-placeve">
               Kupujemo placeve
             </Link>
@@ -65,14 +96,15 @@ export const MainLayout = () => {
       </header>
 
       {!isHome ? (
-        <section className="back-home" aria-label="Povratak na pocetnu">
-          <div className="back-home__inner">
-            <Link className="site-button site-button--light" to="/">
-              <ArrowLeft />
-              Nazad na pocetnu stranicu
-            </Link>
-          </div>
-        </section>
+        <button
+          className="page-back-button"
+          type="button"
+          aria-label="Nazad na prethodnu stranicu"
+          title="Nazad"
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft />
+        </button>
       ) : null}
 
       <Outlet />
@@ -144,8 +176,24 @@ type HeaderDropdownProps = {
 };
 
 const HeaderDropdown = ({ label, links }: HeaderDropdownProps) => {
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseLeave = (event: MouseEvent<HTMLDivElement>) => {
+    const nextTarget = event.relatedTarget;
+
+    if (nextTarget instanceof Node && dropdownRef.current?.contains(nextTarget)) {
+      return;
+    }
+
+    const activeElement = document.activeElement;
+
+    if (activeElement instanceof HTMLElement && dropdownRef.current?.contains(activeElement)) {
+      activeElement.blur();
+    }
+  };
+
   return (
-    <div className="site-nav__dropdown">
+    <div className="site-nav__dropdown" ref={dropdownRef} onMouseLeave={handleMouseLeave}>
       <button className="site-nav__trigger" type="button">
         {label}
         <ChevronDown className="icon-inline" />
@@ -154,11 +202,21 @@ const HeaderDropdown = ({ label, links }: HeaderDropdownProps) => {
       <div className="site-nav__menu">
         <div className="site-nav__panel">
           {links.map((link) => (
-            <div key={link.to}>
-              <Link to={link.to}>
-                <span>{link.label}</span>
-                {link.children ? <ChevronRight className="icon-inline" /> : null}
-              </Link>
+            <div
+              className={`site-nav__item${link.children ? " site-nav__item--has-children" : ""}`}
+              key={link.to}
+            >
+              {link.children ? (
+                <button className="site-nav__nested-trigger" type="button">
+                  <span>{link.label}</span>
+                  <ChevronRight className="icon-inline" />
+                </button>
+              ) : (
+                <Link to={link.to}>
+                  <span>{link.label}</span>
+                </Link>
+              )}
+
               {link.children ? (
                 <div className="site-nav__submenu">
                   {link.children.map((child) => (

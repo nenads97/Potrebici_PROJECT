@@ -1,4 +1,5 @@
 import type { FormEvent } from "react";
+import { useState } from "react";
 import {
   ArrowUpRight,
   CalendarDays,
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { contactEmail, contactPhone } from "../../features/projects/data/herojaPinkija13.data";
+import { submitContactInquiry } from "../../features/inquiries/api/inquiryFunctions.api";
 
 const contactHeroImage =
   "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2200&q=85";
@@ -208,26 +210,39 @@ export const ContactPage = () => {
 };
 
 const ContactForm = () => {
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const [formStatus, setFormStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [formMessage, setFormMessage] = useState("");
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const formData = new FormData(event.currentTarget);
-    const getValue = (name: string) => String(formData.get(name) ?? "").trim();
-    const subject = encodeURIComponent("Upit preko kontakt forme");
-    const body = encodeURIComponent(
-      [
-        "Novi upit preko kontakt forme",
-        "",
-        `Ime i prezime: ${getValue("name")}`,
-        `Telefon: ${getValue("phone") || "-"}`,
-        `E-mail: ${getValue("email")}`,
-        "",
-        "Poruka:",
-        getValue("message") || "-",
-      ].join("\n"),
-    );
+    const form = event.currentTarget;
+    setFormStatus("sending");
+    setFormMessage("");
 
-    window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
+    const formData = new FormData(form);
+    const getValue = (name: string) => String(formData.get(name) ?? "").trim();
+
+    try {
+      await submitContactInquiry({
+        fullName: getValue("name"),
+        phone: getValue("phone"),
+        email: getValue("email"),
+        message: getValue("message"),
+        projectSlug: "heroja-pinkija-13",
+        inquiryType: "general",
+        sourcePage: window.location.pathname,
+        consentAccepted: formData.get("consent") === "on",
+        website: getValue("website"),
+      });
+
+      form.reset();
+      setFormStatus("success");
+      setFormMessage("Hvala. Upit je poslat i prodajni tim ce vas kontaktirati.");
+    } catch (error) {
+      setFormStatus("error");
+      setFormMessage(error instanceof Error ? error.message : "Slanje nije uspelo.");
+    }
   };
 
   return (
@@ -248,6 +263,11 @@ const ContactForm = () => {
         </div>
 
         <div className="form-field inquiry-form__textarea">
+          <label className="form-field form-field--hidden" htmlFor="contact-website">
+            Website
+            <input id="contact-website" name="website" tabIndex={-1} type="text" autoComplete="off" />
+          </label>
+
           <label className="form-label" htmlFor="contact-message">
             Poruka
           </label>
@@ -260,9 +280,20 @@ const ContactForm = () => {
           />
         </div>
 
-        <button className="site-button site-button--dark" type="submit">
+        <label className="form-consent">
+          <input name="consent" required type="checkbox" />
+          <span>Saglasan/saglasna sam da me kontaktirate povodom poslatog upita.</span>
+        </label>
+
+        {formMessage ? (
+          <p className={`form-feedback form-feedback--${formStatus}`} role="status">
+            {formMessage}
+          </p>
+        ) : null}
+
+        <button className="site-button site-button--dark" type="submit" disabled={formStatus === "sending"}>
           <Send />
-          Posalji upit
+          {formStatus === "sending" ? "Slanje..." : "Posalji upit"}
           <ArrowUpRight />
         </button>
       </div>

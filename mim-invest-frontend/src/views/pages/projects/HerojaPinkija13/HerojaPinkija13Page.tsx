@@ -24,12 +24,6 @@ import {
 
 const projectImages = {
   main: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=85",
-  exteriorOne:
-    "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=85",
-  exteriorTwo:
-    "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=1400&q=85",
-  exteriorThree:
-    "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1400&q=85",
 };
 
 const projectQuickFacts = [
@@ -98,24 +92,6 @@ const projectDetails = [
   { label: "Pocetak radova", value: "16.03.2026." },
   { label: "Planirani zavrsetak", value: "15.11.2027." },
   { label: "Trenutna faza", value: "Iskop zavrsen, temelji u toku" },
-];
-
-const exteriorGallery = [
-  {
-    src: projectImages.exteriorOne,
-    alt: "Eksterijer savremenog stambenog objekta",
-    label: "Urbani kontekst",
-  },
-  {
-    src: projectImages.exteriorTwo,
-    alt: "Detalj fasade i terasa objekta",
-    label: "Fasada i terase",
-  },
-  {
-    src: projectImages.exteriorThree,
-    alt: "Urbani stambeni ambijent projekta",
-    label: "Stambeni ambijent",
-  },
 ];
 
 export const HerojaPinkija13Page = () => {
@@ -287,32 +263,6 @@ export const HerojaPinkija13Page = () => {
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="page-section project-gallery-section">
-        <div className="page-container">
-          <div className="split-grid split-grid--end">
-            <div>
-              <p className="section-eyebrow">Eksterijer</p>
-              <h2 className="section-title section-title--medium">
-                Vizuelni pregled objekta i urbanog ambijenta.
-              </h2>
-            </div>
-            <p className="section-copy">
-              Galerija prikazuje karakter projekta, fasadu i stambeni ambijent. Za
-              tlocrt i precizne informacije o stanu kontaktirajte prodaju.
-            </p>
-          </div>
-
-          <div className="exterior-gallery">
-            {exteriorGallery.map((image) => (
-              <figure key={image.src}>
-                <img src={image.src} alt={image.alt} />
-                <figcaption>{image.label}</figcaption>
-              </figure>
-            ))}
           </div>
         </div>
       </section>

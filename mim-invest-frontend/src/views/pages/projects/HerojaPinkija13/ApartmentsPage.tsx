@@ -1,7 +1,33 @@
+import { useEffect, useState } from "react";
+
 import { ApartmentAvailability } from "../../../../features/projects/components/ApartmentAvailability";
 import { apartments } from "../../../../features/projects/data/herojaPinkija13.data";
+import { fetchApartments } from "../../../../features/projects/data/projectSupabase.api";
+import type { Apartment } from "../../../../features/projects/types/project.types";
 
 export const ApartmentsPage = () => {
+  const [availableApartments, setAvailableApartments] = useState<Apartment[]>(apartments);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetchApartments()
+      .then((items) => {
+        if (isMounted) {
+          setAvailableApartments(items);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setAvailableApartments(apartments);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <main>
       <section className="page-section page-section--surface apartments-page-hero">
@@ -14,7 +40,7 @@ export const ApartmentsPage = () => {
           </p>
         </div>
       </section>
-      <ApartmentAvailability apartments={apartments} compactHeading />
+      <ApartmentAvailability apartments={availableApartments} compactHeading />
     </main>
   );
 };
