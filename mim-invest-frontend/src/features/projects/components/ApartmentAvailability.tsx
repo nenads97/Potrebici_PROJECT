@@ -1,9 +1,8 @@
 import { useMemo, useState } from "react";
-import { BedDouble, Layers3, MessageCircle, Ruler, Sun } from "lucide-react";
+import { BedDouble, Layers3, Ruler } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import {
-  contactEmail,
   contactPhone,
   statusLabel,
   statusVariant,
@@ -44,12 +43,14 @@ export const ApartmentAvailability = ({
   );
 
   const filteredApartments = useMemo(() => {
-    return apartments.filter((apartment) => {
-      const matchesStatus = status === "All" || apartment.status === status;
-      const matchesStructure = structure === "All" || apartment.rooms === structure;
+    return apartments
+      .filter((apartment) => {
+        const matchesStatus = status === "All" || apartment.status === status;
+        const matchesStructure = structure === "All" || apartment.rooms === structure;
 
-      return matchesStatus && matchesStructure;
-    });
+        return matchesStatus && matchesStructure;
+      })
+      .sort((firstApartment, secondApartment) => Number(firstApartment.number) - Number(secondApartment.number));
   }, [apartments, status, structure]);
 
   return (
@@ -105,7 +106,12 @@ export const ApartmentAvailability = ({
 
         <div className="apartments-grid">
           {filteredApartments.map((apartment) => (
-            <article className="apartment-card" key={apartment.number}>
+            <Link
+              aria-label={`Detalji stana ${apartment.number}`}
+              className="apartment-card"
+              key={apartment.number}
+              to={`/apartmani/${apartment.number}`}
+            >
               <div className="apartment-card__image">
                 <img src={apartment.images[0].src} alt={apartment.images[0].alt} />
                 <span className={`status-badge status-badge--${statusVariant[apartment.status]}`}>
@@ -125,30 +131,11 @@ export const ApartmentAvailability = ({
                   <ApartmentFact icon={Layers3} label="Sprat" value={apartment.floor} />
                   <ApartmentFact icon={Ruler} label="Povrsina" value={apartment.size} />
                   <ApartmentFact icon={BedDouble} label="Struktura" value={apartment.rooms} />
-                  <ApartmentFact icon={Sun} label="Orijentacija" value={apartment.orientation} />
                 </div>
 
-                <p>{apartment.highlight}</p>
-
-                <div className="apartment-card__actions">
-                  <Link
-                    className="site-button site-button--accent"
-                    to={`/apartmani/${apartment.number}`}
-                  >
-                    Detalji stana
-                  </Link>
-                  <a
-                    className="site-button site-button--outline"
-                    href={`mailto:${contactEmail}?subject=${encodeURIComponent(
-                      `Upit za stan ${apartment.number}`,
-                    )}`}
-                  >
-                    <MessageCircle />
-                    Pitajte
-                  </a>
-                </div>
+                <span className="apartment-card__cta">Detalji stana</span>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
 

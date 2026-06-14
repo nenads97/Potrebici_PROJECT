@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import {
   ArrowUpRight,
@@ -23,7 +23,7 @@ import {
 } from "../../../../features/projects/data/herojaPinkija13.data";
 
 const projectImages = {
-  main: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=85",
+  main: "/images/heroja-pinkija-13/gradilisna-tabla.jpg",
 };
 
 const projectQuickFacts = [
@@ -94,9 +94,59 @@ const projectDetails = [
   { label: "Trenutna faza", value: "Iskop zavrsen, temelji u toku" },
 ];
 
+const AnimatedStatValue = ({ shouldAnimate, value }: { shouldAnimate: boolean; value: string }) => {
+  const targetValue = Number(value);
+  const isNumericValue = Number.isFinite(targetValue);
+  const [displayValue, setDisplayValue] = useState(isNumericValue ? "0" : value);
+  const hasAnimatedRef = useRef(false);
+
+  useEffect(() => {
+    if (!isNumericValue) {
+      setDisplayValue(value);
+      return;
+    }
+
+    if (!shouldAnimate || hasAnimatedRef.current) {
+      return;
+    }
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setDisplayValue(value);
+      return;
+    }
+
+    let animationFrame = 0;
+    hasAnimatedRef.current = true;
+    const duration = 5000;
+    let startTime: number | null = null;
+
+    const tick = (timestamp: number) => {
+      startTime ??= timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
+
+      setDisplayValue(String(Math.round(easedProgress * targetValue)));
+
+      if (progress < 1) {
+        animationFrame = window.requestAnimationFrame(tick);
+      }
+    };
+
+    animationFrame = window.requestAnimationFrame(tick);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+    };
+  }, [isNumericValue, shouldAnimate, targetValue, value]);
+
+  return <strong>{displayValue}</strong>;
+};
+
 export const HerojaPinkija13Page = () => {
   const heroImageRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
   const [activeTimelineIndex, setActiveTimelineIndex] = useState(2);
+  const [shouldAnimateStats, setShouldAnimateStats] = useState(false);
   const activeTimelineStep = projectTimeline[activeTimelineIndex];
   const { scrollYProgress } = useScroll({
     target: heroImageRef,
@@ -107,8 +157,38 @@ export const HerojaPinkija13Page = () => {
     damping: 24,
     mass: 0.35,
   });
-  const heroImageY = useTransform(smoothHeroScroll, [0, 1], ["-5%", "6%"]);
-  const heroImageScale = useTransform(smoothHeroScroll, [0, 1], [1.05, 1.11]);
+  const heroImageY = useTransform(smoothHeroScroll, [0, 1], ["0%", "0%"]);
+  const heroImageScale = useTransform(smoothHeroScroll, [0, 1], [1, 1]);
+
+  useEffect(() => {
+    const element = statsRef.current;
+
+    if (!element || shouldAnimateStats) {
+      return;
+    }
+
+    if (!("IntersectionObserver" in window)) {
+      setShouldAnimateStats(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldAnimateStats(true);
+          observer.disconnect();
+        }
+      },
+      {
+        rootMargin: "0px 0px -12% 0px",
+        threshold: 0.25,
+      },
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [shouldAnimateStats]);
 
   return (
     <main className="project-page">
@@ -162,10 +242,10 @@ export const HerojaPinkija13Page = () => {
               </div>
             </div>
 
-            <div className="project-overview__stats">
+            <div className="project-overview__stats" ref={statsRef}>
               {projectStats.slice(0, 3).map((stat) => (
                 <div key={stat.label}>
-                  <strong>{stat.value}</strong>
+                  <AnimatedStatValue shouldAnimate={shouldAnimateStats} value={stat.value} />
                   <span>{stat.label}</span>
                 </div>
               ))}

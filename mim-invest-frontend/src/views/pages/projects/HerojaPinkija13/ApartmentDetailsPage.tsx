@@ -7,7 +7,6 @@ import {
   ChevronRight,
   CheckCircle2,
   Compass,
-  DoorOpen,
   Images,
   Layers3,
   Maximize2,
@@ -93,7 +92,6 @@ export const ApartmentDetailsPage = () => {
           <DetailMetric icon={BedDouble} label="Struktura" value={apartment.rooms} />
           <DetailMetric icon={Bath} label="Kupatila" value={apartment.bathrooms} />
           <DetailMetric icon={Compass} label="Orijentacija" value={apartment.orientation} />
-          <DetailMetric icon={DoorOpen} label="Plafon" value={apartment.ceilingHeight} />
         </div>
       </section>
 
@@ -291,12 +289,18 @@ const stackPlanSpaces: PlanSpace[] = [
 const ApartmentStackPlan = ({ rooms }: { rooms: ApartmentRoomArea[] }) => {
   const [activeRoomId, setActiveRoomId] = useState<string | null>(null);
   const roomById = new Map(rooms.map((room) => [room.id, room]));
+  const visibleSpaces = activeRoomId
+    ? [
+        ...stackPlanSpaces.filter((space) => space.id !== activeRoomId),
+        ...stackPlanSpaces.filter((space) => space.id === activeRoomId),
+      ]
+    : stackPlanSpaces;
 
   return (
     <div className="apartment-plan__scaled" aria-label="Raspored prostorija za stanove 1, 6 i 11">
       <svg viewBox="0 0 420 560" role="img" aria-labelledby="stack-plan-title">
         <title id="stack-plan-title">Raspored prostorija skaliran prema kvadraturi</title>
-        {stackPlanSpaces.map((space) => {
+        {visibleSpaces.map((space) => {
           const room = roomById.get(space.id);
 
           if (!room) {

@@ -153,6 +153,14 @@ const galleryImages = {
     "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1400&q=85",
 };
 
+const apartmentPlanImages = {
+  stackOne: "/images/apartment-plans/stan-1-6-11.png",
+  stackTwo: "/images/apartment-plans/stan-2-7-12.png",
+  stackThree: "/images/apartment-plans/stan-3-8-13.png",
+  stackFour: "/images/apartment-plans/stan-4-9-14.png",
+  stackFive: "/images/apartment-plans/stan-5-10-15.png",
+};
+
 type ApartmentStack = {
   numbers: string[];
   sizes: string[];
@@ -191,6 +199,7 @@ const apartmentStacks: ApartmentStack[] = [
       ...commonFeatures,
     ],
     images: [
+      { src: apartmentPlanImages.stackOne, alt: "Tlocrt stanova 1, 6 i 11" },
       { src: galleryImages.living, alt: "Dnevna zona dvoiposobnog stana" },
       { src: galleryImages.bathroom, alt: "Kupatilo u stanu" },
       { src: galleryImages.terrace, alt: "Terasa stana" },
@@ -223,6 +232,7 @@ const apartmentStacks: ApartmentStack[] = [
       ...commonFeatures,
     ],
     images: [
+      { src: apartmentPlanImages.stackTwo, alt: "Tlocrt stanova 2, 7 i 12" },
       { src: galleryImages.dining, alt: "Dnevna zona sa trpezarijom" },
       { src: galleryImages.bedroom, alt: "Spavaca soba" },
       { src: galleryImages.bathroom, alt: "Kupatilo u stanu" },
@@ -251,6 +261,7 @@ const apartmentStacks: ApartmentStack[] = [
       ...commonFeatures,
     ],
     images: [
+      { src: apartmentPlanImages.stackThree, alt: "Tlocrt stanova 3, 8 i 13" },
       { src: galleryImages.kitchen, alt: "Kompaktna dnevna zona" },
       { src: galleryImages.living, alt: "Garsonjera u neutralnim tonovima" },
       { src: galleryImages.lobby, alt: "Ulazni prostor zgrade" },
@@ -279,6 +290,7 @@ const apartmentStacks: ApartmentStack[] = [
       ...commonFeatures,
     ],
     images: [
+      { src: apartmentPlanImages.stackFour, alt: "Tlocrt stanova 4, 9 i 14" },
       { src: galleryImages.living, alt: "Dnevni boravak jednoiposobnog stana" },
       { src: galleryImages.bedroom, alt: "Spavaca soba" },
       { src: galleryImages.terrace, alt: "Terasa stana" },
@@ -307,6 +319,7 @@ const apartmentStacks: ApartmentStack[] = [
       ...commonFeatures,
     ],
     images: [
+      { src: apartmentPlanImages.stackFive, alt: "Tlocrt stanova 5, 10 i 15" },
       { src: galleryImages.dining, alt: "Dnevna zona jednoiposobnog stana" },
       { src: galleryImages.kitchen, alt: "Kuhinja u stanu" },
       { src: galleryImages.terrace, alt: "Terasa stana" },
