@@ -15,7 +15,7 @@ type ApartmentAvailabilityProps = {
 };
 
 type StatusFilter = "All" | ApartmentStatus;
-type StructureFilter = "All" | string;
+type StructureFilter = "All" | "Garsonjera" | "Dvosoban" | "Trosoban";
 
 const statusTabs: Array<{ label: string; value: StatusFilter }> = [
   { label: "Svi stanovi", value: "All" },
@@ -24,6 +24,21 @@ const statusTabs: Array<{ label: string; value: StatusFilter }> = [
   { label: "Prodati", value: "Sold" },
 ];
 
+const structureTabs: Array<{ label: string; value: StructureFilter }> = [
+  { label: "Sve strukture", value: "All" },
+  { label: "Garsonjera", value: "Garsonjera" },
+  { label: "Dvosoban", value: "Dvosoban" },
+  { label: "Trosoban", value: "Trosoban" },
+];
+
+const matchesStructureFilter = (apartment: Apartment, structure: StructureFilter) => {
+  if (structure === "All") {
+    return true;
+  }
+
+  return apartment.rooms === structure;
+};
+
 export const ApartmentAvailability = ({
   apartments,
   compactHeading = false,
@@ -31,22 +46,11 @@ export const ApartmentAvailability = ({
   const [status, setStatus] = useState<StatusFilter>("All");
   const [structure, setStructure] = useState<StructureFilter>("All");
 
-  const structureTabs = useMemo(
-    () => [
-      { label: "Sve strukture", value: "All" },
-      ...Array.from(new Set(apartments.map((apartment) => apartment.rooms))).map((rooms) => ({
-        label: rooms,
-        value: rooms,
-      })),
-    ],
-    [apartments],
-  );
-
   const filteredApartments = useMemo(() => {
     return apartments
       .filter((apartment) => {
         const matchesStatus = status === "All" || apartment.status === status;
-        const matchesStructure = structure === "All" || apartment.rooms === structure;
+        const matchesStructure = matchesStructureFilter(apartment, structure);
 
         return matchesStatus && matchesStructure;
       })
@@ -61,7 +65,7 @@ export const ApartmentAvailability = ({
             <p className="section-eyebrow">Ponuda stanova</p>
             <h2 className="section-title section-title--medium">
               {compactHeading
-                ? "15 stanova sa ponavljajucim vertikalnim rasporedom."
+                ? "Pregled stanova po spratu i strukturi."
                 : "Dostupnost po spratu i strukturi."}
             </h2>
           </div>

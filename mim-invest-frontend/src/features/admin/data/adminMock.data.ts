@@ -37,7 +37,7 @@ export const adminInquiries: AdminInquiry[] = [
     unitCode: "Stan 4",
     sourcePage: "/projekti/heroja-pinkija-13/ponuda-stanova",
     message:
-      "Interesuje me jednoiposoban stan sa terasom. Molim vas za informaciju o uslovima placanja i dostupnosti.",
+      "Interesuje me dvosoban stan sa terasom. Molim vas za informaciju o uslovima placanja i dostupnosti.",
     adminStatus: "new",
     adminNote: "Pozvati posle 16h, pita za stan na nizoj etazi.",
     createdAt: "2026-05-22T08:40:00.000Z",
@@ -51,7 +51,7 @@ export const adminInquiries: AdminInquiry[] = [
     projectSlug: "heroja-pinkija-13",
     unitCode: "Stan 1",
     sourcePage: "/apartmani/1",
-    message: "Da li je veci dvoiposoban stan jos slobodan i kada moze obilazak lokacije?",
+    message: "Da li je veci trosoban stan jos slobodan i kada moze obilazak lokacije?",
     adminStatus: "contacted",
     adminNote: "Poslat mejl sa osnovnim informacijama.",
     createdAt: "2026-05-21T14:10:00.000Z",

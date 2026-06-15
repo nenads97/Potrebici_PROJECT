@@ -61,7 +61,7 @@ export const ApartmentDetailsPage = () => {
     <main className="apartment-detail">
       <section className="page-section page-section--surface apartment-detail__hero">
         <div className="page-container split-grid split-grid--center">
-          <div className="fade-up">
+          <div className="fade-up apartment-detail__intro">
             <span className={`status-badge status-badge--${statusVariant[apartment.status]}`}>
               {statusLabel[apartment.status]}
             </span>

@@ -113,21 +113,21 @@ with project as (
 unit_rows as (
   select *
   from (values
-    ('1',  'stan-1',  1, '1. etaza', 62.15, 'Dvoiposoban', '2 kupatila', 'Terasa', 'Veci stan sa dva kupatila, pogodan za porodicu.'),
-    ('2',  'stan-2',  1, '1. etaza', 58.26, 'Dvoiposoban', '2 kupatila', 'Terasa', 'Dvoiposoban stan sa dobrim odnosom komfora i kvadrature.'),
+    ('1',  'stan-1',  1, '1. etaza', 62.15, 'Trosoban', '2 kupatila', 'Terasa', 'Veci stan sa dva kupatila, pogodan za porodicu.'),
+    ('2',  'stan-2',  1, '1. etaza', 58.26, 'Trosoban', '2 kupatila', 'Terasa', 'Trosoban stan sa dobrim odnosom komfora i kvadrature.'),
     ('3',  'stan-3',  1, '1. etaza', 28.55, 'Garsonjera', '1 kupatilo', 'Bez terase', 'Kompaktan stan i jedini tip bez terase.'),
-    ('4',  'stan-4',  1, '1. etaza', 46.95, 'Jednoiposoban', '1 kupatilo', 'Terasa', 'Praktican jednoiposoban stan sa terasom.'),
-    ('5',  'stan-5',  1, '1. etaza', 42.57, 'Jednoiposoban', '1 kupatilo', 'Terasa', 'Manji jednoiposoban stan sa jasnim rasporedom.'),
-    ('6',  'stan-6',  2, '2. etaza', 60.29, 'Dvoiposoban', '2 kupatila', 'Terasa', 'Veci stan sa dva kupatila, pogodan za porodicu.'),
-    ('7',  'stan-7',  2, '2. etaza', 56.50, 'Dvoiposoban', '2 kupatila', 'Terasa', 'Dvoiposoban stan sa dobrim odnosom komfora i kvadrature.'),
+    ('4',  'stan-4',  1, '1. etaza', 46.95, 'Dvosoban', '1 kupatilo', 'Terasa', 'Praktican dvosoban stan sa terasom.'),
+    ('5',  'stan-5',  1, '1. etaza', 42.57, 'Dvosoban', '1 kupatilo', 'Terasa', 'Manji dvosoban stan sa jasnim rasporedom.'),
+    ('6',  'stan-6',  2, '2. etaza', 60.29, 'Trosoban', '2 kupatila', 'Terasa', 'Veci stan sa dva kupatila, pogodan za porodicu.'),
+    ('7',  'stan-7',  2, '2. etaza', 56.50, 'Trosoban', '2 kupatila', 'Terasa', 'Trosoban stan sa dobrim odnosom komfora i kvadrature.'),
     ('8',  'stan-8',  2, '2. etaza', 27.69, 'Garsonjera', '1 kupatilo', 'Bez terase', 'Kompaktan stan i jedini tip bez terase.'),
-    ('9',  'stan-9',  2, '2. etaza', 45.54, 'Jednoiposoban', '1 kupatilo', 'Terasa', 'Praktican jednoiposoban stan sa terasom.'),
-    ('10', 'stan-10', 2, '2. etaza', 41.29, 'Jednoiposoban', '1 kupatilo', 'Terasa', 'Manji jednoiposoban stan sa jasnim rasporedom.'),
-    ('11', 'stan-11', 3, '3. etaza', 60.29, 'Dvoiposoban', '2 kupatila', 'Terasa', 'Veci stan sa dva kupatila, pogodan za porodicu.'),
-    ('12', 'stan-12', 3, '3. etaza', 56.50, 'Dvoiposoban', '2 kupatila', 'Terasa', 'Dvoiposoban stan sa dobrim odnosom komfora i kvadrature.'),
+    ('9',  'stan-9',  2, '2. etaza', 45.54, 'Dvosoban', '1 kupatilo', 'Terasa', 'Praktican dvosoban stan sa terasom.'),
+    ('10', 'stan-10', 2, '2. etaza', 41.29, 'Dvosoban', '1 kupatilo', 'Terasa', 'Manji dvosoban stan sa jasnim rasporedom.'),
+    ('11', 'stan-11', 3, '3. etaza', 60.29, 'Trosoban', '2 kupatila', 'Terasa', 'Veci stan sa dva kupatila, pogodan za porodicu.'),
+    ('12', 'stan-12', 3, '3. etaza', 56.50, 'Trosoban', '2 kupatila', 'Terasa', 'Trosoban stan sa dobrim odnosom komfora i kvadrature.'),
     ('13', 'stan-13', 3, '3. etaza', 27.69, 'Garsonjera', '1 kupatilo', 'Bez terase', 'Kompaktan stan i jedini tip bez terase.'),
-    ('14', 'stan-14', 3, '3. etaza', 45.54, 'Jednoiposoban', '1 kupatilo', 'Terasa', 'Praktican jednoiposoban stan sa terasom.'),
-    ('15', 'stan-15', 3, '3. etaza', 41.29, 'Jednoiposoban', '1 kupatilo', 'Terasa', 'Manji jednoiposoban stan sa jasnim rasporedom.')
+    ('14', 'stan-14', 3, '3. etaza', 45.54, 'Dvosoban', '1 kupatilo', 'Terasa', 'Praktican dvosoban stan sa terasom.'),
+    ('15', 'stan-15', 3, '3. etaza', 41.29, 'Dvosoban', '1 kupatilo', 'Terasa', 'Manji dvosoban stan sa jasnim rasporedom.')
   ) as rows(code, slug, floor_number, floor_label, area_m2, room_structure, bathrooms, terrace, short_description)
 )
 insert into public.units (

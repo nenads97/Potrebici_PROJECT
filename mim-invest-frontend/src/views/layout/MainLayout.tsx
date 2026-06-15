@@ -76,12 +76,12 @@ export const MainLayout = () => {
               }
             }}
           >
+            <HeaderDropdown label="Kompanija" links={companyLinks} />
+            <HeaderDropdown label="Projekti" links={projectLinks} />
+
             <Link className="site-nav__link" to="/kupujemo-placeve">
               Kupujemo placeve
             </Link>
-
-            <HeaderDropdown label="Kompanija" links={companyLinks} />
-            <HeaderDropdown label="Projekti" links={projectLinks} />
 
             <Link className="site-nav__link" to="/kontakt">
               Kontakt

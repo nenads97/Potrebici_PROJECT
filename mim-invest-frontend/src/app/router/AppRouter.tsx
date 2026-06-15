@@ -1,6 +1,6 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import type { ComponentType } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 
 import { LazySectionLoader, PageLoader, RouteTransitionLoader } from "../../shared/components/PageLoader";
 
@@ -49,9 +49,20 @@ const HerojaPinkija13Page = lazyNamed(
   "HerojaPinkija13Page",
 );
 
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [pathname]);
+
+  return null;
+};
+
 const AppRouter = () => {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <RouteTransitionLoader />
       <Suspense fallback={<PageLoader label="Ucitavanje stranice" />}>
         <Routes>

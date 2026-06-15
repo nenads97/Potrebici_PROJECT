@@ -191,7 +191,7 @@ const apartmentStacks: ApartmentStack[] = [
     terrace: "Terasa",
     highlight: "Veci stan sa dva kupatila, pogodan za porodicu.",
     description:
-      "Dvoiposoban stan za kupce kojima je vazan dodatni komfor i funkcionalno odvajanje dnevne i spavace zone. Isti raspored se ponavlja kroz vertikalu, uz razliku u kvadraturi po etazi.",
+      "Trosoban stan za kupce kojima je vazan dodatni komfor i funkcionalno odvajanje dnevne i spavace zone. Isti raspored se ponavlja kroz vertikalu, uz razliku u kvadraturi po etazi.",
     features: [
       "Trosobna struktura",
       "Dva kupatila",
@@ -200,7 +200,7 @@ const apartmentStacks: ApartmentStack[] = [
     ],
     images: [
       { src: apartmentPlanImages.stackOne, alt: "Tlocrt stanova 1, 6 i 11" },
-      { src: galleryImages.living, alt: "Dnevna zona dvoiposobnog stana" },
+      { src: galleryImages.living, alt: "Dnevna zona trosobnog stana" },
       { src: galleryImages.bathroom, alt: "Kupatilo u stanu" },
       { src: galleryImages.terrace, alt: "Terasa stana" },
     ],
@@ -219,14 +219,14 @@ const apartmentStacks: ApartmentStack[] = [
   {
     numbers: ["2", "7", "12"],
     sizes: ["58.26 m2", "56.50 m2", "56.50 m2"],
-    rooms: "Dvoiposoban",
+    rooms: "Trosoban",
     bathrooms: "2 kupatila",
     terrace: "Terasa",
-    highlight: "Dvoiposoban stan sa dobrim odnosom komfora i kvadrature.",
+    highlight: "Trosoban stan sa dobrim odnosom komfora i kvadrature.",
     description:
       "Raspored je namenjen kupcima kojima su potrebne odvojene sobe i dva kupatila, bez nepotrebno velike kvadrature. Pogodan je za porodican zivot ili rad od kuce.",
     features: [
-      "Dvoiposobna struktura",
+      "Trosobna struktura",
       "Dva kupatila",
       "Terasa",
       ...commonFeatures,
@@ -277,21 +277,21 @@ const apartmentStacks: ApartmentStack[] = [
   {
     numbers: ["4", "9", "14"],
     sizes: ["46.95 m2", "45.54 m2", "45.54 m2"],
-    rooms: "Jednoiposoban",
+    rooms: "Dvosoban",
     bathrooms: "1 kupatilo",
     terrace: "Terasa",
-    highlight: "Praktican jednoiposoban stan sa terasom.",
+    highlight: "Praktican dvosoban stan sa terasom.",
     description:
-      "Jednoiposoban stan je funkcionalan izbor za prvi dom, parove ili kupce koji planiraju izdavanje. Raspored zadrzava jasnu dnevnu zonu i odvojenu spavacu sobu.",
+      "Dvosoban stan je funkcionalan izbor za prvi dom, parove ili kupce koji planiraju izdavanje. Raspored zadrzava jasnu dnevnu zonu i odvojenu spavacu sobu.",
     features: [
-      "Jednoiposobna struktura",
+      "Dvosobna struktura",
       "Terasa",
       "Jedno kupatilo",
       ...commonFeatures,
     ],
     images: [
       { src: apartmentPlanImages.stackFour, alt: "Tlocrt stanova 4, 9 i 14" },
-      { src: galleryImages.living, alt: "Dnevni boravak jednoiposobnog stana" },
+      { src: galleryImages.living, alt: "Dnevni boravak dvosobnog stana" },
       { src: galleryImages.bedroom, alt: "Spavaca soba" },
       { src: galleryImages.terrace, alt: "Terasa stana" },
     ],
@@ -306,21 +306,21 @@ const apartmentStacks: ApartmentStack[] = [
   {
     numbers: ["5", "10", "15"],
     sizes: ["42.57 m2", "41.29 m2", "41.29 m2"],
-    rooms: "Jednoiposoban",
+    rooms: "Dvosoban",
     bathrooms: "1 kupatilo",
     terrace: "Terasa",
-    highlight: "Manji jednoiposoban stan sa jasnim rasporedom.",
+    highlight: "Manji dvosoban stan sa jasnim rasporedom.",
     description:
       "Ovaj tip stana nudi kompaktnu kvadraturu uz odvojenu spavacu sobu i terasu. Dobar je izbor za kupce koji traze praktican stan na dobro povezanoj lokaciji.",
     features: [
-      "Jednoiposobna struktura",
+      "Dvosobna struktura",
       "Terasa",
       "Jedno kupatilo",
       ...commonFeatures,
     ],
     images: [
       { src: apartmentPlanImages.stackFive, alt: "Tlocrt stanova 5, 10 i 15" },
-      { src: galleryImages.dining, alt: "Dnevna zona jednoiposobnog stana" },
+      { src: galleryImages.dining, alt: "Dnevna zona dvosobnog stana" },
       { src: galleryImages.kitchen, alt: "Kuhinja u stanu" },
       { src: galleryImages.terrace, alt: "Terasa stana" },
     ],
@@ -408,7 +408,7 @@ export const buildingLevels: BuildingLevel[] = [
   {
     level: "1-3",
     title: "Stambeni spratovi",
-    items: ["5 stanova po spratu", "garsonjere, jednoiposobni i dvoiposobni stanovi"],
+    items: ["5 stanova po spratu", "garsonjere, dvosobni i trosobni stanovi"],
   },
   {
     level: "Dv.",

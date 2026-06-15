@@ -8,6 +8,25 @@ const statusMap: Record<string, ApartmentStatus> = {
   sold: "Sold",
 };
 
+function getApartmentStructure(apartmentNumber: string) {
+  const normalizedNumber = Number(apartmentNumber);
+  const stackPosition = ((normalizedNumber - 1) % 5) + 1;
+
+  if (stackPosition === 1 || stackPosition === 2) {
+    return "Trosoban";
+  }
+
+  if (stackPosition === 3) {
+    return "Garsonjera";
+  }
+
+  if (stackPosition === 4 || stackPosition === 5) {
+    return "Dvosoban";
+  }
+
+  return null;
+}
+
 export async function fetchApartments() {
   if (!isSupabaseConfigured || !supabase) {
     return fallbackApartments;
@@ -25,10 +44,11 @@ export async function fetchApartments() {
   }
 
   return (data ?? []).map<Apartment>((unit) => {
+    const apartmentNumber = unit.code.replace(/\D/g, "");
     const fallback =
-      fallbackApartments.find((apartment) => apartment.number === unit.code.replace(/\D/g, "")) ??
-      fallbackApartments[0];
+      fallbackApartments.find((apartment) => apartment.number === apartmentNumber) ?? fallbackApartments[0];
     const area = unit.area_m2 ? `${unit.area_m2} m2` : fallback.size;
+    const rooms = getApartmentStructure(apartmentNumber) ?? unit.room_structure ?? fallback.rooms;
 
     return {
       ...fallback,
@@ -36,7 +56,7 @@ export async function fetchApartments() {
       floor: unit.floor_label ?? fallback.floor,
       floorNumber: unit.floor_number ?? fallback.floorNumber,
       size: area,
-      rooms: unit.room_structure ?? fallback.rooms,
+      rooms,
       status: statusMap[unit.status] ?? fallback.status,
       orientation: unit.orientation ?? fallback.orientation,
       highlight: unit.short_description ?? fallback.highlight,
@@ -46,7 +66,7 @@ export async function fetchApartments() {
       images: unit.gallery_images && Array.isArray(unit.gallery_images) ? fallback.images : fallback.images,
       plan: [
         { label: "Ukupna povrsina", value: area },
-        { label: "Struktura", value: unit.room_structure ?? fallback.rooms },
+        { label: "Struktura", value: rooms },
         { label: "Kupatila", value: unit.bathrooms ?? fallback.bathrooms },
         { label: "Terasa", value: unit.terrace ?? fallback.terrace },
       ],
