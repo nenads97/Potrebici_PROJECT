@@ -66,6 +66,7 @@ Never expose in browser:
 - Cards should be simple, scannable, and not nested inside other cards.
 - Mobile must have no horizontal scroll, overlap, or clipped button text.
 - Avoid generic SaaS hero sections, loud gradients, heavy decoration.
+- Garage parking and storage units must be shown as separate paid options, not as freebies or included apartment features.
 
 ## Admin UX
 

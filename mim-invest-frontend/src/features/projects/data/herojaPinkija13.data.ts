@@ -35,7 +35,7 @@ export const projectInfo: ProjectInfo = {
   lead:
     "Moderan stambeno-poslovni objekat na pocetku Telepa, osmisljen za miran zivot uz brzu vezu sa gradom.",
   description:
-    "Projekat M & M Gradnja objedinjuje stanove, poslovne apartmane, lokale, garazna i dvorisna parking mesta, uz jasan prodajni pregled dostupnih jedinica.",
+    "Projekat M & M Gradnja objedinjuje stanove, poslovne apartmane i lokale, uz posebnu ponudu garaznih mesta, dvorisnih parking mesta i ostava za odvojenu kupovinu.",
   floorStructure: "PO + PR + 3",
   constructionStart: "16. mart 2026.",
   plannedCompletion: "15. novembar 2027.",
@@ -131,7 +131,7 @@ export const galleryItems: GalleryItem[] = [
     id: "parking",
     title: "Parking i ostave",
     tag: "Dodatne jedinice",
-    meta: "Garazna, dvorisna mesta i ostave",
+    meta: "Garazna mesta, dvorisna mesta i ostave kupuju se odvojeno",
     variant: "parking",
   },
 ];
@@ -178,8 +178,8 @@ type ApartmentStack = {
 const commonFeatures = [
   "Podno grejanje",
   "Lift od podzemne garaze do svih spratova",
-  "Mogucnost kupovine garaznog mesta",
-  "Ostava dostupna uz stan",
+  "Garazno mesto dostupno za odvojenu kupovinu",
+  "Ostava dostupna za odvojenu kupovinu",
 ];
 
 const apartmentStacks: ApartmentStack[] = [
@@ -218,7 +218,7 @@ const apartmentStacks: ApartmentStack[] = [
   },
   {
     numbers: ["2", "7", "12"],
-    sizes: ["58.26 m2", "56.50 m2", "56.50 m2"],
+    sizes: ["58.25 m2", "56.50 m2", "56.50 m2"],
     rooms: "Trosoban",
     bathrooms: "2 kupatila",
     terrace: "Terasa",
@@ -238,11 +238,14 @@ const apartmentStacks: ApartmentStack[] = [
       { src: galleryImages.bathroom, alt: "Kupatilo u stanu" },
     ],
     roomAreas: [
-      { id: "living", label: "Dnevni boravak", area: "19.80 m2" },
-      { id: "kitchen", label: "Kuhinja", area: "5.90 m2" },
-      { id: "bedroom", label: "Spavaca soba", area: "12.10 m2" },
-      { id: "bathroom", label: "Kupatilo", area: "4.50 m2" },
-      { id: "terrace", label: "Terasa", area: "4.80 m2" },
+      { id: "entry", number: "1", label: "Ulaz", area: "3.75 m2" },
+      { id: "kitchen", number: "2", label: "Kuhinja", area: "4.72 m2" },
+      { id: "bathroom", number: "3", label: "Kupatilo", area: "4.30 m2" },
+      { id: "living", number: "4", label: "Dnevni boravak", area: "19.26 m2" },
+      { id: "terrace", number: "5", label: "Terasa", area: "3.14 m2" },
+      { id: "hall", number: "6", label: "Hodnik", area: "3.08 m2" },
+      { id: "bedroom-primary", number: "7", label: "Spavaca soba", area: "11.96 m2" },
+      { id: "bedroom-secondary", number: "8", label: "Spavaca soba", area: "8.04 m2" },
     ],
   },
   {
@@ -267,11 +270,10 @@ const apartmentStacks: ApartmentStack[] = [
       { src: galleryImages.lobby, alt: "Ulazni prostor zgrade" },
     ],
     roomAreas: [
-      { id: "living", label: "Dnevni boravak", area: "16.30 m2" },
-      { id: "kitchen", label: "Kuhinja", area: "4.20 m2" },
-      { id: "bedroom", label: "Spavaca soba", area: "U sklopu dnevne zone" },
-      { id: "bathroom", label: "Kupatilo", area: "4.10 m2" },
-      { id: "terrace", label: "Terasa", area: "Bez terase" },
+      { id: "entry", number: "1", label: "Ulaz", area: "2.43 m2" },
+      { id: "kitchen", number: "2", label: "Kuhinja", area: "3.35 m2" },
+      { id: "bathroom", number: "3", label: "Kupatilo", area: "4.22 m2" },
+      { id: "living", number: "4", label: "Dnevna zona", area: "18.55 m2" },
     ],
   },
   {
@@ -296,11 +298,12 @@ const apartmentStacks: ApartmentStack[] = [
       { src: galleryImages.terrace, alt: "Terasa stana" },
     ],
     roomAreas: [
-      { id: "living", label: "Dnevni boravak", area: "17.90 m2" },
-      { id: "kitchen", label: "Kuhinja", area: "5.10 m2" },
-      { id: "bedroom", label: "Spavaca soba", area: "10.60 m2" },
-      { id: "bathroom", label: "Kupatilo", area: "4.30 m2" },
-      { id: "terrace", label: "Terasa", area: "4.40 m2" },
+      { id: "entry", number: "1", label: "Ulaz", area: "3.31 m2" },
+      { id: "kitchen", number: "2", label: "Kuhinja", area: "4.90 m2" },
+      { id: "bathroom", number: "3", label: "Kupatilo", area: "4.21 m2" },
+      { id: "living", number: "4", label: "Dnevni boravak", area: "18.96 m2" },
+      { id: "terrace", number: "5", label: "Terasa", area: "3.12 m2" },
+      { id: "bedroom", number: "6", label: "Spavaca soba", area: "12.45 m2" },
     ],
   },
   {
@@ -325,11 +328,12 @@ const apartmentStacks: ApartmentStack[] = [
       { src: galleryImages.terrace, alt: "Terasa stana" },
     ],
     roomAreas: [
-      { id: "living", label: "Dnevni boravak", area: "16.80 m2" },
-      { id: "kitchen", label: "Kuhinja", area: "4.80 m2" },
-      { id: "bedroom", label: "Spavaca soba", area: "9.90 m2" },
-      { id: "bathroom", label: "Kupatilo", area: "4.00 m2" },
-      { id: "terrace", label: "Terasa", area: "4.20 m2" },
+      { id: "entry", number: "1", label: "Ulaz", area: "3.15 m2" },
+      { id: "kitchen", number: "2", label: "Kuhinja", area: "4.97 m2" },
+      { id: "bathroom", number: "3", label: "Kupatilo", area: "4.21 m2" },
+      { id: "living", number: "4", label: "Dnevni boravak", area: "16.84 m2" },
+      { id: "terrace", number: "5", label: "Terasa", area: "3.19 m2" },
+      { id: "bedroom", number: "6", label: "Spavaca soba", area: "10.21 m2" },
     ],
   },
 ];
@@ -378,8 +382,8 @@ export const apartments: Apartment[] = apartmentStacks.flatMap((stack) =>
       "Prodaja stanova je pocela. Za cenu, uslove kupovine i tacan status kontaktirajte prodaju.",
     bathrooms: stack.bathrooms,
     terrace: stack.terrace,
-    parking: "Garazno mesto dostupno uz kupovinu",
-    storage: "Ostava dostupna uz kupovinu",
+    parking: "Garazno mesto dostupno za odvojenu kupovinu",
+    storage: "Ostava dostupna za odvojenu kupovinu",
     ceilingHeight: "Prema prodajnoj dokumentaciji",
     images: stack.images,
     plan: [
@@ -398,7 +402,7 @@ export const buildingLevels: BuildingLevel[] = [
   {
     level: "PO",
     title: "Podrum",
-    items: ["15 ostava", "13 garaznih parking mesta"],
+    items: ["15 ostava - odvojena kupovina", "13 garaznih parking mesta - odvojena kupovina"],
   },
   {
     level: "PR",

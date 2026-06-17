@@ -13,6 +13,7 @@ Design target: premium real estate website for M & M Gradnja, project Heroja Pin
 - Structure: PO + P + 3.
 - Construction start: 2026-03-16.
 - Planned completion: 2027-11-15.
+- Additional paid options: 13 garage parking spaces and 15 storage units, sold separately from apartments.
 - Main CTA: ask about apartment/unit.
 - Secondary CTA: offer land/old house.
 
@@ -81,7 +82,7 @@ letter-spacing 0
    - cards show code, floor, area, structure, status, CTA.
 
 5. Building structure
-   - PO: storage + garage.
+   - PO: 15 storage units + 13 garage parking spaces, separate paid options.
    - P: commercial spaces + business apartments.
    - 1-3: residential floors.
    - yard parking.

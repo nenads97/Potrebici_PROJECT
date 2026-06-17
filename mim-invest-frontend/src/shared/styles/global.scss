@@ -6,6 +6,7 @@
   --site-muted: #{$color-muted-surface};
   --site-accent: #{$color-accent};
   --site-accent-dark: #{$color-accent-dark};
+  --site-forest: #{$color-forest};
   --site-ink: #{$color-text};
   --site-ink-muted: #{$color-muted};
   --site-card: #{$color-off-white};
@@ -1020,6 +1021,120 @@ img {
   filter: drop-shadow(0 18px 44px rgba(0, 0, 0, 0.42));
 }
 
+.home-hero__lead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 14px;
+  width: min(100%, 720px);
+  margin: 28px auto 0;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: clamp(1rem, 2vw, 1.22rem);
+  font-weight: 700;
+  line-height: 1.6;
+  text-shadow: 0 10px 34px rgba(0, 0, 0, 0.42);
+}
+
+.home-hero__lead span:not(:first-child)::before {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  margin-right: 14px;
+  border-radius: 50%;
+  background: var(--site-accent);
+  content: "";
+  vertical-align: middle;
+}
+
+.home-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.home-hero__actions .site-button {
+  min-width: 190px;
+}
+
+.home-availability {
+  position: relative;
+  z-index: 2;
+  margin-top: -48px;
+  padding: 0 0 30px;
+  background: linear-gradient(180deg, transparent 0 48px, var(--site-bg) 48px);
+}
+
+.home-availability__grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid rgba(79, 103, 94, 0.18);
+  border-radius: 8px;
+  background: rgba(249, 248, 246, 0.9);
+  backdrop-filter: blur(18px);
+  box-shadow:
+    0 24px 70px rgba(31, 28, 21, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.home-availability__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 92px;
+  padding: 16px;
+  border-right: 1px solid var(--site-border);
+}
+
+.home-availability__item:last-child {
+  border-right: 0;
+}
+
+.home-availability__item .icon-bubble {
+  width: 38px;
+  height: 38px;
+  color: var(--site-forest);
+  background: rgba(79, 103, 94, 0.14);
+}
+
+.home-availability__item .icon-bubble svg {
+  width: 18px;
+  height: 18px;
+}
+
+.home-availability__item span:not(.icon-bubble) {
+  display: block;
+  color: #706961;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.home-availability__item strong {
+  display: block;
+  margin-top: 6px;
+  color: var(--site-footer);
+  font-size: 0.96rem;
+  line-height: 1.25;
+}
+
+.home-availability__note {
+  width: min(100%, #{$content-max-width});
+  margin: 12px auto 0;
+  color: #706961;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  text-align: right;
+}
+
+.home-projects {
+  padding-top: 50px;
+}
+
 .home-projects__intro {
   max-width: 760px;
   padding-left: 20px;
@@ -1154,10 +1269,27 @@ img {
   border-radius: 8px;
   object-fit: cover;
   box-shadow: 0 18px 42px rgba(31, 28, 21, 0.1);
+  transition:
+    box-shadow 220ms ease,
+    filter 220ms ease;
+}
+
+.portfolio-card__images img:hover {
+  filter: saturate(1.04) contrast(1.03);
+  box-shadow: 0 22px 52px rgba(31, 28, 21, 0.14);
 }
 
 .portfolio-card__images > img {
   min-height: 420px;
+}
+
+.portfolio-card__image--facade {
+  background: #ece4d8;
+  object-position: center top;
+}
+
+.portfolio-card__image--works {
+  object-position: center;
 }
 
 .portfolio-card__images > div {
@@ -1308,10 +1440,15 @@ img {
 .home-land-acquisition {
   position: relative;
   overflow: hidden;
+  padding: 66px 0;
   border-top: 1px solid var(--site-border);
   background:
-    linear-gradient(90deg, rgba(249, 248, 246, 0.96), rgba(249, 248, 246, 0.88) 48%, rgba(249, 248, 246, 0.74)),
+    linear-gradient(90deg, rgba(249, 248, 246, 0.98), rgba(249, 248, 246, 0.94) 48%, rgba(249, 248, 246, 0.88)),
     url("/images/kupovina-placeva-hero.png") center / cover no-repeat;
+}
+
+.home-land-acquisition .section-title--medium {
+  font-size: clamp(1.8rem, 2.9vw, 2.75rem);
 }
 
 .home-land-acquisition .page-container {
@@ -1323,24 +1460,24 @@ img {
   display: grid;
   grid-template-columns: 0.88fr 1.12fr;
   overflow: hidden;
-  margin-top: 36px;
+  margin-top: 28px;
   border: 1px solid var(--site-border);
   border-radius: 8px;
-  background: rgba(249, 248, 246, 0.86);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 26px 70px rgba(31, 28, 21, 0.1);
+  background: rgba(249, 248, 246, 0.92);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 48px rgba(31, 28, 21, 0.08);
 }
 
 .land-preview-card__copy {
-  padding: 40px;
-  background: rgba(243, 239, 233, 0.9);
+  padding: 32px;
+  background: rgba(243, 239, 233, 0.84);
 }
 
 .land-preview-card__copy h3 {
   max-width: 620px;
   margin: 22px 0 0;
   color: var(--site-footer);
-  font-size: clamp(2rem, 3.7vw, 3.1rem);
+  font-size: clamp(1.7rem, 2.7vw, 2.45rem);
   line-height: 1.06;
 }
 
@@ -1399,8 +1536,8 @@ img {
 
 .land-preview-card__highlights {
   display: grid;
-  gap: 18px;
-  padding: 34px;
+  gap: 14px;
+  padding: 28px;
 }
 
 .home-contact {
@@ -1705,6 +1842,15 @@ img {
   object-fit: cover;
 }
 
+.about-hero-card > img.about-hero-card__project-image {
+  display: block;
+  height: auto;
+  min-height: 0;
+  object-fit: initial;
+  object-position: center;
+  background: transparent;
+}
+
 .about-hero-card > div,
 .privacy-summary__stats {
   display: grid;
@@ -1769,6 +1915,13 @@ img {
   width: 100%;
   min-height: 420px;
   object-fit: cover;
+}
+
+.tall-image-card > img.tall-image-card__project-image {
+  display: block;
+  height: auto;
+  min-height: 0;
+  object-fit: initial;
 }
 
 .contact-hero-card {
@@ -2570,10 +2723,25 @@ img {
   padding: 30px;
 }
 
+.apartment-plan-section__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(310px, 0.45fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.apartment-plan--compare {
+  padding: 0;
+}
+
 .apartment-plan h2 {
   margin: 14px 0 0;
   color: var(--site-footer);
   font-size: 2rem;
+}
+
+.apartment-plan__header {
+  max-width: 760px;
 }
 
 .apartment-plan__items {
@@ -2603,6 +2771,49 @@ img {
   white-space: nowrap;
 }
 
+.apartment-plan__compare {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.92fr) minmax(340px, 1.08fr);
+  gap: 18px;
+  margin-top: 26px;
+  align-items: stretch;
+}
+
+.apartment-plan__panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-width: 0;
+  min-height: 520px;
+  padding: 16px;
+  border: 1px solid var(--site-border);
+  border-radius: 8px;
+  background: rgba(249, 248, 246, 0.82);
+  box-shadow: 0 18px 42px rgba(31, 28, 21, 0.06);
+}
+
+.apartment-plan__panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.apartment-plan__panel-heading span {
+  color: #706961;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.apartment-plan__panel-heading strong {
+  color: var(--site-footer);
+  font-size: 0.98rem;
+  line-height: 1.25;
+  text-align: right;
+}
+
 .apartment-plan__drawing {
   display: grid;
   height: 320px;
@@ -2619,12 +2830,34 @@ img {
   font-weight: 700;
 }
 
+.apartment-plan__panel .apartment-plan__drawing {
+  height: auto;
+  min-height: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: none;
+  align-content: start;
+  margin-top: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
 .apartment-plan__scaled {
   margin-top: 30px;
   border: 1px solid var(--site-border);
   border-radius: 8px;
   background: var(--site-surface);
   overflow: hidden;
+}
+
+.apartment-plan__panel .apartment-plan__scaled {
+  display: grid;
+  min-height: 0;
+  margin-top: 0;
+  padding: 10px;
+  border: 0;
+  background: transparent;
+  place-items: center;
 }
 
 .apartment-plan__scaled svg {
@@ -2661,11 +2894,18 @@ img {
 }
 
 .apartment-plan__space-label,
+.apartment-plan__space-number,
 .apartment-plan__space-area {
   fill: var(--site-footer);
   font-weight: 800;
   pointer-events: none;
   text-anchor: middle;
+}
+
+.apartment-plan__space-number {
+  fill: var(--site-accent-dark);
+  font-size: 16px;
+  text-anchor: start;
 }
 
 .apartment-plan__space-label {
@@ -2730,6 +2970,22 @@ img {
     transform 180ms ease;
 }
 
+.apartment-plan__room small {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  display: inline-grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--site-footer);
+  background: rgba(201, 181, 156, 0.48);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
 .apartment-plan__room:hover,
 .apartment-plan__room:focus-visible {
   background: #fff;
@@ -2761,6 +3017,68 @@ img {
   grid-row: span 3;
   color: var(--site-ink);
   background: var(--site-accent);
+}
+
+.apartment-plan__panel .apartment-plan__room,
+.apartment-plan__panel .apartment-plan__room:nth-child(1),
+.apartment-plan__panel .apartment-plan__room:nth-child(2),
+.apartment-plan__panel .apartment-plan__room:nth-child(3),
+.apartment-plan__panel .apartment-plan__room:nth-child(4),
+.apartment-plan__panel .apartment-plan__room:nth-child(5) {
+  grid-column: auto;
+  grid-row: auto;
+  min-height: 112px;
+}
+
+.apartment-floor-plan {
+  margin: 0;
+}
+
+.apartment-floor-plan__media {
+  display: grid;
+  min-height: 0;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(31, 28, 21, 0.08);
+  border-radius: 8px;
+  background: #fff;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.apartment-floor-plan__media:hover,
+.apartment-floor-plan__media:focus-visible {
+  border-color: rgba(201, 181, 156, 0.76);
+  box-shadow: 0 18px 38px rgba(31, 28, 21, 0.12);
+  outline: none;
+}
+
+.apartment-floor-plan__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 560px;
+  object-fit: contain;
+}
+
+.apartment-floor-plan figcaption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  color: #706961;
+  font-size: 0.86rem;
+}
+
+.apartment-floor-plan figcaption span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--site-footer);
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 .apartment-side {
@@ -3067,6 +3385,18 @@ img {
     grid-template-columns: 1fr;
   }
 
+  .home-availability__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .home-availability__item:nth-child(3n) {
+    border-right: 0;
+  }
+
+  .home-availability__item:nth-child(n + 4) {
+    border-top: 1px solid var(--site-border);
+  }
+
   .portfolio-card__media,
   .land-preview-card__details {
     border-top: 1px solid var(--site-border);
@@ -3085,6 +3415,10 @@ img {
 
   .apartment-metrics__grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .apartment-plan-section__layout {
+    grid-template-columns: 1fr;
   }
 
   .apartment-detail__intro {
@@ -3175,8 +3509,51 @@ img {
     width: min(100% - 24px, 1080px);
   }
 
+  .home-hero__lead {
+    margin-top: 22px;
+    font-size: 0.98rem;
+  }
+
+  .home-hero__actions {
+    gap: 10px;
+    margin-top: 22px;
+  }
+
   .home-hero h1 {
     gap: 10px;
+  }
+
+  .home-availability {
+    margin-top: -30px;
+    padding-bottom: 10px;
+    background: linear-gradient(180deg, transparent 0 30px, var(--site-bg) 30px);
+  }
+
+  .home-availability__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-availability__item,
+  .home-availability__item:nth-child(3n) {
+    min-height: 76px;
+    padding: 14px;
+    border-right: 1px solid var(--site-border);
+  }
+
+  .home-availability__item:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .home-availability__item:nth-child(n + 3) {
+    border-top: 1px solid var(--site-border);
+  }
+
+  .home-availability__note {
+    text-align: left;
+  }
+
+  .home-projects {
+    padding-top: 42px;
   }
 
   .portfolio-tabs {
@@ -3188,11 +3565,14 @@ img {
   .portfolio-card__slots,
   .dark-process-card,
   .project-timeline-panel,
-  .apartment-plan,
   .apartment-info-card,
   .inquiry-form__body,
   .inquiry-form__head {
     padding: 22px;
+  }
+
+  .apartment-plan {
+    padding: 0;
   }
 
   .portfolio-card__images,
@@ -3210,8 +3590,25 @@ img {
   .apartment-plan__items,
   .info-card-grid,
   .contact-method-grid,
-  .contact-hero-card > div > div {
+    .contact-hero-card > div > div {
     grid-template-columns: 1fr;
+  }
+
+  .apartment-plan__compare {
+    grid-template-columns: 1fr;
+  }
+
+  .apartment-plan__panel {
+    min-height: auto;
+    padding: 14px;
+  }
+
+  .apartment-plan__panel .apartment-plan__drawing {
+    grid-template-columns: 1fr;
+  }
+
+  .apartment-floor-plan__media {
+    min-height: 300px;
   }
 
   .portfolio-card__images > img,
@@ -3220,6 +3617,104 @@ img {
   .tall-image-card img {
     min-height: 280px;
     height: 280px;
+  }
+
+  .portfolio-card__images {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .portfolio-card__images > img.portfolio-card__image--facade {
+    height: auto;
+    min-height: 0;
+    object-fit: contain;
+  }
+
+  .portfolio-card__features {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .portfolio-card__features .portfolio-feature {
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid var(--site-border);
+    border-radius: 8px;
+    background: rgba(249, 248, 246, 0.74);
+  }
+
+  .portfolio-card__features .portfolio-feature .icon-bubble {
+    width: 34px;
+    height: 34px;
+  }
+
+  .portfolio-card__features .portfolio-feature .icon-bubble svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .portfolio-card__features .portfolio-feature h4 {
+    font-size: 0.9rem;
+    line-height: 1.25;
+  }
+
+  .portfolio-card__features .portfolio-feature p {
+    display: none;
+  }
+
+  .home-land-acquisition {
+    padding: 52px 0;
+  }
+
+  .land-preview-card__copy h3 {
+    font-size: 1.55rem;
+  }
+
+  .land-preview-card__copy p {
+    line-height: 1.58;
+  }
+
+  .land-preview-card__facts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .land-preview-card__facts div {
+    padding: 14px 10px;
+    border-right: 1px solid var(--site-border);
+    border-bottom: 0;
+  }
+
+  .land-preview-card__facts div:last-child {
+    border-right: 0;
+  }
+
+  .land-preview-card__facts strong {
+    font-size: 0.86rem;
+    line-height: 1.25;
+  }
+
+  .land-preview-card__highlights {
+    gap: 10px;
+    padding: 16px;
+  }
+
+  .land-preview-card__highlights .portfolio-feature {
+    align-items: center;
+    padding: 12px;
+    border: 1px solid var(--site-border);
+    border-radius: 8px;
+    background: rgba(249, 248, 246, 0.72);
+  }
+
+  .land-preview-card__highlights .portfolio-feature h4 {
+    font-size: 0.92rem;
+    line-height: 1.25;
+  }
+
+  .land-preview-card__highlights .portfolio-feature p {
+    display: none;
   }
 
   .portfolio-card__facts div,
