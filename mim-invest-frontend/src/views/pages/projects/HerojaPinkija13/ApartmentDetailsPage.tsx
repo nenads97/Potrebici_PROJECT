@@ -198,8 +198,14 @@ export const ApartmentDetailsPage = () => {
 };
 
 const ApartmentPlanDrawing = ({ apartment }: { apartment: Apartment }) => {
-  if (apartment.planVariant === "stack-1-6-11") {
-    return <ApartmentStackPlan rooms={apartment.roomAreas} />;
+  if (apartment.planVariant && apartment.planVariant in stackPlanSpacesByVariant) {
+    return (
+      <ApartmentStackPlan
+        ariaLabel={`Raspored prostorija za stanove ${apartment.number}`}
+        rooms={apartment.roomAreas}
+        plan={stackPlanSpacesByVariant[apartment.planVariant]}
+      />
+    );
   }
 
   return (
@@ -227,7 +233,7 @@ type PlanSpace = {
   height: number;
 };
 
-const stackPlanSpaces: PlanSpace[] = [
+const stackOnePlanSpaces: PlanSpace[] = [
   {
     id: "entry",
     x: 0,
@@ -286,19 +292,234 @@ const stackPlanSpaces: PlanSpace[] = [
   },
 ];
 
-const ApartmentStackPlan = ({ rooms }: { rooms: ApartmentRoomArea[] }) => {
+const stackTwoPlanSpaces: PlanSpace[] = [
+  {
+    id: "bedroom-primary",
+    x: 0,
+    y: 0,
+    width: 260,
+    height: 145,
+  },
+  {
+    id: "bedroom-secondary",
+    x: 0,
+    y: 145,
+    width: 260,
+    height: 110,
+  },
+  {
+    id: "hall",
+    x: 260,
+    y: 0,
+    width: 55,
+    height: 255,
+  },
+  {
+    id: "bathroom",
+    x: 315,
+    y: 0,
+    width: 160,
+    height: 160,
+  },
+  {
+    id: "entry",
+    x: 315,
+    y: 160,
+    width: 205,
+    height: 95,
+  },
+  {
+    id: "living",
+    x: 70,
+    y: 255,
+    width: 350,
+    height: 175,
+  },
+  {
+    id: "loggia",
+    x: 0,
+    y: 255,
+    width: 70,
+    height: 175,
+  },
+  {
+    id: "kitchen",
+    x: 420,
+    y: 255,
+    width: 100,
+    height: 175,
+  },
+];
+
+const stackThreePlanSpaces: PlanSpace[] = [
+  {
+    id: "living",
+    x: 0,
+    y: 0,
+    width: 360,
+    height: 180,
+  },
+  {
+    id: "kitchen",
+    x: 360,
+    y: 0,
+    width: 110,
+    height: 90,
+  },
+  {
+    id: "entry",
+    x: 360,
+    y: 90,
+    width: 110,
+    height: 90,
+  },
+  {
+    id: "bathroom",
+    x: 300,
+    y: 180,
+    width: 170,
+    height: 105,
+  },
+];
+
+const stackFourPlanSpaces: PlanSpace[] = [
+  {
+    id: "loggia",
+    x: 0,
+    y: 0,
+    width: 70,
+    height: 180,
+  },
+  {
+    id: "living",
+    x: 70,
+    y: 0,
+    width: 350,
+    height: 180,
+  },
+  {
+    id: "kitchen",
+    x: 420,
+    y: 0,
+    width: 100,
+    height: 180,
+  },
+  {
+    id: "entry",
+    x: 300,
+    y: 180,
+    width: 220,
+    height: 80,
+  },
+  {
+    id: "bedroom",
+    x: 0,
+    y: 180,
+    width: 300,
+    height: 210,
+  },
+  {
+    id: "bathroom",
+    x: 300,
+    y: 260,
+    width: 220,
+    height: 130,
+  },
+];
+
+const stackFivePlanSpaces: PlanSpace[] = [
+  {
+    id: "kitchen",
+    x: 0,
+    y: 0,
+    width: 110,
+    height: 180,
+  },
+  {
+    id: "living",
+    x: 110,
+    y: 0,
+    width: 320,
+    height: 180,
+  },
+  {
+    id: "loggia",
+    x: 430,
+    y: 20,
+    width: 70,
+    height: 160,
+  },
+  {
+    id: "entry",
+    x: 60,
+    y: 180,
+    width: 190,
+    height: 90,
+  },
+  {
+    id: "bathroom",
+    x: 60,
+    y: 270,
+    width: 190,
+    height: 120,
+  },
+  {
+    id: "bedroom",
+    x: 250,
+    y: 180,
+    width: 250,
+    height: 210,
+  },
+];
+
+const stackPlanSpacesByVariant = {
+  "stack-1-6-11": {
+    spaces: stackOnePlanSpaces,
+    viewBox: "0 0 420 560",
+  },
+  "stack-2-7-12": {
+    spaces: stackTwoPlanSpaces,
+    viewBox: "0 0 520 430",
+  },
+  "stack-3-8-13": {
+    spaces: stackThreePlanSpaces,
+    viewBox: "0 0 470 285",
+  },
+  "stack-4-9-14": {
+    spaces: stackFourPlanSpaces,
+    viewBox: "0 0 520 390",
+  },
+  "stack-5-10-15": {
+    spaces: stackFivePlanSpaces,
+    viewBox: "0 0 500 390",
+  },
+};
+
+type StackPlanConfig = {
+  spaces: PlanSpace[];
+  viewBox: string;
+};
+
+type ApartmentStackPlanProps = {
+  ariaLabel: string;
+  rooms: ApartmentRoomArea[];
+  plan: StackPlanConfig;
+};
+
+const ApartmentStackPlan = ({ ariaLabel, rooms, plan }: ApartmentStackPlanProps) => {
   const [activeRoomId, setActiveRoomId] = useState<string | null>(null);
   const roomById = new Map(rooms.map((room) => [room.id, room]));
+  const { spaces, viewBox } = plan;
   const visibleSpaces = activeRoomId
     ? [
-        ...stackPlanSpaces.filter((space) => space.id !== activeRoomId),
-        ...stackPlanSpaces.filter((space) => space.id === activeRoomId),
+        ...spaces.filter((space) => space.id !== activeRoomId),
+        ...spaces.filter((space) => space.id === activeRoomId),
       ]
-    : stackPlanSpaces;
+    : spaces;
 
   return (
-    <div className="apartment-plan__scaled" aria-label="Raspored prostorija za stanove 1, 6 i 11">
-      <svg viewBox="0 0 420 560" role="img" aria-labelledby="stack-plan-title">
+    <div className="apartment-plan__scaled" aria-label={ariaLabel}>
+      <svg viewBox={viewBox} role="img" aria-labelledby="stack-plan-title">
         <title id="stack-plan-title">Raspored prostorija skaliran prema kvadraturi</title>
         {visibleSpaces.map((space) => {
           const room = roomById.get(space.id);

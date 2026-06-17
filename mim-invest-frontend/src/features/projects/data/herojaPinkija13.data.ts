@@ -136,23 +136,6 @@ export const galleryItems: GalleryItem[] = [
   },
 ];
 
-const galleryImages = {
-  living:
-    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=85",
-  terrace:
-    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=85",
-  lobby:
-    "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1400&q=85",
-  kitchen:
-    "https://images.unsplash.com/photo-1556912173-3bb406ef7e77?auto=format&fit=crop&w=1400&q=85",
-  bedroom:
-    "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1400&q=85",
-  bathroom:
-    "https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=1400&q=85",
-  dining:
-    "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1400&q=85",
-};
-
 const apartmentPlanImages = {
   stackOne: "/images/apartment-plans/stan-1-6-11.png",
   stackTwo: "/images/apartment-plans/stan-2-7-12.png",
@@ -172,7 +155,7 @@ type ApartmentStack = {
   features: string[];
   images: ApartmentImage[];
   roomAreas: ApartmentRoomArea[];
-  planVariant?: "stack-1-6-11";
+  planVariant?: "stack-1-6-11" | "stack-2-7-12" | "stack-3-8-13" | "stack-4-9-14" | "stack-5-10-15";
 };
 
 const commonFeatures = [
@@ -200,9 +183,6 @@ const apartmentStacks: ApartmentStack[] = [
     ],
     images: [
       { src: apartmentPlanImages.stackOne, alt: "Tlocrt stanova 1, 6 i 11" },
-      { src: galleryImages.living, alt: "Dnevna zona trosobnog stana" },
-      { src: galleryImages.bathroom, alt: "Kupatilo u stanu" },
-      { src: galleryImages.terrace, alt: "Terasa stana" },
     ],
     planVariant: "stack-1-6-11",
     roomAreas: [
@@ -233,16 +213,17 @@ const apartmentStacks: ApartmentStack[] = [
     ],
     images: [
       { src: apartmentPlanImages.stackTwo, alt: "Tlocrt stanova 2, 7 i 12" },
-      { src: galleryImages.dining, alt: "Dnevna zona sa trpezarijom" },
-      { src: galleryImages.bedroom, alt: "Spavaca soba" },
-      { src: galleryImages.bathroom, alt: "Kupatilo u stanu" },
     ],
+    planVariant: "stack-2-7-12",
     roomAreas: [
-      { id: "living", label: "Dnevni boravak", area: "19.80 m2" },
-      { id: "kitchen", label: "Kuhinja", area: "5.90 m2" },
-      { id: "bedroom", label: "Spavaca soba", area: "12.10 m2" },
-      { id: "bathroom", label: "Kupatilo", area: "4.50 m2" },
-      { id: "terrace", label: "Terasa", area: "4.80 m2" },
+      { id: "entry", number: "1", label: "Ulaz", area: "3.75 m2" },
+      { id: "kitchen", number: "2", label: "Kuhinja", area: "4.72 m2" },
+      { id: "bathroom", number: "3", label: "Kupatilo", area: "4.30 m2" },
+      { id: "living", number: "4", label: "Dnevna soba", area: "19.26 m2" },
+      { id: "loggia", number: "5", label: "Terasa", area: "3.14 m2" },
+      { id: "hall", number: "6", label: "Hodnik", area: "3.08 m2" },
+      { id: "bedroom-primary", number: "7", label: "Spavaca soba", area: "11.96 m2" },
+      { id: "bedroom-secondary", number: "8", label: "Spavaca soba", area: "8.04 m2" },
     ],
   },
   {
@@ -262,16 +243,13 @@ const apartmentStacks: ApartmentStack[] = [
     ],
     images: [
       { src: apartmentPlanImages.stackThree, alt: "Tlocrt stanova 3, 8 i 13" },
-      { src: galleryImages.kitchen, alt: "Kompaktna dnevna zona" },
-      { src: galleryImages.living, alt: "Garsonjera u neutralnim tonovima" },
-      { src: galleryImages.lobby, alt: "Ulazni prostor zgrade" },
     ],
+    planVariant: "stack-3-8-13",
     roomAreas: [
-      { id: "living", label: "Dnevni boravak", area: "16.30 m2" },
-      { id: "kitchen", label: "Kuhinja", area: "4.20 m2" },
-      { id: "bedroom", label: "Spavaca soba", area: "U sklopu dnevne zone" },
-      { id: "bathroom", label: "Kupatilo", area: "4.10 m2" },
-      { id: "terrace", label: "Terasa", area: "Bez terase" },
+      { id: "entry", number: "1", label: "Ulaz", area: "2.43 m2" },
+      { id: "kitchen", number: "2", label: "Kuhinja", area: "3.35 m2" },
+      { id: "bathroom", number: "3", label: "Kupatilo", area: "4.22 m2" },
+      { id: "living", number: "4", label: "Dnevna soba", area: "18.55 m2" },
     ],
   },
   {
@@ -291,16 +269,15 @@ const apartmentStacks: ApartmentStack[] = [
     ],
     images: [
       { src: apartmentPlanImages.stackFour, alt: "Tlocrt stanova 4, 9 i 14" },
-      { src: galleryImages.living, alt: "Dnevni boravak dvosobnog stana" },
-      { src: galleryImages.bedroom, alt: "Spavaca soba" },
-      { src: galleryImages.terrace, alt: "Terasa stana" },
     ],
+    planVariant: "stack-4-9-14",
     roomAreas: [
-      { id: "living", label: "Dnevni boravak", area: "17.90 m2" },
-      { id: "kitchen", label: "Kuhinja", area: "5.10 m2" },
-      { id: "bedroom", label: "Spavaca soba", area: "10.60 m2" },
-      { id: "bathroom", label: "Kupatilo", area: "4.30 m2" },
-      { id: "terrace", label: "Terasa", area: "4.40 m2" },
+      { id: "entry", number: "1", label: "Ulaz", area: "3.31 m2" },
+      { id: "kitchen", number: "2", label: "Kuhinja", area: "4.90 m2" },
+      { id: "bathroom", number: "3", label: "Kupatilo", area: "4.21 m2" },
+      { id: "living", number: "4", label: "Dnevna soba", area: "18.96 m2" },
+      { id: "loggia", number: "5", label: "Terasa", area: "3.12 m2" },
+      { id: "bedroom", number: "6", label: "Spavaca soba", area: "12.45 m2" },
     ],
   },
   {
@@ -320,16 +297,15 @@ const apartmentStacks: ApartmentStack[] = [
     ],
     images: [
       { src: apartmentPlanImages.stackFive, alt: "Tlocrt stanova 5, 10 i 15" },
-      { src: galleryImages.dining, alt: "Dnevna zona dvosobnog stana" },
-      { src: galleryImages.kitchen, alt: "Kuhinja u stanu" },
-      { src: galleryImages.terrace, alt: "Terasa stana" },
     ],
+    planVariant: "stack-5-10-15",
     roomAreas: [
-      { id: "living", label: "Dnevni boravak", area: "16.80 m2" },
-      { id: "kitchen", label: "Kuhinja", area: "4.80 m2" },
-      { id: "bedroom", label: "Spavaca soba", area: "9.90 m2" },
-      { id: "bathroom", label: "Kupatilo", area: "4.00 m2" },
-      { id: "terrace", label: "Terasa", area: "4.20 m2" },
+      { id: "entry", number: "1", label: "Ulaz", area: "3.15 m2" },
+      { id: "kitchen", number: "2", label: "Kuhinja", area: "4.97 m2" },
+      { id: "bathroom", number: "3", label: "Kupatilo", area: "4.21 m2" },
+      { id: "living", number: "4", label: "Dnevna soba", area: "16.84 m2" },
+      { id: "loggia", number: "5", label: "Terasa", area: "3.19 m2" },
+      { id: "bedroom", number: "6", label: "Spavaca soba", area: "10.21 m2" },
     ],
   },
 ];

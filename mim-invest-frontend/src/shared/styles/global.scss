@@ -654,9 +654,11 @@ img {
 }
 
 .site-footer__brand {
-  display: flex;
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
   align-items: center;
   gap: 24px;
+  min-width: 0;
 }
 
 .site-footer__brand .brand-logo__mark {
@@ -676,6 +678,7 @@ img {
   margin: 0;
   font-size: 0.94rem;
   line-height: 1.75;
+  min-width: 0;
 }
 
 .site-footer h2 {
@@ -3148,6 +3151,10 @@ img {
   .site-footer__bottom-inner {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .site-footer__brand {
+    grid-template-columns: 1fr;
   }
 
   .site-footer__brand .brand-logo__mark {

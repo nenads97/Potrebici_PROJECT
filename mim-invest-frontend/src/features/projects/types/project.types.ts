@@ -37,7 +37,7 @@ export type Apartment = {
   images: ApartmentImage[];
   plan: ApartmentPlanItem[];
   roomAreas: ApartmentRoomArea[];
-  planVariant?: "stack-1-6-11";
+  planVariant?: "stack-1-6-11" | "stack-2-7-12" | "stack-3-8-13" | "stack-4-9-14" | "stack-5-10-15";
   features: string[];
 };
 
