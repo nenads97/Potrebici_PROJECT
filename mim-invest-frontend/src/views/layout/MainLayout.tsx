@@ -21,7 +21,7 @@ const companyLinks = [
 
 const projectLinks = [
   {
-    to: "/projekti/heroja-pinkija-13",
+    to: "/projekti/heroja-pinkija-13/o-projektu",
     label: "Heroja Pinkija 13",
     children: [
       {
@@ -115,7 +115,8 @@ export const MainLayout = () => {
             <BrandLogo showText={false} />
             <p>
               Heroja Pinkija 13 je novi stambeni projekat na pocetku Telepa sa 15
-              stanova, garazom, ostavama i liftom do svih spratova.
+              stanova, liftom do svih spratova i dodatnom ponudom garaznih mesta i
+              ostava.
             </p>
           </div>
 
@@ -124,7 +125,7 @@ export const MainLayout = () => {
           <FooterColumn
             title="Projekat"
             links={[
-              { to: "/projekti/heroja-pinkija-13", label: "Heroja Pinkija 13" },
+              { to: "/projekti/heroja-pinkija-13/o-projektu", label: "Heroja Pinkija 13" },
               {
                 to: "/projekti/heroja-pinkija-13/ponuda-stanova",
                 label: "Ponuda stanova",
@@ -207,10 +208,10 @@ const HeaderDropdown = ({ label, links }: HeaderDropdownProps) => {
               key={link.to}
             >
               {link.children ? (
-                <button className="site-nav__nested-trigger" type="button">
+                <Link className="site-nav__nested-trigger" to={link.to}>
                   <span>{link.label}</span>
                   <ChevronRight className="icon-inline" />
-                </button>
+                </Link>
               ) : (
                 <Link to={link.to}>
                   <span>{link.label}</span>

@@ -3,6 +3,7 @@ import { AnimatePresence, motion, useScroll, useSpring, useTransform } from "fra
 import {
   ArrowUpRight,
   Building2,
+  CalendarDays,
   ClipboardCheck,
   Home,
   MapPin,
@@ -18,13 +19,22 @@ import { contactEmail, contactPhone } from "../../features/projects/data/herojaP
 
 const images = {
   hero: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2200&q=85",
-  living:
-    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=85",
-  terrace:
-    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=85",
+  living: "/images/heroja-pinkija-13/gradilisna-tabla-slika.jpg",
+  terrace: "/images/heroja-pinkija-13/radovi-u-toku.jpg",
 };
 
 const heroLines = ["Tvoj prostor.", "Tvoja pravila.", "Tvoj novi pocetak."];
+
+const heroLeadItems = ["Heroja Pinkija 13, Novi Sad", "15 stanova", "prodaja u toku"];
+
+const availabilityItems = [
+  { icon: Home, label: "Stanovi", value: "15 stanova" },
+  { icon: Building2, label: "Objekat", value: "PO + PR + 3" },
+  { icon: Ruler, label: "Garaza", value: "13 mesta" },
+  { icon: ClipboardCheck, label: "Ostave", value: "15 ostava" },
+  { icon: Sparkles, label: "Grejanje", value: "Podno grejanje" },
+  { icon: CalendarDays, label: "Rok", value: "15.11.2027." },
+];
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
@@ -63,7 +73,7 @@ const lifestyleItems = [
     icon: Sparkles,
     title: "Komfor koji se vidi u svakom detalju",
     text:
-      "Podno grejanje, ostave, lift iz garaze i optimalno organizovani stanovi za svakodnevni zivot bez kompromisa.",
+      "Podno grejanje, lift iz garaze i optimalno organizovani stanovi, uz mogucnost odvojene kupovine garaznog mesta i ostave.",
   },
 ];
 
@@ -166,7 +176,43 @@ export const HomePage = () => {
               </motion.span>
             ))}
           </h1>
+          <p className="home-hero__lead" aria-label={heroLeadItems.join(" / ")}>
+            {heroLeadItems.map((item) => (
+              <span key={item}>{item}</span>
+            ))}
+          </p>
+          <div className="home-hero__actions" aria-label="Glavne akcije">
+            <Link className="site-button site-button--accent" to="/projekti/heroja-pinkija-13/ponuda-stanova">
+              <Home />
+              Pogledaj stanove
+            </Link>
+            <Link className="site-button site-button--light" to="/kontakt">
+              <MessageCircle />
+              Zakazi obilazak
+            </Link>
+          </div>
         </motion.div>
+      </section>
+
+      <section className="home-availability" aria-label="Kljucne informacije o projektu">
+        <div className="page-container">
+          <div className="home-availability__grid">
+            {availabilityItems.map(({ icon: Icon, label, value }) => (
+              <div className="home-availability__item" key={label}>
+                <span className="icon-bubble">
+                  <Icon />
+                </span>
+                <div>
+                  <span>{label}</span>
+                  <strong>{value}</strong>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="home-availability__note">
+            Garazna mesta i ostave kupuju se odvojeno od stana.
+          </p>
+        </div>
       </section>
 
       <section className="page-section home-projects">
@@ -398,7 +444,7 @@ const ActiveProjectCard = () => {
         </div>
 
         <div className="portfolio-card__actions">
-          <Link className="site-button site-button--dark" to="/projekti/heroja-pinkija-13">
+          <Link className="site-button site-button--dark" to="/projekti/heroja-pinkija-13/o-projektu">
             Detalji projekta
             <ArrowUpRight />
           </Link>
@@ -413,9 +459,17 @@ const ActiveProjectCard = () => {
 
       <div className="portfolio-card__media">
         <div className="portfolio-card__images">
-          <img src={images.living} alt="Svetao dnevni boravak modernog stana" />
+          <img
+            className="portfolio-card__image portfolio-card__image--facade"
+            src={images.living}
+            alt="Render fasade projekta Heroja Pinkija 13"
+          />
           <div>
-            <img src={images.terrace} alt="Terasa stana sa otvorenim pogledom" />
+            <img
+              className="portfolio-card__image portfolio-card__image--works"
+              src={images.terrace}
+              alt="Radovi u toku na projektu Heroja Pinkija 13"
+            />
             <div className="portfolio-note">
               <div>
                 <Sparkles className="icon-inline" />

@@ -82,9 +82,14 @@ created_at timestamptz
 updated_at timestamptz
 ```
 
+`total_storage_units` and `total_garage_parking_spaces` are inventory counts only.
+Storage units and garage parking spaces are separate paid options and must not be
+presented as included apartment features.
+
 ### units
 
 Apartments, commercial spaces, business apartments. Do not list every parking/storage unit publicly in v1.
+When unit copy references parking/storage availability, phrase it as separate purchase.
 
 Essential columns:
 

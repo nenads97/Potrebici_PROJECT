@@ -12,8 +12,9 @@ export const ProjectStructure = () => {
         <p className="eyebrow">Struktura objekta</p>
         <h2>Jasna organizacija jedinica</h2>
         <p>
-          Objekat kombinuje stambene jedinice, poslovni sadrzaj, ostave i
-          parking, uz ponavljanje funkcionalnih stanova na stambenim spratovima.
+          Objekat kombinuje stambene jedinice, poslovni sadrzaj i dodatne
+          opcije za parking i ostave, uz ponavljanje funkcionalnih stanova na
+          stambenim spratovima.
         </p>
       </div>
 

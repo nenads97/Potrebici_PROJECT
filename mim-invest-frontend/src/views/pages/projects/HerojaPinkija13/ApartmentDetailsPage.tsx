@@ -96,10 +96,12 @@ export const ApartmentDetailsPage = () => {
       </section>
 
       <section className="page-section apartment-plan-section">
-        <div className="page-container split-grid">
-          <div className="soft-card apartment-plan">
-            <p className="section-eyebrow">Raspored prostora</p>
-            <h2>Funkcionalan tlocrt bez izgubljenih kvadrata.</h2>
+        <div className="page-container apartment-plan-section__layout">
+          <div className="apartment-plan apartment-plan--compare">
+            <div className="apartment-plan__header">
+              <p className="section-eyebrow">Raspored prostora</p>
+              <h2>Funkcionalan tlocrt bez izgubljenih kvadrata.</h2>
+            </div>
 
             <div className="apartment-plan__items">
               {apartment.plan.map((item) => (
@@ -110,7 +112,17 @@ export const ApartmentDetailsPage = () => {
               ))}
             </div>
 
-            <ApartmentPlanDrawing apartment={apartment} />
+            <div className="apartment-plan__compare">
+              <div className="apartment-plan__panel apartment-plan__panel--grid">
+                <div className="apartment-plan__panel-heading">
+                  <span>Grid prostorija</span>
+                  <strong>{apartment.rooms}</strong>
+                </div>
+                <ApartmentPlanDrawing apartment={apartment} />
+              </div>
+
+              <ApartmentFloorPlanFigure apartment={apartment} />
+            </div>
           </div>
 
           <div className="apartment-side">
@@ -217,6 +229,7 @@ const ApartmentPlanDrawing = ({ apartment }: { apartment: Apartment }) => {
           type="button"
           aria-label={`${room.label}: ${room.area}`}
         >
+          {room.number ? <small>{room.number}</small> : null}
           <span>{room.label}</span>
           <strong>{room.area}</strong>
         </button>
@@ -549,6 +562,11 @@ const ApartmentStackPlan = ({ ariaLabel, rooms, plan }: ApartmentStackPlanProps)
             >
               <title>{`${room.label}: ${room.area}`}</title>
               <rect x={space.x} y={space.y} width={space.width} height={space.height} rx="8" />
+              {room.number ? (
+                <text className="apartment-plan__space-number" x={space.x + 20} y={space.y + 26}>
+                  {room.number}
+                </text>
+              ) : null}
               <text
                 className="apartment-plan__space-label"
                 x={space.x + space.width / 2}
@@ -568,6 +586,37 @@ const ApartmentStackPlan = ({ ariaLabel, rooms, plan }: ApartmentStackPlanProps)
         })}
       </svg>
     </div>
+  );
+};
+
+const ApartmentFloorPlanFigure = ({ apartment }: { apartment: Apartment }) => {
+  const floorPlanImage = apartment.images[0];
+
+  return (
+    <figure className="apartment-plan__panel apartment-floor-plan">
+      <div className="apartment-plan__panel-heading">
+        <span>Projektni tlocrt</span>
+        <strong>{apartment.size}</strong>
+      </div>
+
+      <a
+        className="apartment-floor-plan__media"
+        href={floorPlanImage.src}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={`Otvori tlocrt stana ${apartment.number} u punoj velicini`}
+      >
+        <img src={floorPlanImage.src} alt={floorPlanImage.alt} />
+      </a>
+
+      <figcaption>
+        Stan {apartment.number} - {apartment.floor}
+        <span>
+          <Maximize2 className="icon-inline" />
+          Puna velicina
+        </span>
+      </figcaption>
+    </figure>
   );
 };
 

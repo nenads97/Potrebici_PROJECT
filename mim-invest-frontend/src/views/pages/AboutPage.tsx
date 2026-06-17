@@ -12,7 +12,7 @@ import {
 import { Link } from "react-router-dom";
 
 const aboutHeroImage =
-  "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=2200&q=85";
+  "/images/heroja-pinkija-13/gradilisna-tabla.jpg";
 
 const heroHighlights = [
   { value: "Heroja Pinkija 13", label: "prvi projekat kompanije" },
@@ -34,7 +34,7 @@ const values = [
   {
     icon: HardHat,
     title: "Kvalitet izvedbe",
-    text: "Fokus je na stvarima koje se svakodnevno osecaju: podno grejanje, lift, garaza, ostave i funkcionalni rasporedi.",
+    text: "Fokus je na stvarima koje se svakodnevno osecaju: podno grejanje, lift, funkcionalni rasporedi i dodatne opcije za garazu i ostavu.",
   },
   {
     icon: Handshake,
@@ -79,7 +79,7 @@ export const AboutPage = () => {
               od prve faze radova.
             </p>
             <div className="page-actions">
-              <Link className="site-button site-button--accent" to="/projekti/heroja-pinkija-13">
+              <Link className="site-button site-button--accent" to="/projekti/heroja-pinkija-13/o-projektu">
                 <Building2 />
                 Pogledajte projekat
               </Link>
@@ -91,7 +91,11 @@ export const AboutPage = () => {
           </div>
 
           <div className="image-card about-hero-card">
-            <img src={aboutHeroImage} alt="Moderan stambeni enterijer u toplom neutralnom tonu" />
+            <img
+              className="about-hero-card__project-image"
+              src={aboutHeroImage}
+              alt="Projekat Heroja Pinkija 13 sa gradilisnom tablom"
+            />
             <div>
               {heroHighlights.map((item) => (
                 <div key={item.value}>
@@ -179,8 +183,9 @@ export const AboutPage = () => {
         <div className="page-container split-grid split-grid--center">
           <div className="image-card tall-image-card">
             <img
-              src="https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=1400&q=85"
-              alt="Detalj savremenog stambenog objekta"
+              className="tall-image-card__project-image"
+              src="/images/heroja-pinkija-13/radovi-u-toku.jpg"
+              alt="Radovi u toku na projektu Heroja Pinkija 13"
             />
           </div>
 

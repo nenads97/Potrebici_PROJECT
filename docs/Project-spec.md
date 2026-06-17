@@ -26,12 +26,14 @@ Real estate website for M & M Gradnja. First project: Heroja Pinkija 13, Novi Sa
 - Construction start: 2026-03-16.
 - Planned completion: 2027-11-15.
 - Basement: 15 storage units, 13 garage parking spaces.
+- Sales note: storage units and garage parking spaces are optional additional purchases; do not present them as free or included with an apartment.
 - Yard: 10 outdoor parking spaces.
 - Ground floor: 2 commercial spaces, 3 business apartments.
 - Floors 1-3: 5 residential apartments per floor.
 - Residential total: 15 apartments.
 - Per residential floor: 1 studio, 2 two-bedroom, 2 three-bedroom.
 - Prices: hidden publicly, show `Na upit`.
+- Garage/storage pricing: hidden publicly, communicate availability as separate purchase.
 
 ## Target users
 
@@ -151,4 +153,5 @@ Not needed in v1:
 - CTAs visible but not aggressive.
 - apartment cards must be scannable.
 - no fake claims about visuals.
+- when showing garage/storage information, clearly state that these are separate paid options.
 - mobile must avoid horizontal scroll and text overlap.

@@ -43,7 +43,7 @@ const buyerHighlights = [
   {
     icon: CheckCircle2,
     title: "Prakticna oprema",
-    text: "Podno grejanje, lift iz garaze, ostave i garazna mesta dostupni su uz kupovinu.",
+    text: "Podno grejanje i lift su deo komfora objekta, dok se ostave i garazna mesta kupuju odvojeno.",
   },
   {
     icon: MapPin,
@@ -87,8 +87,8 @@ const projectDetails = [
   { label: "Tip objekta", value: "Stambena zgrada" },
   { label: "Stambenih jedinica", value: "15" },
   { label: "Grejanje", value: "Podno grejanje" },
-  { label: "Garazna mesta", value: "Dostupna uz kupovinu" },
-  { label: "Ostave", value: "Dostupne uz kupovinu" },
+  { label: "Garazna mesta", value: "13 mesta - odvojena kupovina" },
+  { label: "Ostave", value: "15 ostava - odvojena kupovina" },
   { label: "Pocetak radova", value: "16.03.2026." },
   { label: "Planirani zavrsetak", value: "15.11.2027." },
   { label: "Trenutna faza", value: "Iskop zavrsen, temelji u toku" },
@@ -198,8 +198,8 @@ export const HerojaPinkija13Page = () => {
             <p className="section-eyebrow">O projektu</p>
             <h1 className="section-title">{projectInfo.name}, Novi Sad.</h1>
             <p className="section-copy section-copy--large">
-              Nova stambena zgrada na pocetku Telepa, sa 15 stanova, garazom,
-              ostavama i liftom do svih spratova.
+              Nova stambena zgrada na pocetku Telepa, sa 15 stanova, liftom do
+              svih spratova i dodatnom ponudom garaznih mesta i ostava.
             </p>
 
             <div className="project-overview__actions">
