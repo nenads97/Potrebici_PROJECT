@@ -138,6 +138,7 @@ export const galleryItems: GalleryItem[] = [
 
 const apartmentPlanImages = {
   stackOne: "/images/apartment-plans/stan-1-6-11.png",
+  stackOneComparison: "/images/apartment-plans/stan-1-6-11-comparison.png",
   stackTwo: "/images/apartment-plans/stan-2-7-12.png",
   stackThree: "/images/apartment-plans/stan-3-8-13.png",
   stackFour: "/images/apartment-plans/stan-4-9-14.png",
@@ -153,7 +154,8 @@ type ApartmentStack = {
   highlight: string;
   description: string;
   features: string[];
-  images: ApartmentImage[];
+  heroFloorPlan: ApartmentImage;
+  projectFloorPlan: ApartmentImage;
   roomAreas: ApartmentRoomArea[];
   planVariant?: "stack-1-6-11" | "stack-2-7-12" | "stack-3-8-13" | "stack-4-9-14" | "stack-5-10-15";
 };
@@ -181,9 +183,14 @@ const apartmentStacks: ApartmentStack[] = [
       "Terasa",
       ...commonFeatures,
     ],
-    images: [
-      { src: apartmentPlanImages.stackOne, alt: "Tlocrt stanova 1, 6 i 11" },
-    ],
+    heroFloorPlan: {
+      src: apartmentPlanImages.stackOne,
+      alt: "Projektni tlocrt stanova 1, 6 i 11",
+    },
+    projectFloorPlan: {
+      src: apartmentPlanImages.stackOneComparison,
+      alt: "Izdvojeni tlocrt stanova 1, 6 i 11",
+    },
     planVariant: "stack-1-6-11",
     roomAreas: [
       { id: "entry", number: "1", label: "Ulaz", area: "7.09 m2" },
@@ -211,9 +218,14 @@ const apartmentStacks: ApartmentStack[] = [
       "Terasa",
       ...commonFeatures,
     ],
-    images: [
-      { src: apartmentPlanImages.stackTwo, alt: "Tlocrt stanova 2, 7 i 12" },
-    ],
+    heroFloorPlan: {
+      src: apartmentPlanImages.stackTwo,
+      alt: "Projektni tlocrt stanova 2, 7 i 12",
+    },
+    projectFloorPlan: {
+      src: apartmentPlanImages.stackTwo,
+      alt: "Projektni tlocrt stanova 2, 7 i 12",
+    },
     planVariant: "stack-2-7-12",
     roomAreas: [
       { id: "entry", number: "1", label: "Ulaz", area: "3.75 m2" },
@@ -241,9 +253,14 @@ const apartmentStacks: ApartmentStack[] = [
       "Jedno kupatilo",
       ...commonFeatures,
     ],
-    images: [
-      { src: apartmentPlanImages.stackThree, alt: "Tlocrt stanova 3, 8 i 13" },
-    ],
+    heroFloorPlan: {
+      src: apartmentPlanImages.stackThree,
+      alt: "Projektni tlocrt stanova 3, 8 i 13",
+    },
+    projectFloorPlan: {
+      src: apartmentPlanImages.stackThree,
+      alt: "Projektni tlocrt stanova 3, 8 i 13",
+    },
     planVariant: "stack-3-8-13",
     roomAreas: [
       { id: "entry", number: "1", label: "Ulaz", area: "2.43 m2" },
@@ -267,9 +284,14 @@ const apartmentStacks: ApartmentStack[] = [
       "Jedno kupatilo",
       ...commonFeatures,
     ],
-    images: [
-      { src: apartmentPlanImages.stackFour, alt: "Tlocrt stanova 4, 9 i 14" },
-    ],
+    heroFloorPlan: {
+      src: apartmentPlanImages.stackFour,
+      alt: "Projektni tlocrt stanova 4, 9 i 14",
+    },
+    projectFloorPlan: {
+      src: apartmentPlanImages.stackFour,
+      alt: "Projektni tlocrt stanova 4, 9 i 14",
+    },
     planVariant: "stack-4-9-14",
     roomAreas: [
       { id: "entry", number: "1", label: "Ulaz", area: "3.31 m2" },
@@ -295,9 +317,14 @@ const apartmentStacks: ApartmentStack[] = [
       "Jedno kupatilo",
       ...commonFeatures,
     ],
-    images: [
-      { src: apartmentPlanImages.stackFive, alt: "Tlocrt stanova 5, 10 i 15" },
-    ],
+    heroFloorPlan: {
+      src: apartmentPlanImages.stackFive,
+      alt: "Projektni tlocrt stanova 5, 10 i 15",
+    },
+    projectFloorPlan: {
+      src: apartmentPlanImages.stackFive,
+      alt: "Projektni tlocrt stanova 5, 10 i 15",
+    },
     planVariant: "stack-5-10-15",
     roomAreas: [
       { id: "entry", number: "1", label: "Ulaz", area: "3.15 m2" },
@@ -357,7 +384,8 @@ export const apartments: Apartment[] = apartmentStacks.flatMap((stack) =>
     parking: "Garazno mesto dostupno za odvojenu kupovinu",
     storage: "Ostava dostupna za odvojenu kupovinu",
     ceilingHeight: "Prema prodajnoj dokumentaciji",
-    images: stack.images,
+    heroFloorPlan: stack.heroFloorPlan,
+    projectFloorPlan: stack.projectFloorPlan,
     plan: [
       { label: "Ukupna povrsina", value: stack.sizes[index] },
       { label: "Struktura", value: stack.rooms },

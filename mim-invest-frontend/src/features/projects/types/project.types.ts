@@ -34,7 +34,8 @@ export type Apartment = {
   parking: string;
   storage: string;
   ceilingHeight: string;
-  images: ApartmentImage[];
+  heroFloorPlan: ApartmentImage;
+  projectFloorPlan: ApartmentImage;
   plan: ApartmentPlanItem[];
   roomAreas: ApartmentRoomArea[];
   planVariant?: "stack-1-6-11" | "stack-2-7-12" | "stack-3-8-13" | "stack-4-9-14" | "stack-5-10-15";

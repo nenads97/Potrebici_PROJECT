@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
-import { BedDouble, Layers3, Ruler } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useMemo, useRef } from "react";
+import { ArrowLeft, ArrowRight, BedDouble, Layers3, RotateCcw, Ruler } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
 
 import {
   contactPhone,
@@ -16,6 +16,8 @@ type ApartmentAvailabilityProps = {
 
 type StatusFilter = "All" | ApartmentStatus;
 type StructureFilter = "All" | "Garsonjera" | "Dvosoban" | "Trosoban";
+
+const apartmentsPerPage = 6;
 
 const statusTabs: Array<{ label: string; value: StatusFilter }> = [
   { label: "Svi stanovi", value: "All" },
@@ -39,12 +41,36 @@ const matchesStructureFilter = (apartment: Apartment, structure: StructureFilter
   return apartment.rooms === structure;
 };
 
+const statusQueryMap: Record<Exclude<StatusFilter, "All">, string> = {
+  Available: "available",
+  Reserved: "reserved",
+  Sold: "sold",
+};
+
+const structureQueryMap: Record<Exclude<StructureFilter, "All">, string> = {
+  Garsonjera: "garsonjera",
+  Dvosoban: "dvosoban",
+  Trosoban: "trosoban",
+};
+
+const getStatusFromQuery = (value: string | null): StatusFilter => {
+  const match = Object.entries(statusQueryMap).find(([, queryValue]) => queryValue === value);
+  return (match?.[0] as StatusFilter | undefined) ?? "All";
+};
+
+const getStructureFromQuery = (value: string | null): StructureFilter => {
+  const match = Object.entries(structureQueryMap).find(([, queryValue]) => queryValue === value);
+  return (match?.[0] as StructureFilter | undefined) ?? "All";
+};
+
 export const ApartmentAvailability = ({
   apartments,
   compactHeading = false,
 }: ApartmentAvailabilityProps) => {
-  const [status, setStatus] = useState<StatusFilter>("All");
-  const [structure, setStructure] = useState<StructureFilter>("All");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
+  const status = getStatusFromQuery(searchParams.get("status"));
+  const structure = getStructureFromQuery(searchParams.get("structure"));
 
   const filteredApartments = useMemo(() => {
     return apartments
@@ -56,6 +82,71 @@ export const ApartmentAvailability = ({
       })
       .sort((firstApartment, secondApartment) => Number(firstApartment.number) - Number(secondApartment.number));
   }, [apartments, status, structure]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredApartments.length / apartmentsPerPage));
+  const requestedPage = Number.parseInt(searchParams.get("page") ?? "1", 10);
+  const currentPage = Number.isFinite(requestedPage)
+    ? Math.min(Math.max(requestedPage, 1), totalPages)
+    : 1;
+  const firstResultIndex = (currentPage - 1) * apartmentsPerPage;
+  const paginatedApartments = filteredApartments.slice(
+    firstResultIndex,
+    firstResultIndex + apartmentsPerPage,
+  );
+  const firstVisibleResult = filteredApartments.length === 0 ? 0 : firstResultIndex + 1;
+  const lastVisibleResult = Math.min(
+    firstResultIndex + apartmentsPerPage,
+    filteredApartments.length,
+  );
+  const hasActiveFilters = status !== "All" || structure !== "All";
+
+  const updateSearchParams = ({
+    nextStatus = status,
+    nextStructure = structure,
+    nextPage = 1,
+  }: {
+    nextStatus?: StatusFilter;
+    nextStructure?: StructureFilter;
+    nextPage?: number;
+  }) => {
+    const nextParams = new URLSearchParams();
+
+    if (nextStatus !== "All") {
+      nextParams.set("status", statusQueryMap[nextStatus]);
+    }
+
+    if (nextStructure !== "All") {
+      nextParams.set("structure", structureQueryMap[nextStructure]);
+    }
+
+    if (nextPage > 1) {
+      nextParams.set("page", String(nextPage));
+    }
+
+    setSearchParams(nextParams);
+  };
+
+  const focusResults = () => {
+    window.requestAnimationFrame(() => {
+      resultsHeadingRef.current?.focus({ preventScroll: true });
+      resultsHeadingRef.current?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "auto"
+          : "smooth",
+        block: "start",
+      });
+    });
+  };
+
+  const changePage = (nextPage: number) => {
+    updateSearchParams({ nextPage });
+    focusResults();
+  };
+
+  const resetFilters = () => {
+    setSearchParams(new URLSearchParams());
+    focusResults();
+  };
 
   return (
     <section className="page-section page-section--surface apartments-section" id="stanovi">
@@ -75,49 +166,80 @@ export const ApartmentAvailability = ({
           </p>
         </div>
 
-        <div className="portfolio-tabs apartments-section__tabs" role="tablist">
-          {statusTabs.map((tab) => (
-            <button
-              aria-selected={status === tab.value}
-              className={status === tab.value ? "is-active" : ""}
-              key={tab.value}
-              onClick={() => setStatus(tab.value)}
-              role="tab"
-              type="button"
-            >
-              {tab.label}
+        <div className="apartments-filters" aria-label="Filtriranje stanova">
+          <div className="apartments-filter-group">
+            <p>Dostupnost</p>
+            <div className="apartments-filter-group__options">
+              {statusTabs.map((tab) => (
+                <button
+                  aria-pressed={status === tab.value}
+                  className={status === tab.value ? "is-active" : ""}
+                  key={tab.value}
+                  onClick={() => updateSearchParams({ nextStatus: tab.value })}
+                  type="button"
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="apartments-filter-group">
+            <p>Struktura</p>
+            <div className="apartments-filter-group__options">
+              {structureTabs.map((tab) => (
+                <button
+                  aria-pressed={structure === tab.value}
+                  className={structure === tab.value ? "is-active" : ""}
+                  key={tab.value}
+                  onClick={() => updateSearchParams({ nextStructure: tab.value })}
+                  type="button"
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {hasActiveFilters ? (
+            <button className="apartments-filters__reset" type="button" onClick={resetFilters}>
+              <RotateCcw />
+              Ponistite filtere
             </button>
-          ))}
+          ) : null}
         </div>
 
-        <div
-          className="portfolio-tabs apartments-section__tabs"
-          role="tablist"
-        >
-          {structureTabs.map((tab) => (
-            <button
-              aria-selected={structure === tab.value}
-              className={structure === tab.value ? "is-active" : ""}
-              key={tab.value}
-              onClick={() => setStructure(tab.value)}
-              role="tab"
-              type="button"
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div className="apartments-results-bar">
+          <h3 ref={resultsHeadingRef} tabIndex={-1}>
+            {filteredApartments.length === 0
+              ? "Nema rezultata"
+              : `Prikazano ${firstVisibleResult}–${lastVisibleResult} od ${filteredApartments.length} stanova`}
+          </h3>
+          <span aria-live="polite" className="sr-only">
+            {filteredApartments.length === 0
+              ? "Nema stanova za izabrane filtere."
+              : `Prikazani stanovi ${firstVisibleResult} do ${lastVisibleResult} od ukupno ${filteredApartments.length}.`}
+          </span>
+          <Link to="/projekti/heroja-pinkija-13/spisak-stanova">
+            Tabelarni spisak
+            <ArrowRight />
+          </Link>
         </div>
 
         <div className="apartments-grid">
-          {filteredApartments.map((apartment) => (
+          {paginatedApartments.map((apartment) => (
             <Link
               aria-label={`Detalji stana ${apartment.number}`}
               className="apartment-card"
               key={apartment.number}
-              to={`/apartmani/${apartment.number}`}
+              to={`/projekti/heroja-pinkija-13/ponuda-stanova/${apartment.number}`}
             >
               <div className="apartment-card__image">
-                <img src={apartment.images[0].src} alt={apartment.images[0].alt} />
+                <div className="apartment-card__visual" aria-hidden="true">
+                  <span>Stan</span>
+                  <strong>{apartment.number.padStart(2, "0")}</strong>
+                  <small>{apartment.rooms}</small>
+                </div>
                 <span className={`status-badge status-badge--${statusVariant[apartment.status]}`}>
                   {statusLabel[apartment.status]}
                 </span>
@@ -145,11 +267,60 @@ export const ApartmentAvailability = ({
 
         {filteredApartments.length === 0 ? (
           <div className="apartments-empty">
-            <p>Trenutno nema stanova za izabrane filtere.</p>
-            <a className="site-button site-button--dark" href={`tel:${contactPhone}`}>
-              Pozovite prodaju
-            </a>
+            <div>
+              <h3>Nema stanova za izabrane filtere.</h3>
+              <p>Promenite strukturu ili dostupnost da biste videli druge jedinice.</p>
+            </div>
+            <div className="apartments-empty__actions">
+              <button className="site-button site-button--dark" type="button" onClick={resetFilters}>
+                <RotateCcw />
+                Ponistite filtere
+              </button>
+              <a className="site-button site-button--outline" href={`tel:${contactPhone}`}>
+                Pozovite prodaju
+              </a>
+            </div>
           </div>
+        ) : null}
+
+        {filteredApartments.length > apartmentsPerPage ? (
+          <nav className="apartments-pagination" aria-label="Paginacija stanova">
+            <button
+              type="button"
+              disabled={currentPage === 1}
+              onClick={() => changePage(currentPage - 1)}
+            >
+              <ArrowLeft />
+              <span>Prethodna</span>
+            </button>
+
+            <div className="apartments-pagination__pages">
+              {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+                <button
+                  aria-current={page === currentPage ? "page" : undefined}
+                  className={page === currentPage ? "is-active" : ""}
+                  key={page}
+                  type="button"
+                  onClick={() => changePage(page)}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
+
+            <span className="apartments-pagination__mobile-status">
+              Stranica {currentPage} od {totalPages}
+            </span>
+
+            <button
+              type="button"
+              disabled={currentPage === totalPages}
+              onClick={() => changePage(currentPage + 1)}
+            >
+              <span>Sledeca</span>
+              <ArrowRight />
+            </button>
+          </nav>
         ) : null}
       </div>
     </section>

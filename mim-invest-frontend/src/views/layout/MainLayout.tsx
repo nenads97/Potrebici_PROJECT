@@ -3,10 +3,14 @@ import type { MouseEvent } from "react";
 import {
   ArrowLeft,
   ArrowUp,
+  ArrowUpRight,
   ChevronDown,
   ChevronRight,
+  Mail,
+  MapPin,
   Menu,
   MessageCircle,
+  Phone,
   X,
 } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -44,6 +48,9 @@ export const MainLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isHome = location.pathname === "/";
+  const isApartmentDetail = /^\/projekti\/heroja-pinkija-13\/ponuda-stanova\/[^/]+$/.test(
+    location.pathname,
+  );
   const currentYear = new Date().getFullYear();
   const [isNavOpen, setIsNavOpen] = useState(false);
 
@@ -95,7 +102,7 @@ export const MainLayout = () => {
         </div>
       </header>
 
-      {!isHome ? (
+      {!isHome && !isApartmentDetail ? (
         <button
           className="page-back-button"
           type="button"
@@ -110,44 +117,101 @@ export const MainLayout = () => {
       <Outlet />
 
       <footer className="site-footer">
+        <div className="site-footer__cta">
+          <div className="site-footer__cta-inner">
+            <div>
+              <span className="site-footer__eyebrow">Zainteresovani ste za stan?</span>
+              <h2>Razgovarajte direktno sa nasim prodajnim timom.</h2>
+            </div>
+
+            <Link className="site-button site-button--accent" to="/kontakt">
+              <MessageCircle />
+              Posaljite upit
+            </Link>
+          </div>
+        </div>
+
         <div className="site-footer__grid">
           <div className="site-footer__brand">
             <BrandLogo showText={false} />
-            <p>
-              Heroja Pinkija 13 je novi stambeni projekat na pocetku Telepa sa 15
-              stanova, liftom do svih spratova i dodatnom ponudom garaznih mesta i
-              ostava.
-            </p>
+            <div className="site-footer__brand-copy">
+              <strong>M & M Gradnja</strong>
+              <p>
+                Gradimo pazljivo osmisljene prostore za savremen i udoban zivot u
+                Novom Sadu.
+              </p>
+              <Link className="site-footer__inline-link" to="/o-nama">
+                Upoznajte kompaniju
+                <ArrowUpRight />
+              </Link>
+            </div>
           </div>
 
-          <FooterColumn title="Kompanija" links={companyLinks} />
+          <FooterColumn
+            id="footer-company"
+            title="Kompanija"
+            links={[
+              { to: "/", label: "Pocetna" },
+              { to: "/o-nama", label: "O nama" },
+              { to: "/kupujemo-placeve", label: "Kupujemo placeve" },
+              { to: "/lokacija", label: "Lokacija" },
+            ]}
+          />
 
           <FooterColumn
-            title="Projekat"
+            id="footer-project"
+            title="Aktuelni projekat"
             links={[
-              { to: "/projekti/heroja-pinkija-13/o-projektu", label: "Heroja Pinkija 13" },
+              {
+                to: "/projekti/heroja-pinkija-13/o-projektu",
+                label: "Heroja Pinkija 13",
+              },
               {
                 to: "/projekti/heroja-pinkija-13/ponuda-stanova",
                 label: "Ponuda stanova",
               },
-              { to: "/kontakt", label: "Kontakt" },
+              {
+                to: "/projekti/heroja-pinkija-13/spisak-stanova",
+                label: "Spisak stanova",
+              },
             ]}
           />
 
-          <div>
-            <h2>Kontakt</h2>
-            <div className="site-footer__links">
-              <a href={`tel:${contactPhone}`}>{contactPhone}</a>
-              <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
-              <span>Heroja Pinkija 13, Novi Sad</span>
+          <address className="site-footer__contact" aria-labelledby="footer-contact">
+            <h2 id="footer-contact">Kontakt</h2>
+            <div className="site-footer__contact-list">
+              <a href={`tel:${contactPhone}`}>
+                <Phone />
+                <span>
+                  <small>Telefon prodaje</small>
+                  <strong>{contactPhone}</strong>
+                </span>
+              </a>
+              <a href={`mailto:${contactEmail}`}>
+                <Mail />
+                <span>
+                  <small>Email</small>
+                  <strong>{contactEmail}</strong>
+                </span>
+              </a>
+              <Link to="/lokacija">
+                <MapPin />
+                <span>
+                  <small>Adresa projekta</small>
+                  <strong>Heroja Pinkija 13, Novi Sad</strong>
+                </span>
+              </Link>
             </div>
-          </div>
+          </address>
         </div>
 
         <div className="site-footer__bottom">
           <div className="site-footer__bottom-inner">
             <span>(c) {currentYear} M & M Gradnja. Sva prava zadrzana.</span>
-            <Link to="/politika-privatnosti">Politika privatnosti</Link>
+            <div className="site-footer__legal">
+              <Link to="/politika-privatnosti">Politika privatnosti</Link>
+              <Link to="/kontakt">Kontakt</Link>
+            </div>
           </div>
         </div>
       </footer>
@@ -236,14 +300,15 @@ const HeaderDropdown = ({ label, links }: HeaderDropdownProps) => {
 };
 
 type FooterColumnProps = {
+  id: string;
   title: string;
   links: Array<{ to: string; label: string }>;
 };
 
-const FooterColumn = ({ title, links }: FooterColumnProps) => {
+const FooterColumn = ({ id, title, links }: FooterColumnProps) => {
   return (
-    <div>
-      <h2>{title}</h2>
+    <nav aria-labelledby={id}>
+      <h2 id={id}>{title}</h2>
       <div className="site-footer__links">
         {links.map((link) => (
           <Link key={link.to} to={link.to}>
@@ -251,6 +316,6 @@ const FooterColumn = ({ title, links }: FooterColumnProps) => {
           </Link>
         ))}
       </div>
-    </div>
+    </nav>
   );
 };

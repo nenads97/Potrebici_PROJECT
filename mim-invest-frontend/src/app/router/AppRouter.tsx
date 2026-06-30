@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect } from "react";
 import type { ComponentType } from "react";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useParams } from "react-router-dom";
 
 import { LazySectionLoader, PageLoader, RouteTransitionLoader } from "../../shared/components/PageLoader";
 
@@ -57,6 +57,17 @@ const ScrollToTop = () => {
   }, [pathname]);
 
   return null;
+};
+
+const LegacyApartmentRedirect = () => {
+  const { apartmentNumber } = useParams();
+
+  return (
+    <Navigate
+      replace
+      to={`/projekti/heroja-pinkija-13/ponuda-stanova/${apartmentNumber ?? ""}`}
+    />
+  );
 };
 
 const AppRouter = () => {
@@ -127,7 +138,7 @@ const AppRouter = () => {
             <Route path="/kontakt" element={<ContactPage />} />
             <Route path="/lokacija" element={<LocationPage />} />
             <Route path="/politika-privatnosti" element={<PrivacyPolicyPage />} />
-            <Route path="/apartmani/:apartmentNumber" element={<ApartmentDetailsPage />} />
+            <Route path="/apartmani/:apartmentNumber" element={<LegacyApartmentRedirect />} />
             <Route path="/projekti/heroja-pinkija-13" element={<HerojaPinkija13Page />} />
             <Route
               path="/projekti/heroja-pinkija-13/o-projektu"
@@ -136,6 +147,10 @@ const AppRouter = () => {
             <Route
               path="/projekti/heroja-pinkija-13/ponuda-stanova"
               element={<ApartmentsPage />}
+            />
+            <Route
+              path="/projekti/heroja-pinkija-13/ponuda-stanova/:apartmentNumber"
+              element={<ApartmentDetailsPage />}
             />
             <Route
               path="/projekti/heroja-pinkija-13/spisak-stanova"

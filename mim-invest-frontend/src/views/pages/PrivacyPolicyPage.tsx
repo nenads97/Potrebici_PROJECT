@@ -1,11 +1,12 @@
+import { motion, useReducedMotion } from "framer-motion";
 import {
+  ArrowDown,
   ArrowUpRight,
   ClipboardList,
   Database,
   FileText,
   LockKeyhole,
   Mail,
-  MessageCircle,
   Phone,
   RefreshCw,
   Scale,
@@ -15,43 +16,49 @@ import {
 import { contactEmail, contactPhone } from "../../features/projects/data/herojaPinkija13.data";
 
 const heroHighlights = [
-  { value: "Transparentno", label: "jasno objasnjena obrada" },
-  { value: "Namenski", label: "podaci se koriste za upite kupaca" },
-  { value: "Kontrolisano", label: "prava mozete zatraziti direktno" },
+  { value: "Transparentno", label: "objasnjena svrha obrade" },
+  { value: "Namenski", label: "podaci se koriste za konkretan upit" },
+  { value: "Kontrolisano", label: "zahtev mozete poslati direktno" },
 ];
 
 const privacySections = [
   {
+    id: "rukovalac",
     icon: FileText,
     title: "Rukovalac podacima",
     text:
       "Rukovalac podacima je M & M Gradnja. Za pitanja u vezi sa obradom podataka mozete nas kontaktirati putem prodajnog e-maila ili telefona navedenih na sajtu.",
   },
   {
+    id: "podaci",
     icon: Database,
     title: "Podaci koje prikupljamo",
     text:
       "Podatke prikupljamo kada posaljete upit, zakazete obilazak, pozovete prodaju ili zatrazite informacije o odredjenom stanu.",
   },
   {
+    id: "svrha",
     icon: ClipboardList,
     title: "Svrha obrade",
     text:
       "Podaci se koriste za komunikaciju sa potencijalnim kupcima, slanje informacija o stanovima, organizaciju obilazaka i pripremu ponuda.",
   },
   {
+    id: "bezbednost",
     icon: LockKeyhole,
     title: "Bezbednost podataka",
     text:
       "Podaci se cuvaju uz razumne organizacione i tehnicke mere zastite. Pristup imaju samo osobe kojima su informacije potrebne za prodaju ili zakonske obaveze.",
   },
   {
+    id: "prava",
     icon: Scale,
     title: "Vasa prava",
     text:
       "Mozete zatraziti pristup, ispravku, brisanje ili ogranicenje obrade podataka, kao i povlacenje saglasnosti kada je obrada zasnovana na saglasnosti.",
   },
   {
+    id: "izmene",
     icon: RefreshCw,
     title: "Izmene politike",
     text:
@@ -77,22 +84,54 @@ const processingSteps = [
   },
 ];
 
-const dataExamples = ["Ime i prezime", "Telefon", "E-mail adresa", "Interesovanje za projekat ili stan"];
+const dataExamples = [
+  "Ime i prezime",
+  "Telefon",
+  "E-mail adresa",
+  "Interesovanje za projekat, stan ili termin obilaska",
+];
+
+const reveal = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 },
+};
+
+const revealContainer = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.05,
+    },
+  },
+};
 
 export const PrivacyPolicyPage = () => {
+  const reduceMotion = useReducedMotion();
+  const motionState = reduceMotion ? "show" : "hidden";
+
   return (
-    <main>
-      <section className="page-section page-section--surface">
-        <div className="page-container split-grid split-grid--end">
-          <div className="fade-up">
-            <p className="section-eyebrow">Politika privatnosti</p>
-            <h1 className="section-title">Vasi podaci, jasno i odgovorno.</h1>
-            <p className="section-copy section-copy--large">
-              Ova stranica objasnjava kako M & M Gradnja prikuplja, koristi i cuva
-              podatke koje dostavite prilikom interesovanja za stanove, obilazak
-              projekta ili kontakt sa prodajnim timom.
-            </p>
-            <div className="page-actions">
+    <main className="privacy-page">
+      <section className="privacy-hero">
+        <div className="page-container privacy-hero__grid">
+          <motion.div
+            className="privacy-hero__copy"
+            initial={motionState}
+            animate="show"
+            variants={revealContainer}
+          >
+            <motion.p className="section-eyebrow" variants={reveal}>
+              Politika privatnosti
+            </motion.p>
+            <motion.h1 className="section-title" variants={reveal}>
+              Vasi podaci, jasno i odgovorno.
+            </motion.h1>
+            <motion.p className="section-copy section-copy--large" variants={reveal}>
+              Ova stranica objasnjava kako M & M Gradnja prikuplja, koristi i
+              cuva podatke koje dostavite prilikom interesovanja za stanove,
+              obilazak projekta ili kontakt sa prodajnim timom.
+            </motion.p>
+            <motion.div className="page-actions" variants={reveal}>
               <a className="site-button site-button--accent" href={`mailto:${contactEmail}`}>
                 <Mail />
                 Pisite nam
@@ -101,137 +140,215 @@ export const PrivacyPolicyPage = () => {
                 <Phone />
                 Pozovite prodaju
               </a>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          <div className="soft-card privacy-summary">
-            <div>
-              <ShieldCheck className="icon-inline" />
-              <p>Sazetak politike</p>
-              <span>
-                Podaci se koriste samo za komunikaciju sa kupcima, proveru
-                dostupnosti stanova, organizaciju obilazaka i zakonske obaveze.
+          <motion.aside
+            className="privacy-hero__summary"
+            initial={motionState}
+            animate="show"
+            variants={reveal}
+            transition={{ duration: 0.62, delay: reduceMotion ? 0 : 0.14 }}
+            aria-label="Sazetak politike privatnosti"
+          >
+            <div className="privacy-hero__summary-head">
+              <span className="privacy-hero__summary-icon">
+                <ShieldCheck />
               </span>
-            </div>
-            <div className="privacy-summary__stats">
-              {heroHighlights.map((item) => (
-                <span key={item.value}>
-                  <strong>{item.value}</strong>
-                  {item.label}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="page-section page-section--surface">
-        <div className="page-container split-grid">
-          <div className="sticky-copy">
-            <p className="section-eyebrow">Pregled</p>
-            <h2 className="section-title section-title--medium">
-              Privatnost kao deo korektne komunikacije.
-            </h2>
-            <p className="section-copy">
-              Podatke trazimo samo kada su potrebni da odgovorimo na upit, zakazemo
-              obilazak ili posaljemo informacije o stanovima.
-            </p>
-            <blockquote>
-              Ne koristimo podatke za nepotrebnu komunikaciju. Fokus je na jasnom
-              odgovoru, prodajnim informacijama i organizaciji obilaska.
-            </blockquote>
-          </div>
-
-          <div className="info-card-grid">
-            {privacySections.map(({ icon: Icon, title, text }) => (
-              <article className="info-card" key={title}>
-                <span className="icon-bubble">
-                  <Icon />
-                </span>
-                <h3>{title}</h3>
-                <p>{text}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="page-section">
-        <div className="page-container split-grid split-grid--center">
-          <div className="dark-process-card">
-            <div>
-              <ShieldCheck className="icon-inline" />
-              <p>Tok obrade</p>
-            </div>
-            {processingSteps.map((step, index) => (
-              <div className="process-step" key={step.title}>
-                <span>{index + 1}</span>
-                <p>
-                  <strong>{step.title}</strong>
-                  {step.text}
-                </p>
+              <div>
+                <p>Sazetak politike</p>
+                <h2>Podaci imaju jasno definisanu namenu.</h2>
               </div>
-            ))}
-          </div>
-
-          <div>
-            <p className="section-eyebrow">Koje podatke mozemo traziti</p>
-            <h2 className="section-title section-title--medium">
-              Samo ono sto je potrebno za odgovor na vas upit.
-            </h2>
-            <p className="section-copy">
-              Uobicajeno su to osnovni kontakt podaci i informacija o tome koji
-              projekat, stan ili termin obilaska vas zanima.
-            </p>
-            <div className="check-list">
-              {dataExamples.map((item) => (
-                <p key={item}>
-                  <span className="icon-bubble">
-                    <LockKeyhole />
-                  </span>
-                  {item}
-                </p>
-              ))}
             </div>
-          </div>
+            <p className="privacy-hero__summary-copy">
+              Koristimo ih za odgovor na upit, proveru dostupnosti stanova,
+              organizaciju obilazaka i ispunjavanje zakonskih obaveza.
+            </p>
+            <dl className="privacy-hero__facts">
+              {heroHighlights.map((item) => (
+                <div key={item.value}>
+                  <dt>{item.label}</dt>
+                  <dd>{item.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </motion.aside>
         </div>
       </section>
 
-      <section className="page-section page-section--surface">
-        <div className="page-container split-grid split-grid--center">
-          <div className="image-card tall-image-card">
-            <img
-              src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=85"
-              alt="Mirna terasa savremenog stana"
-            />
-          </div>
+      <section className="privacy-intro">
+        <motion.div
+          className="page-container privacy-intro__grid"
+          initial={motionState}
+          whileInView="show"
+          viewport={{ once: true, amount: 0.28 }}
+          variants={revealContainer}
+        >
+          <motion.div className="privacy-intro__statement" variants={reveal}>
+            <p className="section-eyebrow">Osnovni princip</p>
+            <h2>Podatke trazimo samo kada su potrebni za konkretan odgovor.</h2>
+            <blockquote>
+              Ne koristimo podatke za nepotrebnu komunikaciju. Fokus je na
+              prodajnim informacijama, organizaciji obilaska i odgovoru na vas
+              zahtev.
+            </blockquote>
+          </motion.div>
 
-          <div>
-            <p className="section-eyebrow">Pitanja o privatnosti</p>
+          <motion.nav
+            className="privacy-toc"
+            aria-label="Sadrzaj politike privatnosti"
+            variants={reveal}
+          >
+            <p>Sadrzaj stranice</p>
+            <ol>
+              {privacySections.map((section, index) => (
+                <li key={section.id}>
+                  <a href={`#${section.id}`}>
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    {section.title}
+                    <ArrowDown />
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </motion.nav>
+        </motion.div>
+      </section>
+
+      <section className="privacy-document" aria-labelledby="privacy-document-title">
+        <div className="page-container privacy-document__grid">
+          <motion.aside
+            className="privacy-document__aside"
+            initial={motionState}
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={reveal}
+          >
+            <p className="section-eyebrow">Pregled politike</p>
+            <h2 id="privacy-document-title">Kako postupamo sa podacima.</h2>
+            <p>
+              Svaki odeljak opisuje jednu oblast obrade, od trenutka kada nam se
+              obratite do nacina na koji mozete ostvariti svoja prava.
+            </p>
+          </motion.aside>
+
+          <motion.div
+            className="privacy-document__sections"
+            initial={motionState}
+            whileInView="show"
+            viewport={{ once: true, amount: 0.08 }}
+            variants={revealContainer}
+          >
+            {privacySections.map(({ id, icon: Icon, title, text }, index) => (
+              <motion.article id={id} className="privacy-clause" key={id} variants={reveal}>
+                <div className="privacy-clause__meta">
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <Icon />
+                </div>
+                <div>
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                </div>
+              </motion.article>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="privacy-processing">
+        <motion.div
+          className="page-container privacy-processing__panel"
+          initial={motionState}
+          whileInView="show"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={revealContainer}
+        >
+          <motion.div className="privacy-processing__intro" variants={reveal}>
+            <div className="privacy-processing__eyebrow">
+              <ShieldCheck />
+              <span>Tok obrade</span>
+            </div>
+            <h2>Od vaseg upita do bezbedne komunikacije.</h2>
+            <p>
+              Obrada je vezana za razgovor koji ste zapoceli i informacije koje
+              su potrebne da taj razgovor bude koristan.
+            </p>
+          </motion.div>
+
+          <motion.ol className="privacy-processing__steps" variants={revealContainer}>
+            {processingSteps.map((step, index) => (
+              <motion.li key={step.title} variants={reveal}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <h3>{step.title}</h3>
+                  <p>{step.text}</p>
+                </div>
+              </motion.li>
+            ))}
+          </motion.ol>
+        </motion.div>
+      </section>
+
+      <section className="privacy-data">
+        <motion.div
+          className="page-container privacy-data__grid"
+          initial={motionState}
+          whileInView="show"
+          viewport={{ once: true, amount: 0.24 }}
+          variants={revealContainer}
+        >
+          <motion.div variants={reveal}>
+            <p className="section-eyebrow">Podaci u upitu</p>
             <h2 className="section-title section-title--medium">
-              Za svaki zahtev mozete nam se obratiti direktno.
+              Samo ono sto je potrebno za odgovor.
             </h2>
             <p className="section-copy">
-              Ako zelite pristup podacima, ispravku, brisanje ili dodatno
-              objasnjenje obrade, kontaktirajte nas putem zvanicnog e-maila ili
-              telefona.
+              Uobicajeno su to osnovni kontakt podaci i informacija o projektu,
+              stanu ili terminu obilaska koji vas zanima.
             </p>
-            <div className="contact-links">
-              <a href={`mailto:${contactEmail}`}>
-                <MessageCircle className="icon-inline" />
-                {contactEmail}
-              </a>
-              <a href={`tel:${contactPhone}`}>
-                <Phone className="icon-inline" />
-                {contactPhone}
-              </a>
-            </div>
+          </motion.div>
+
+          <motion.ul className="privacy-data__list" variants={revealContainer}>
+            {dataExamples.map((item, index) => (
+              <motion.li key={item} variants={reveal}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <LockKeyhole />
+                <strong>{item}</strong>
+              </motion.li>
+            ))}
+          </motion.ul>
+        </motion.div>
+      </section>
+
+      <section className="privacy-contact">
+        <motion.div
+          className="page-container privacy-contact__inner"
+          initial={motionState}
+          whileInView="show"
+          viewport={{ once: true, amount: 0.35 }}
+          variants={revealContainer}
+        >
+          <motion.div variants={reveal}>
+            <p className="section-eyebrow">Zahtevi i pitanja</p>
+            <h2>Za pristup, ispravku ili brisanje podataka obratite nam se direktno.</h2>
+            <p>
+              Navedite na koji upit ili komunikaciju se zahtev odnosi kako bismo
+              mogli precizno da proverimo potrebne informacije.
+            </p>
+          </motion.div>
+
+          <motion.div className="privacy-contact__actions" variants={reveal}>
             <a className="site-button site-button--dark" href={`mailto:${contactEmail}`}>
+              <Mail />
               Posaljite zahtev
+            </a>
+            <a className="privacy-contact__link" href={`tel:${contactPhone}`}>
+              <Phone />
+              {contactPhone}
               <ArrowUpRight />
             </a>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </section>
     </main>
   );

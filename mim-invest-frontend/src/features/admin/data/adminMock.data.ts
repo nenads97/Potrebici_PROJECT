@@ -50,7 +50,7 @@ export const adminInquiries: AdminInquiry[] = [
     inquiryType: "availability",
     projectSlug: "heroja-pinkija-13",
     unitCode: "Stan 1",
-    sourcePage: "/apartmani/1",
+    sourcePage: "/projekti/heroja-pinkija-13/ponuda-stanova/1",
     message: "Da li je veci trosoban stan jos slobodan i kada moze obilazak lokacije?",
     adminStatus: "contacted",
     adminNote: "Poslat mejl sa osnovnim informacijama.",

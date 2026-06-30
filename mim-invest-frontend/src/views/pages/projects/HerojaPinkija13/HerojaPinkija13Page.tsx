@@ -1,385 +1,619 @@
-import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useSpring, useTransform } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowUpRight,
   Building2,
   CalendarDays,
+  Car,
+  Check,
   CheckCircle2,
   Clock3,
   FileText,
+  Flame,
   Home,
   Layers3,
   MapPin,
+  Package,
   Ruler,
-  ShieldCheck,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-import { ApartmentAvailability } from "../../../../features/projects/components/ApartmentAvailability";
 import {
   apartments,
   projectInfo,
-  projectStats,
+  statusLabel,
+  statusVariant,
 } from "../../../../features/projects/data/herojaPinkija13.data";
 
 const projectImages = {
-  main: "/images/heroja-pinkija-13/gradilisna-tabla.jpg",
+  hero: "/images/heroja-pinkija-13/gradilisna-tabla.jpg",
+  works: "/images/heroja-pinkija-13/radovi-u-toku.jpg",
 };
 
-const projectQuickFacts = [
-  { icon: Building2, label: "Objekat", value: "Stambena zgrada" },
-  { icon: Layers3, label: "Struktura", value: projectInfo.floorStructure },
-  { icon: Ruler, label: "Jedinice", value: "15 stanova" },
-  { icon: Clock3, label: "Faza", value: "Temelji u toku" },
+const heroFacts = [
+  { label: "Stanovi", value: "15" },
+  { label: "Struktura", value: projectInfo.floorStructure },
+  { label: "Grejanje", value: "Podno" },
+  { label: "Planirani zavrsetak", value: "15.11.2027." },
 ];
 
-const buyerHighlights = [
+const overviewFacts = [
+  { icon: Building2, label: "Tip objekta", value: "Stambena zgrada" },
+  { icon: MapPin, label: "Lokacija", value: "Heroja Pinkija 13, Novi Sad" },
+  { icon: Home, label: "Stambene jedinice", value: "15 stanova" },
+  { icon: Layers3, label: "Struktura objekta", value: projectInfo.floorStructure },
+  { icon: Car, label: "Garazna mesta", value: "13 mesta, odvojena kupovina" },
+  { icon: Package, label: "Ostave", value: "15 ostava, odvojena kupovina" },
+  { icon: Clock3, label: "Trenutna faza", value: "Iskop zavrsen, temelji u toku" },
+  { icon: CalendarDays, label: "Planirani zavrsetak", value: "15.11.2027." },
+];
+
+const projectBenefits = [
   {
-    icon: ShieldCheck,
-    title: "Jasna ponuda stanova",
+    number: "01",
+    icon: Ruler,
+    title: "Funkcionalni rasporedi",
     text:
-      "Stanovi su organizovani po pet na etazi, pa se lako uporedjuju sprat, kvadratura i struktura.",
+      "Garsonjere, dvosobni i trosobni stanovi organizovani su kroz pet stanova na svakoj stambenoj etazi.",
   },
   {
-    icon: CheckCircle2,
-    title: "Prakticna oprema",
-    text: "Podno grejanje i lift su deo komfora objekta, dok se ostave i garazna mesta kupuju odvojeno.",
+    number: "02",
+    icon: Flame,
+    title: "Komfor u svakodnevici",
+    text:
+      "Podno grejanje i lift od podzemne garaze do svih spratova deo su potvrdene opreme objekta.",
   },
   {
+    number: "03",
+    icon: Building2,
+    title: "Pregledan objekat",
+    text:
+      "Ukupno 15 stanova omogucava jasnu ponudu i jednostavno poredjenje jedinica kroz vertikalu.",
+  },
+  {
+    number: "04",
     icon: MapPin,
     title: "Pocetak Telepa",
-    text: "Lokacija je dobro povezana sa gradom i svakodnevnim sadrzajima u neposrednoj blizini.",
+    text:
+      "Lokacija povezuje mirniji stambeni karakter sa linijom 12, gradskim sadrzajima i centrom Novog Sada.",
   },
 ];
 
-const projectActions = [
+const constructionTimeline = [
   {
-    icon: Home,
-    title: "Ponuda stanova",
-    text: "Pogledajte aktuelne stanove, kvadrature, strukture i status dostupnosti.",
-    to: "/projekti/heroja-pinkija-13/ponuda-stanova",
-  },
-  {
-    icon: FileText,
-    title: "Spisak stanova",
-    text: "Brz pregled svih jedinica u objektu za poredjenje po etazi i tipu stana.",
-    to: "/projekti/heroja-pinkija-13/spisak-stanova",
+    date: "16.03.2026.",
+    title: "Pocetak radova",
+    text: "Radovi na objektu su zapoceti prema projektnoj dinamici.",
+    status: "Zavrseno",
+    variant: "done",
   },
   {
-    icon: MapPin,
-    title: "Lokacija",
-    text: "Proverite poziciju objekta Heroja Pinkija 13 i povezanost sa gradom.",
-    to: "/lokacija",
+    date: "2026.",
+    title: "Iskop",
+    text: "Faza iskopa je zavrsena i gradiliste je preslo u narednu etapu.",
+    status: "Zavrseno",
+    variant: "done",
+  },
+  {
+    date: "Aktuelno",
+    title: "Temelji",
+    text: "Trenutna faza projekta obuhvata radove na temeljima objekta.",
+    status: "Aktuelno",
+    variant: "active",
+  },
+  {
+    date: "15.11.2027.",
+    title: "Planirani zavrsetak",
+    text: "Predvidjeni termin zavrsetka izgradnje prema dostupnim podacima projekta.",
+    status: "Planirano",
+    variant: "upcoming",
   },
 ];
 
-const projectTimeline = [
-  { label: "Pocetak radova", value: "16.03.2026.", state: "Zavrseno" },
-  { label: "Iskop", value: "Zavrsena faza", state: "Zavrseno" },
-  { label: "Temelji", value: "Radovi u toku", state: "Aktuelno" },
-  { label: "Planirani zavrsetak", value: "15.11.2027.", state: "Planirano" },
+const detailGroups = [
+  {
+    eyebrow: "Objekat",
+    title: "Osnovni podaci",
+    items: [
+      { label: "Investitor", value: "M & M Gradnja" },
+      { label: "Tip objekta", value: "Stambena zgrada" },
+      { label: "Struktura", value: projectInfo.floorStructure },
+      { label: "Stambene jedinice", value: "15 stanova" },
+    ],
+  },
+  {
+    eyebrow: "Stanovanje",
+    title: "Komfor",
+    items: [
+      { label: "Grejanje", value: "Podno grejanje" },
+      { label: "Vertikalna komunikacija", value: "Lift do svih spratova" },
+      { label: "Raspored", value: "5 stanova po stambenoj etazi" },
+      { label: "Strukture stanova", value: "Garsonjere, dvosobni i trosobni" },
+    ],
+  },
+  {
+    eyebrow: "Dodatne jedinice",
+    title: "Parking i ostave",
+    items: [
+      { label: "Garazna mesta", value: "13 mesta" },
+      { label: "Ostave", value: "15 ostava" },
+      { label: "Dvorisni parking", value: "10 mesta" },
+      { label: "Nacin kupovine", value: "Odvojeno od stana" },
+    ],
+  },
+  {
+    eyebrow: "Realizacija",
+    title: "Rokovi i status",
+    items: [
+      { label: "Pocetak radova", value: "16.03.2026." },
+      { label: "Zavrsena faza", value: "Iskop" },
+      { label: "Aktuelna faza", value: "Temelji u toku" },
+      { label: "Planirani zavrsetak", value: "15.11.2027." },
+    ],
+  },
 ];
 
-const projectDetails = [
-  { label: "Investitor", value: "M & M Gradnja" },
-  { label: "Lokacija", value: "Heroja Pinkija 13, Novi Sad" },
-  { label: "Struktura objekta", value: projectInfo.floorStructure },
-  { label: "Tip objekta", value: "Stambena zgrada" },
-  { label: "Stambenih jedinica", value: "15" },
-  { label: "Grejanje", value: "Podno grejanje" },
-  { label: "Garazna mesta", value: "13 mesta - odvojena kupovina" },
-  { label: "Ostave", value: "15 ostava - odvojena kupovina" },
-  { label: "Pocetak radova", value: "16.03.2026." },
-  { label: "Planirani zavrsetak", value: "15.11.2027." },
-  { label: "Trenutna faza", value: "Iskop zavrsen, temelji u toku" },
-];
+const featuredApartmentNumbers = new Set(["1", "2", "3", "4", "5"]);
+const featuredApartments = apartments.filter((apartment) =>
+  featuredApartmentNumbers.has(apartment.number),
+);
 
-const AnimatedStatValue = ({ shouldAnimate, value }: { shouldAnimate: boolean; value: string }) => {
-  const targetValue = Number(value);
-  const isNumericValue = Number.isFinite(targetValue);
-  const [displayValue, setDisplayValue] = useState(isNumericValue ? "0" : value);
-  const hasAnimatedRef = useRef(false);
+const featuredApartmentPlans: Record<string, string> = {
+  "1": "/images/apartment-plans/showcase-stan-1-6-11.png",
+  "2": "/images/apartment-plans/showcase-stan-2-7-12.png",
+  "3": "/images/apartment-plans/showcase-stan-3-8-13.png",
+  "4": "/images/apartment-plans/showcase-stan-4-9-14.png",
+  "5": "/images/apartment-plans/showcase-stan-5-10-15.png",
+};
 
-  useEffect(() => {
-    if (!isNumericValue) {
-      setDisplayValue(value);
-      return;
-    }
+const reveal = {
+  hidden: { opacity: 0, y: 22 },
+  show: { opacity: 1, y: 0 },
+};
 
-    if (!shouldAnimate || hasAnimatedRef.current) {
-      return;
-    }
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setDisplayValue(value);
-      return;
-    }
-
-    let animationFrame = 0;
-    hasAnimatedRef.current = true;
-    const duration = 5000;
-    let startTime: number | null = null;
-
-    const tick = (timestamp: number) => {
-      startTime ??= timestamp;
-      const progress = Math.min((timestamp - startTime) / duration, 1);
-      const easedProgress = 1 - Math.pow(1 - progress, 3);
-
-      setDisplayValue(String(Math.round(easedProgress * targetValue)));
-
-      if (progress < 1) {
-        animationFrame = window.requestAnimationFrame(tick);
-      }
-    };
-
-    animationFrame = window.requestAnimationFrame(tick);
-
-    return () => {
-      window.cancelAnimationFrame(animationFrame);
-    };
-  }, [isNumericValue, shouldAnimate, targetValue, value]);
-
-  return <strong>{displayValue}</strong>;
+const revealContainer = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.05,
+    },
+  },
 };
 
 export const HerojaPinkija13Page = () => {
-  const heroImageRef = useRef<HTMLDivElement>(null);
-  const statsRef = useRef<HTMLDivElement>(null);
-  const [activeTimelineIndex, setActiveTimelineIndex] = useState(2);
-  const [shouldAnimateStats, setShouldAnimateStats] = useState(false);
-  const activeTimelineStep = projectTimeline[activeTimelineIndex];
-  const { scrollYProgress } = useScroll({
-    target: heroImageRef,
-    offset: ["start end", "end start"],
-  });
-  const smoothHeroScroll = useSpring(scrollYProgress, {
-    stiffness: 80,
-    damping: 24,
-    mass: 0.35,
-  });
-  const heroImageY = useTransform(smoothHeroScroll, [0, 1], ["0%", "0%"]);
-  const heroImageScale = useTransform(smoothHeroScroll, [0, 1], [1, 1]);
-
-  useEffect(() => {
-    const element = statsRef.current;
-
-    if (!element || shouldAnimateStats) {
-      return;
-    }
-
-    if (!("IntersectionObserver" in window)) {
-      setShouldAnimateStats(true);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setShouldAnimateStats(true);
-          observer.disconnect();
-        }
-      },
-      {
-        rootMargin: "0px 0px -12% 0px",
-        threshold: 0.25,
-      },
-    );
-
-    observer.observe(element);
-
-    return () => observer.disconnect();
-  }, [shouldAnimateStats]);
+  const reduceMotion = useReducedMotion();
+  const motionState = reduceMotion ? "show" : "hidden";
 
   return (
-    <main className="project-page">
-      <section className="page-section page-section--surface project-overview">
-        <div className="page-container split-grid project-overview__grid">
-          <div className="project-overview__intro fade-up">
-            <p className="section-eyebrow">O projektu</p>
-            <h1 className="section-title">{projectInfo.name}, Novi Sad.</h1>
-            <p className="section-copy section-copy--large">
-              Nova stambena zgrada na pocetku Telepa, sa 15 stanova, liftom do
-              svih spratova i dodatnom ponudom garaznih mesta i ostava.
-            </p>
-
-            <div className="project-overview__actions">
+    <main className="project-showcase">
+      <section className="project-showcase-hero">
+        <div className="page-container project-showcase-hero__grid">
+          <motion.div
+            className="project-showcase-hero__copy"
+            initial={motionState}
+            animate="show"
+            variants={revealContainer}
+          >
+            <motion.p className="section-eyebrow" variants={reveal}>
+              Aktuelni projekat
+            </motion.p>
+            <motion.h1 className="section-title" variants={reveal}>
+              Heroja Pinkija 13.
+            </motion.h1>
+            <motion.p className="project-showcase-hero__location" variants={reveal}>
+              <MapPin />
+              Pocetak Telepa, Novi Sad
+            </motion.p>
+            <motion.p className="section-copy section-copy--large" variants={reveal}>
+              Stambena zgrada sa 15 funkcionalno organizovanih stanova, podnim
+              grejanjem, liftom i dodatnom ponudom garaznih mesta i ostava.
+            </motion.p>
+            <motion.div className="page-actions" variants={reveal}>
               <Link
                 className="site-button site-button--accent"
                 to="/projekti/heroja-pinkija-13/ponuda-stanova"
               >
                 <Home />
-                Ponuda stanova
+                Pogledajte stanove
               </Link>
               <Link className="site-button site-button--outline" to="/kontakt">
                 <CalendarDays />
                 Zakazite obilazak
               </Link>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          <div className="project-overview__visual">
-            <div className="image-card" ref={heroImageRef}>
-              <div className="project-overview__image">
-                <motion.img
-                  src={projectImages.main}
-                  alt="Heroja Pinkija 13 eksterijer projekta"
-                  style={{ y: heroImageY, scale: heroImageScale }}
-                />
-                <span>Prodaja je pocela</span>
-              </div>
-              <div className="project-overview__quick">
-                {projectQuickFacts.map(({ icon: Icon, label, value }) => (
-                  <div key={label}>
-                    <span className="icon-bubble">
-                      <Icon />
-                    </span>
-                    <div>
-                      <p>{label}</p>
-                      <strong>{value}</strong>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="project-overview__stats" ref={statsRef}>
-              {projectStats.slice(0, 3).map((stat) => (
-                <div key={stat.label}>
-                  <AnimatedStatValue shouldAnimate={shouldAnimateStats} value={stat.value} />
-                  <span>{stat.label}</span>
-                </div>
-              ))}
-            </div>
-
-            <section className="project-buyer">
-              <div className="split-grid split-grid--end">
-                <div>
-                  <p className="section-eyebrow">Za kupce</p>
-                  <h2 className="section-title section-title--medium">
-                    Sve sto je potrebno za brzu odluku.
-                  </h2>
-                </div>
-                <p className="section-copy">
-                  Dostupni stanovi, faza radova, lokacija, tehnicki detalji i
-                  kontakt za obilazak objedinjeni su na jednom mestu.
-                </p>
-              </div>
-
-              <div className="project-actions-grid">
-                {projectActions.map(({ icon: Icon, title, text, to }) => (
-                  <Link className="project-action-card" key={title} to={to}>
-                    <span className="icon-bubble">
-                      <Icon />
-                    </span>
-                    <h3>{title}</h3>
-                    <p>{text}</p>
-                    <strong>
-                      Otvori
-                      <ArrowUpRight className="icon-inline" />
-                    </strong>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          </div>
-        </div>
-      </section>
-
-      <section className="page-section page-section--surface">
-        <div className="page-container split-grid project-status">
-          <div className="project-timeline-panel">
-            <div className="project-timeline-panel__heading">
-              <Clock3 className="icon-inline" />
-              <p>Status radova</p>
-            </div>
-
-            <div className="project-timeline-list">
-              {projectTimeline.map((step, index) => (
-                <button
-                  className={activeTimelineIndex === index ? "is-active" : ""}
-                  key={step.label}
-                  onClick={() => setActiveTimelineIndex(index)}
-                  type="button"
-                >
-                  <span>{index + 1}</span>
-                  <div>
-                    <strong>{step.label}</strong>
-                    <small>{step.state}</small>
-                    <p>{step.value}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            <div className="project-active-step">
-              <p>Aktivna faza</p>
-              <h3>{activeTimelineStep.label}</h3>
-              <span>
-                {activeTimelineStep.value} - {activeTimelineStep.state}
+          <motion.div
+            className="project-showcase-hero__visual"
+            initial={motionState}
+            animate="show"
+            variants={reveal}
+            transition={{ duration: 0.65, delay: reduceMotion ? 0 : 0.15 }}
+          >
+            <div className="project-showcase-hero__image">
+              <img
+                src={projectImages.hero}
+                alt="Eksterijer projekta Heroja Pinkija 13"
+                width="818"
+                height="783"
+              />
+              <span className="project-showcase-hero__status">
+                <span />
+                Prodaja u toku
               </span>
             </div>
-          </div>
-
-          <div className="project-status__copy">
-            <p className="section-eyebrow">Prednosti projekta</p>
-            <h2 className="section-title section-title--medium">
-              Praktican objekat na dobro povezanoj lokaciji.
-            </h2>
-            <p className="section-copy">
-              Heroja Pinkija 13 je projektovan za kupce kojima su vazni
-              funkcionalan raspored, svakodnevna logistika i jasni uslovi kupovine.
-            </p>
-
-            <div className="project-highlight-list">
-              {buyerHighlights.map(({ icon: Icon, title, text }) => (
-                <div key={title}>
-                  <span className="icon-bubble">
-                    <Icon />
-                  </span>
-                  <div>
-                    <h3>{title}</h3>
-                    <p>{text}</p>
-                  </div>
+            <dl className="project-showcase-hero__facts">
+              {heroFacts.map((fact) => (
+                <div key={fact.label}>
+                  <dt>{fact.label}</dt>
+                  <dd>{fact.value}</dd>
                 </div>
               ))}
-            </div>
-          </div>
+            </dl>
+          </motion.div>
         </div>
       </section>
 
-      <section className="page-section page-section--surface project-details-section">
-        <div className="page-container split-grid">
-          <div>
+      <section className="project-showcase-overview">
+        <div className="page-container">
+          <motion.div
+            className="project-showcase-heading"
+            initial={motionState}
+            whileInView="show"
+            viewport={{ once: true, amount: 0.35 }}
+            variants={reveal}
+          >
+            <div>
+              <p className="section-eyebrow">Projekat ukratko</p>
+              <h2 className="section-title section-title--medium">
+                Najvaznije informacije na jednom mestu.
+              </h2>
+            </div>
+            <p className="section-copy">
+              Pregled cinjenica koje kupcu omogucavaju da brzo razume objekat,
+              dodatne jedinice i trenutnu dinamiku realizacije.
+            </p>
+          </motion.div>
+
+          <motion.dl
+            className="project-showcase-overview__facts"
+            initial={motionState}
+            whileInView="show"
+            viewport={{ once: true, amount: 0.15 }}
+            variants={revealContainer}
+          >
+            {overviewFacts.map(({ icon: Icon, label, value }) => (
+              <motion.div key={label} variants={reveal}>
+                <Icon />
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </motion.div>
+            ))}
+          </motion.dl>
+        </div>
+      </section>
+
+      <section className="project-showcase-benefits">
+        <div className="page-container">
+          <motion.div
+            className="project-showcase-benefits__intro"
+            initial={motionState}
+            whileInView="show"
+            viewport={{ once: true, amount: 0.35 }}
+            variants={reveal}
+          >
+            <p className="section-eyebrow">Zasto ovaj projekat</p>
+            <h2 className="section-title section-title--medium">
+              Prakticne prednosti koje se osecaju svakog dana.
+            </h2>
+          </motion.div>
+
+          <motion.div
+            className="project-showcase-benefits__grid"
+            initial={motionState}
+            whileInView="show"
+            viewport={{ once: true, amount: 0.16 }}
+            variants={revealContainer}
+          >
+            {projectBenefits.map(({ number, icon: Icon, title, text }) => (
+              <motion.article key={number} variants={reveal}>
+                <div>
+                  <span>{number}</span>
+                  <Icon />
+                </div>
+                <h3>{title}</h3>
+                <p>{text}</p>
+              </motion.article>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="project-showcase-progress">
+        <motion.div
+          className="page-container project-showcase-progress__panel"
+          initial={motionState}
+          whileInView="show"
+          viewport={{ once: true, amount: 0.16 }}
+          variants={revealContainer}
+        >
+          <motion.div className="project-showcase-progress__intro" variants={reveal}>
+            <div className="project-showcase-progress__eyebrow">
+              <Clock3 />
+              <span>Status radova</span>
+            </div>
+            <h2>Jasan pregled zavrsenih i narednih faza.</h2>
+            <p>
+              Aktuelni status je prikazan tekstualno i vizuelno, bez potrebe za
+              dodatnim otvaranjem ili izborom koraka.
+            </p>
+            <div className="project-showcase-progress__current">
+              <span>Aktuelna faza</span>
+              <strong>Temelji u toku</strong>
+            </div>
+          </motion.div>
+
+          <motion.ol
+            className="project-showcase-progress__timeline"
+            variants={revealContainer}
+          >
+            {constructionTimeline.map((step, index) => (
+              <motion.li
+                className={`project-showcase-progress__step project-showcase-progress__step--${step.variant}`}
+                key={step.title}
+                variants={reveal}
+              >
+                <div className="project-showcase-progress__marker">
+                  {step.variant === "done" ? <Check /> : <span>{index + 1}</span>}
+                </div>
+                <div>
+                  <div className="project-showcase-progress__step-head">
+                    <span>{step.date}</span>
+                    <small>{step.status}</small>
+                  </div>
+                  <h3>{step.title}</h3>
+                  <p>{step.text}</p>
+                </div>
+              </motion.li>
+            ))}
+          </motion.ol>
+        </motion.div>
+      </section>
+
+      <section className="project-showcase-apartments" id="stanovi">
+        <div className="page-container">
+          <motion.div
+            className="project-showcase-heading"
+            initial={motionState}
+            whileInView="show"
+            viewport={{ once: true, amount: 0.32 }}
+            variants={reveal}
+          >
+            <div>
+              <p className="section-eyebrow">Ponuda stanova</p>
+              <h2 className="section-title section-title--medium">
+                Pet tipova rasporeda kroz tri etaze.
+              </h2>
+            </div>
+            <div className="project-showcase-apartments__heading-copy">
+              <p className="section-copy">
+                Prikazani su reprezentativni stanovi prve etaze. Isti tipovi
+                ponavljaju se kroz vertikalu uz razlike u kvadraturi.
+              </p>
+              <span>Svi prikazani statusi su dostupni i tekstualno.</span>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="project-showcase-apartments__grid"
+            initial={motionState}
+            whileInView="show"
+            viewport={{ once: true, amount: 0.1 }}
+            variants={revealContainer}
+          >
+            {featuredApartments.map((apartment) => (
+              <motion.article
+                className="project-showcase-apartment"
+                key={apartment.number}
+                variants={reveal}
+              >
+                <Link
+                  className="project-showcase-apartment__image"
+                  to={`/projekti/heroja-pinkija-13/ponuda-stanova/${apartment.number}`}
+                  aria-label={`Detalji stana ${apartment.number}`}
+                >
+                  <img
+                    src={featuredApartmentPlans[apartment.number]}
+                    alt={`Tlocrt stana ${apartment.number}`}
+                    loading="lazy"
+                    width="520"
+                    height="430"
+                  />
+                  <span
+                    className={`status-badge status-badge--${statusVariant[apartment.status]}`}
+                  >
+                    {statusLabel[apartment.status]}
+                  </span>
+                </Link>
+                <div className="project-showcase-apartment__body">
+                  <div className="project-showcase-apartment__title">
+                    <span>Stan</span>
+                    <h3>{apartment.number}</h3>
+                  </div>
+                  <dl>
+                    <div>
+                      <dt>Sprat</dt>
+                      <dd>{apartment.floor}</dd>
+                    </div>
+                    <div>
+                      <dt>Povrsina</dt>
+                      <dd>{apartment.size}</dd>
+                    </div>
+                    <div>
+                      <dt>Struktura</dt>
+                      <dd>{apartment.rooms}</dd>
+                    </div>
+                  </dl>
+                  <Link
+                    className="project-showcase-apartment__link"
+                    to={`/projekti/heroja-pinkija-13/ponuda-stanova/${apartment.number}`}
+                  >
+                    Detalji stana
+                    <ArrowUpRight />
+                  </Link>
+                </div>
+              </motion.article>
+            ))}
+          </motion.div>
+
+          <motion.div
+            className="project-showcase-apartments__actions"
+            initial={motionState}
+            whileInView="show"
+            viewport={{ once: true, amount: 0.5 }}
+            variants={reveal}
+          >
+            <Link
+              className="site-button site-button--dark"
+              to="/projekti/heroja-pinkija-13/ponuda-stanova"
+            >
+              <Home />
+              Kompletna ponuda
+            </Link>
+            <Link
+              className="site-button site-button--outline"
+              to="/projekti/heroja-pinkija-13/spisak-stanova"
+            >
+              <FileText />
+              Spisak stanova
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="project-showcase-details">
+        <div className="page-container">
+          <motion.div
+            className="project-showcase-details__intro"
+            initial={motionState}
+            whileInView="show"
+            viewport={{ once: true, amount: 0.35 }}
+            variants={reveal}
+          >
             <p className="section-eyebrow">Detalji projekta</p>
             <h2 className="section-title section-title--medium">
-              Tehnicke i prodajne informacije.
+              Tehnicke i prodajne informacije, grupisane pregledno.
             </h2>
-            <p className="section-copy">
-              Pregled kljucnih podataka za kupce koji zele da brzo provere osnovne
-              cinjenice o objektu i trenutnoj fazi izgradnje.
-            </p>
-          </div>
+          </motion.div>
 
-          <dl className="project-details-list">
-            {projectDetails.map((detail) => (
-              <div key={detail.label}>
-                <dt>{detail.label}</dt>
-                <dd>{detail.value}</dd>
-              </div>
+          <motion.div
+            className="project-showcase-details__grid"
+            initial={motionState}
+            whileInView="show"
+            viewport={{ once: true, amount: 0.1 }}
+            variants={revealContainer}
+          >
+            {detailGroups.map((group) => (
+              <motion.article key={group.title} variants={reveal}>
+                <p>{group.eyebrow}</p>
+                <h3>{group.title}</h3>
+                <dl>
+                  {group.items.map((item) => (
+                    <div key={item.label}>
+                      <dt>{item.label}</dt>
+                      <dd>{item.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </motion.article>
             ))}
-          </dl>
+          </motion.div>
         </div>
       </section>
 
-      <ApartmentAvailability apartments={apartments} compactHeading />
+      <section className="project-showcase-location">
+        <div className="page-container project-showcase-location__grid">
+          <motion.div
+            className="project-showcase-location__media"
+            initial={motionState}
+            whileInView="show"
+            viewport={{ once: true, amount: 0.25 }}
+            variants={reveal}
+          >
+            <img
+              src={projectImages.works}
+              alt="Radovi na projektu Heroja Pinkija 13"
+              width="1663"
+              height="1247"
+              loading="lazy"
+            />
+            <span>
+              <MapPin />
+              Heroja Pinkija 13
+            </span>
+          </motion.div>
 
-      <section className="project-cta">
-        <div className="page-container project-cta__inner">
-          <div>
-            <p className="section-eyebrow">Prodaja</p>
+          <motion.div
+            className="project-showcase-location__copy"
+            initial={motionState}
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={revealContainer}
+          >
+            <motion.p className="section-eyebrow" variants={reveal}>
+              Lokacija
+            </motion.p>
+            <motion.h2
+              className="section-title section-title--medium"
+              variants={reveal}
+            >
+              Pocetak Telepa, povezan sa gradom.
+            </motion.h2>
+            <motion.p className="section-copy" variants={reveal}>
+              Objekat se nalazi na adresi Heroja Pinkija 13 u Novom Sadu, u delu
+              Telepa sa linijom 12 ka centru i svakodnevnim sadrzajima u blizini.
+            </motion.p>
+            <motion.ul variants={reveal}>
+              <li>
+                <CheckCircle2 />
+                Lidl i Gimnazija Laza Kostic u blizini
+              </li>
+              <li>
+                <CheckCircle2 />
+                Kej, Ribarac, Sodros i parkovi
+              </li>
+              <li>
+                <CheckCircle2 />
+                Direktna autobuska veza sa centrom
+              </li>
+            </motion.ul>
+            <motion.div variants={reveal}>
+              <Link className="site-button site-button--outline" to="/lokacija">
+                <MapPin />
+                Pogledajte lokaciju
+              </Link>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="project-showcase-cta">
+        <motion.div
+          className="page-container project-showcase-cta__inner"
+          initial={motionState}
+          whileInView="show"
+          viewport={{ once: true, amount: 0.4 }}
+          variants={revealContainer}
+        >
+          <motion.div variants={reveal}>
+            <p className="section-eyebrow">Sledeci korak</p>
             <h2>Izaberite stan ili zakazite razgovor sa prodajom.</h2>
-          </div>
-          <div>
+            <p>
+              Proverite kvadrature i rasporede ili nam se obratite za cenu,
+              uslove kupovine i termin obilaska.
+            </p>
+          </motion.div>
+          <motion.div className="project-showcase-cta__actions" variants={reveal}>
             <Link
               className="site-button site-button--dark"
               to="/projekti/heroja-pinkija-13/ponuda-stanova"
@@ -387,13 +621,13 @@ export const HerojaPinkija13Page = () => {
               <Home />
               Ponuda stanova
             </Link>
-            <Link className="site-button site-button--outline" to="/kontakt">
+            <Link className="project-showcase-cta__link" to="/kontakt">
               <CalendarDays />
-              Kontaktirajte nas
+              Zakazite obilazak
               <ArrowUpRight />
             </Link>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </section>
     </main>
   );

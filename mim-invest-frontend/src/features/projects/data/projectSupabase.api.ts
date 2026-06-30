@@ -63,7 +63,8 @@ export async function fetchApartments() {
       description: unit.full_description ?? fallback.description,
       bathrooms: unit.bathrooms ?? fallback.bathrooms,
       terrace: unit.terrace ?? fallback.terrace,
-      images: unit.gallery_images && Array.isArray(unit.gallery_images) ? fallback.images : fallback.images,
+      heroFloorPlan: fallback.heroFloorPlan,
+      projectFloorPlan: fallback.projectFloorPlan,
       plan: [
         { label: "Ukupna povrsina", value: area },
         { label: "Struktura", value: rooms },
