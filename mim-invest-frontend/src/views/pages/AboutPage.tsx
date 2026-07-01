@@ -2,9 +2,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowUpRight,
   BadgeCheck,
-  Building2,
   CalendarDays,
-  FileText,
   Handshake,
   HardHat,
   Home,
@@ -17,7 +15,7 @@ const aboutHeroImage = "/images/heroja-pinkija-13/gradilisna-tabla.jpg";
 const projectImage = "/images/heroja-pinkija-13/radovi-u-toku.jpg";
 
 const heroHighlights = [
-  { value: "Heroja Pinkija 13", label: "prvi projekat kompanije" },
+  { value: "Marko i Milan Potrebic", label: "direktno kod investitora" },
   { value: "15 stanova", label: "pregledna ponuda" },
   { value: "15.11.2027.", label: "planirani zavrsetak" },
 ];
@@ -25,49 +23,35 @@ const heroHighlights = [
 const values = [
   {
     icon: BadgeCheck,
-    title: "Jasne informacije",
-    text: "Kupac brzo dolazi do podataka o projektu, fazi radova, stanovima i nacinu kupovine.",
+    title: "Realne fotografije radova",
+    text: "Projekat prikazujemo kroz stvarne slike sa gradilista, bez zamene za genericke vizuale.",
   },
   {
     icon: ShieldCheck,
-    title: "Odgovoran pristup",
-    text: "Projekat predstavljamo realno, sa rokovima i informacijama koje mogu da se isprate izvedbom.",
+    title: "Stanovi, kvadrature i tlocrti",
+    text: "Kupac moze da uporedi rasporede, povrsine i strukture pre prvog razgovora.",
   },
   {
     icon: HardHat,
-    title: "Kvalitet izvedbe",
-    text: "Paznju usmeravamo na funkcionalne rasporede, pouzdana resenja i svakodnevni komfor.",
+    title: "Statusi i rokovi",
+    text: "Ponuda stanova i planirani rok zavrsetka prikazani su jasno, uz kontakt za proveru detalja.",
   },
   {
     icon: Handshake,
-    title: "Korektna saradnja",
-    text: "Komunikacija sa kupcima i partnerima ostaje direktna, uredna i korisna kroz svaku fazu.",
-  },
-];
-
-const workSteps = [
-  {
-    title: "Planiranje",
-    text: "Lokacija, konstrukcija, organizacija stanova i rokovi sagledavaju se kao jedna celina.",
-  },
-  {
-    title: "Izvedba",
-    text: "Radovi se prate fazno, uz pouzdane izvodjace i resenja koja imaju prakticnu vrednost.",
-  },
-  {
-    title: "Prodaja",
-    text: "Kvadrature, strukture i statusi prikazani su jasno, uz direktan kontakt sa prodajom.",
+    title: "Direktan dogovor",
+    text: "Za dostupnost, uslove kupovine, obilazak i dodatne opcije razgovarate direktno sa investitorima.",
   },
 ];
 
 const projectProof = [
-  "Funkcionalni rasporedi sa pet stanova po etazi.",
-  "Javno prikazane kvadrature, strukture i statusi jedinica.",
-  "Definisan tok radova i planirani rok zavrsetka.",
+  "Otvoren prikaz projekta od prvog koraka.",
+  "Jasna ponuda 15 stanova sa tlocrtima, kvadraturama i statusima.",
+  "Direktan kontakt sa Markom i Milanom Potrebicem tokom kupovine.",
+  "Parking i ostave proveravaju se direktno kroz razgovor o kupovini.",
 ];
 
 const projectFacts = [
-  { label: "Investitor", value: "M & M Gradnja" },
+  { label: "Investitori", value: "Marko i Milan Potrebic" },
   { label: "Lokacija", value: "Heroja Pinkija 13, Novi Sad" },
   { label: "Struktura", value: "PO + PR + 3" },
   { label: "Trenutna faza", value: "Iskop zavrsen, temelji u toku" },
@@ -106,24 +90,25 @@ export const AboutPage = () => {
               O nama
             </motion.p>
             <motion.h1 className="section-title" variants={reveal}>
-              Gradimo stanove sa jasnom idejom i merom.
+              Prvi projekat, otvoren pristup.
             </motion.h1>
             <motion.p className="section-copy section-copy--large" variants={reveal}>
-              M & M Gradnja razvija stambene projekte u kojima su funkcionalnost,
-              kontrolisana realizacija i korektan odnos prema kupcu deo istog
-              procesa.
+              M & M Gradnja je porodicno vodjen investitorski projekat iza kog
+              stoje Marko i Milan Potrebic. Heroja Pinkija 13 razvijamo kao prvi
+              projekat, sa fokusom na jasnu ponudu stanova, direktnu komunikaciju
+              i realno prikazane informacije.
             </motion.p>
             <motion.div className="page-actions" variants={reveal}>
               <Link
                 className="site-button site-button--accent"
-                to="/projekti/heroja-pinkija-13/o-projektu"
+                to="/projekti/heroja-pinkija-13/ponuda-stanova"
               >
-                <Building2 />
-                Pogledajte projekat
+                <Home />
+                Pogledajte ponudu stanova
               </Link>
               <Link className="site-button site-button--outline" to="/kontakt">
                 <MessageCircle />
-                Kontaktirajte nas
+                Kontaktirajte investitore
               </Link>
             </motion.div>
           </motion.div>
@@ -166,21 +151,22 @@ export const AboutPage = () => {
           variants={revealContainer}
         >
           <motion.div variants={reveal}>
-            <p className="section-eyebrow">Nacin razmisljanja</p>
+            <p className="section-eyebrow">Ko stoji iza projekta</p>
             <p className="about-philosophy__statement">
-              Dobar stan ne pocinje kvadraturom, vec odlukama koje svakodnevni
-              zivot cine jednostavnijim.
+              Direktno sa investitorima.
             </p>
           </motion.div>
 
           <motion.div className="about-philosophy__copy" variants={reveal}>
             <p>
-              Zato projekte posmatramo kroz celinu: od izbora lokacije i
-              organizacije prostora do nacina na koji kupac dolazi do informacija.
+              Heroja Pinkija 13 je prvi projekat M & M Gradnja i zato ga
+              predstavljamo otvoreno: kroz realne informacije, dostupne tlocrte,
+              prikaz stanova i jasan kontakt sa investitorima.
             </p>
             <blockquote>
-              Gradnja treba da bude razumljiva i pre useljenja — kroz uredne
-              podatke, realne rokove i komunikaciju bez nepotrebne komplikacije.
+              Kupac ne prolazi kroz nepotrebne posrednike. Pitanja o stanu,
+              dostupnosti, uslovima kupovine i obilasku idu direktno ka ljudima
+              koji stoje iza projekta.
             </blockquote>
           </motion.div>
         </motion.div>
@@ -196,14 +182,14 @@ export const AboutPage = () => {
             variants={reveal}
           >
             <div>
-              <p className="section-eyebrow">Vrednosti</p>
+              <p className="section-eyebrow">Zasto ovakav pristup</p>
               <h2 className="section-title section-title--medium">
-                Jednostavan pristup, bez velikih reci.
+                Poverenje kroz jasne informacije.
               </h2>
             </div>
             <p className="section-copy">
-              Principi rada treba da budu vidljivi u projektu, dokumentaciji i
-              svakom razgovoru sa kupcem.
+              Detaljna dokumentacija ostaje na stranici projekta, dok ovde
+              izdvajamo ono sto kupcu odmah pomaze da razume ponudu.
             </p>
           </motion.div>
 
@@ -230,42 +216,6 @@ export const AboutPage = () => {
             ))}
           </motion.div>
         </div>
-      </section>
-
-      <section className="about-process">
-        <motion.div
-          className="page-container about-process__panel"
-          initial={motionState}
-          whileInView="show"
-          viewport={{ once: true, amount: 0.18 }}
-          variants={revealContainer}
-        >
-          <motion.div className="about-process__intro" variants={reveal}>
-            <div className="about-process__eyebrow">
-              <FileText />
-              <span>Kako radimo</span>
-            </div>
-            <h2>Od prve odluke do jasne ponude.</h2>
-            <p>
-              Svaka faza ima svoju svrhu, odgovornost i informacije koje moraju
-              biti dostupne u pravom trenutku.
-            </p>
-          </motion.div>
-
-          <motion.ol className="about-process__steps" variants={revealContainer}>
-            {workSteps.map((step, index) => (
-              <motion.li key={step.title} variants={reveal}>
-                <span className="about-process__number">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <div>
-                  <h3>{step.title}</h3>
-                  <p>{step.text}</p>
-                </div>
-              </motion.li>
-            ))}
-          </motion.ol>
-        </motion.div>
       </section>
 
       <section className="about-project">
@@ -298,14 +248,15 @@ export const AboutPage = () => {
             variants={revealContainer}
           >
             <motion.div variants={reveal}>
-              <p className="section-eyebrow">Prvi projekat</p>
+              <p className="section-eyebrow">Heroja Pinkija 13 kao prvi korak</p>
               <h2 className="section-title section-title--medium">
-                Pristup koji se vidi u konkretnim odlukama.
+                Heroja Pinkija 13 kao prvi korak.
               </h2>
               <p className="section-copy">
-                Heroja Pinkija 13 je prvi projekat kroz koji M & M Gradnja
-                primenjuje principe pregledne ponude, funkcionalnog stanovanja i
-                kontrolisane realizacije.
+                Ne predstavljamo se kroz dug portfolio koji ne postoji. Heroja
+                Pinkija 13 je osnova naseg buduceg rada: pregledna ponuda,
+                funkcionalni stanovi i komunikacija koja kupcu pomaze da donese
+                mirnu odluku.
               </p>
             </motion.div>
 
@@ -329,7 +280,7 @@ export const AboutPage = () => {
 
             <motion.div className="about-project__link" variants={reveal}>
               <Link to="/projekti/heroja-pinkija-13/o-projektu">
-                Detalji projekta
+                Pogledajte detalje projekta
                 <ArrowUpRight />
               </Link>
             </motion.div>
@@ -347,10 +298,11 @@ export const AboutPage = () => {
         >
           <motion.div variants={reveal}>
             <p className="section-eyebrow">Kupci u fokusu</p>
-            <h2>Dobre odluke pocinju potpunim informacijama.</h2>
+            <h2>Dostupni stanovi i direktan razgovor.</h2>
             <p>
-              Proverite ponudu stanova ili razgovarajte direktno sa prodajom o
-              dostupnosti, uslovima kupovine i obilasku projekta.
+              Ponuda je postavljena tako da lako uporedite stanove, proverite
+              tlocrte i posaljete upit za konkretnu jedinicu. Garazna mesta i
+              ostave su dodatne opcije i kupuju se odvojeno.
             </p>
           </motion.div>
 

@@ -1,3 +1,4 @@
+import type { CSSProperties, PointerEvent } from "react";
 import { useEffect, useId, useMemo, useState } from "react";
 import {
   ArrowRight,
@@ -21,6 +22,7 @@ import {
   apartments,
   contactEmail,
   contactPhone,
+  locationAdvantages,
   statusLabel,
   statusVariant,
 } from "../../../../features/projects/data/herojaPinkija13.data";
@@ -214,16 +216,7 @@ export const ApartmentDetailsPage = () => {
             <ApartmentFloorPlanFigure apartment={apartment} />
           </div>
 
-          <div className="apartment-layout-details">
-            <RoomSchedule
-              apartment={apartment}
-              activeRoomId={activeRoomId}
-              onActiveRoomChange={setActiveRoomId}
-            />
-            <PurchasePanel apartment={apartment} subject={subject} />
-          </div>
-
-          <ApartmentFeatures apartment={apartment} />
+          <ApartmentPurchaseGuide apartment={apartment} subject={subject} />
         </div>
       </section>
 
@@ -331,6 +324,55 @@ const ApartmentFacts = ({ apartment }: { apartment: Apartment }) => {
 type ActiveRoomProps = {
   activeRoomId: string | null;
   onActiveRoomChange: (roomId: string | null) => void;
+};
+
+const floorPlanZoomScale = 1.85;
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
+
+const updateFloorPlanZoom = (event: PointerEvent<HTMLDivElement>) => {
+  const stage = event.currentTarget;
+  const image = stage.querySelector<HTMLImageElement>("img");
+
+  if (!image) {
+    return;
+  }
+
+  const stageBounds = stage.getBoundingClientRect();
+  const imageBounds = image.getBoundingClientRect();
+  const naturalWidth = image.naturalWidth || Number(image.getAttribute("width")) || 1;
+  const naturalHeight = image.naturalHeight || Number(image.getAttribute("height")) || 1;
+  const imageRatio = naturalWidth / naturalHeight;
+  const frameRatio = imageBounds.width / imageBounds.height;
+
+  let renderedWidth = imageBounds.width;
+  let renderedHeight = imageBounds.height;
+  let renderedLeft = imageBounds.left;
+  let renderedTop = imageBounds.top;
+
+  if (imageRatio > frameRatio) {
+    renderedHeight = renderedWidth / imageRatio;
+    renderedTop += (imageBounds.height - renderedHeight) / 2;
+  } else {
+    renderedWidth = renderedHeight * imageRatio;
+    renderedLeft += (imageBounds.width - renderedWidth) / 2;
+  }
+
+  const lensWidth = parseFloat(getComputedStyle(stage, "::before").width) || 230;
+  const lensRadius = lensWidth / 2;
+  const cursorX = event.clientX - stageBounds.left;
+  const cursorY = event.clientY - stageBounds.top;
+  const imageX = clamp(event.clientX - renderedLeft, 0, renderedWidth);
+  const imageY = clamp(event.clientY - renderedTop, 0, renderedHeight);
+
+  stage.dataset.zoomActive = "true";
+  stage.style.setProperty("--zoom-x", `${cursorX}px`);
+  stage.style.setProperty("--zoom-y", `${cursorY}px`);
+  stage.style.setProperty("--zoom-bg-width", `${renderedWidth * floorPlanZoomScale}px`);
+  stage.style.setProperty("--zoom-bg-height", `${renderedHeight * floorPlanZoomScale}px`);
+  stage.style.setProperty("--zoom-bg-x", `${lensRadius - imageX * floorPlanZoomScale}px`);
+  stage.style.setProperty("--zoom-bg-y", `${lensRadius - imageY * floorPlanZoomScale}px`);
 };
 
 const PlanPanel = ({
@@ -471,6 +513,18 @@ const ApartmentFloorPlanFigure = ({ apartment }: { apartment: Apartment }) => (
     </div>
     <div
       className="apartment-layout-panel__stage apartment-floor-plan__media"
+      onPointerEnter={(event: PointerEvent<HTMLDivElement>) => {
+        updateFloorPlanZoom(event);
+      }}
+      onPointerMove={updateFloorPlanZoom}
+      onPointerLeave={(event: PointerEvent<HTMLDivElement>) => {
+        delete event.currentTarget.dataset.zoomActive;
+      }}
+      style={
+        {
+          "--zoom-image": `url("${apartment.projectFloorPlan.src}")`,
+        } as CSSProperties
+      }
     >
       <img
         src={apartment.projectFloorPlan.src}
@@ -487,41 +541,79 @@ const ApartmentFloorPlanFigure = ({ apartment }: { apartment: Apartment }) => (
   </figure>
 );
 
-const RoomSchedule = ({
+const ApartmentPurchaseGuide = ({
   apartment,
-  activeRoomId,
-  onActiveRoomChange,
-}: { apartment: Apartment } & ActiveRoomProps) => (
-  <section className="room-schedule" aria-labelledby="room-schedule-title">
-    <div className="room-schedule__heading">
-      <p className="section-eyebrow">Program prostorija</p>
-      <h3 id="room-schedule-title">Povrsine, prostoriju po prostoriju.</h3>
+  subject,
+}: {
+  apartment: Apartment;
+  subject: string;
+}) => (
+  <section className="apartment-purchase-guide" aria-labelledby="apartment-purchase-guide-title">
+    <div className="apartment-purchase-guide__advantages">
+      <div className="apartment-purchase-guide__intro">
+        <div>
+          <p className="section-eyebrow">Prednosti stana</p>
+          <h3 id="apartment-purchase-guide-title">Lokacija i komfor na jednom mestu.</h3>
+        </div>
+        <p>
+          Stan se posmatra kroz svakodnevni ritam: gde se nalazi, koliko je lako
+          uporediti raspored i koje prakticne karakteristike prate kupovinu.
+        </p>
+      </div>
+
+      <div className="apartment-advantage-groups">
+        <article className="apartment-advantage-group">
+          <div>
+            <span>Lokacija</span>
+            <h4>Okruzenje za svakodnevni zivot</h4>
+          </div>
+          <ul className="apartment-location-list">
+            {locationAdvantages.map((advantage) => (
+              <li key={advantage}>
+                <CheckCircle2 />
+                <span>{advantage}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+
+        <article className="apartment-advantage-group">
+          <div>
+            <span>Stan</span>
+            <h4>Karakteristike koje olaksavaju izbor</h4>
+          </div>
+          <ul className="apartment-feature-list">
+            {apartment.features.map((feature) => (
+              <li key={feature}>
+                <CheckCircle2 />
+                <span>{feature}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+      </div>
+
+      <dl className="apartment-context-facts">
+        <div>
+          <dt>Lokacija</dt>
+          <dd>Heroja Pinkija 13</dd>
+        </div>
+        <div>
+          <dt>Izgradnja</dt>
+          <dd>u toku od 2026.</dd>
+        </div>
+        <div>
+          <dt>Planirano</dt>
+          <dd>15.11.2027.</dd>
+        </div>
+        <div>
+          <dt>Opcije</dt>
+          <dd>garazna mesta i ostave</dd>
+        </div>
+      </dl>
     </div>
-    <ol>
-      {apartment.roomAreas.map((room) => (
-        <li key={room.id}>
-          <button
-            type="button"
-            className={activeRoomId === room.id ? "is-active" : ""}
-            aria-pressed={activeRoomId === room.id}
-            onBlur={() => onActiveRoomChange(null)}
-            onClick={() => onActiveRoomChange(activeRoomId === room.id ? null : room.id)}
-            onFocus={() => onActiveRoomChange(room.id)}
-            onMouseEnter={() => onActiveRoomChange(room.id)}
-            onMouseLeave={() => onActiveRoomChange(null)}
-          >
-            <span>{room.number?.padStart(2, "0")}</span>
-            <strong>{room.label}</strong>
-            <i aria-hidden="true" />
-            <b>{room.area}</b>
-          </button>
-        </li>
-      ))}
-    </ol>
-    <div className="room-schedule__total">
-      <span>Ukupna povrsina</span>
-      <strong>{apartment.size}</strong>
-    </div>
+
+    <PurchasePanel apartment={apartment} subject={subject} />
   </section>
 );
 
@@ -533,9 +625,10 @@ const PurchasePanel = ({
   subject: string;
 }) => (
   <aside className="apartment-purchase" aria-labelledby="apartment-purchase-title">
-    <div>
+    <div className="apartment-purchase__copy">
       <p className="section-eyebrow">Informacije o kupovini</p>
-      <h3 id="apartment-purchase-title">Jasan sledeci korak.</h3>
+      <h3 id="apartment-purchase-title">Direktan sledeci korak.</h3>
+      <p>{apartment.availabilityNote}</p>
     </div>
     <dl>
       <PurchaseRow label="Cena" value={apartment.priceRange} />
@@ -543,36 +636,20 @@ const PurchasePanel = ({
       <PurchaseRow label="Garazno mesto" value="Odvojena kupovina" />
       <PurchaseRow label="Ostava" value="Odvojena kupovina" />
     </dl>
-    <p>{apartment.availabilityNote}</p>
-    <a
-      className="site-button site-button--accent"
-      href={`mailto:${contactEmail}?subject=${subject}`}
-    >
-      <CalendarDays />
-      Zakazite razgovor
-    </a>
-    <a className="apartment-purchase__phone" href={`tel:${contactPhone}`}>
-      <Phone />
-      {contactPhone}
-    </a>
-  </aside>
-);
-
-const ApartmentFeatures = ({ apartment }: { apartment: Apartment }) => (
-  <section className="apartment-features" aria-labelledby="apartment-features-title">
-    <div>
-      <p className="section-eyebrow">Dodatne karakteristike</p>
-      <h3 id="apartment-features-title">Komfor koji prati svakodnevni zivot.</h3>
+    <div className="apartment-purchase__actions">
+      <a
+        className="site-button site-button--accent"
+        href={`mailto:${contactEmail}?subject=${subject}`}
+      >
+        <CalendarDays />
+        Zakazite razgovor
+      </a>
+      <a className="apartment-purchase__phone" href={`tel:${contactPhone}`}>
+        <Phone />
+        {contactPhone}
+      </a>
     </div>
-    <ul>
-      {apartment.features.map((feature) => (
-        <li key={feature}>
-          <CheckCircle2 />
-          <span>{feature}</span>
-        </li>
-      ))}
-    </ul>
-  </section>
+  </aside>
 );
 
 const PurchaseRow = ({ label, value }: { label: string; value: string }) => (

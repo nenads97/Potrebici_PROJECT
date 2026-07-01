@@ -234,12 +234,12 @@ export const ApartmentAvailability = ({
               key={apartment.number}
               to={`/projekti/heroja-pinkija-13/ponuda-stanova/${apartment.number}`}
             >
-              <div className="apartment-card__image">
-                <div className="apartment-card__visual" aria-hidden="true">
-                  <span>Stan</span>
-                  <strong>{apartment.number.padStart(2, "0")}</strong>
-                  <small>{apartment.rooms}</small>
-                </div>
+              <div className="apartment-card__image apartment-card__image--floor-plan">
+                <img
+                  src={apartment.heroFloorPlan.src}
+                  alt={apartment.heroFloorPlan.alt}
+                  loading="lazy"
+                />
                 <span className={`status-badge status-badge--${statusVariant[apartment.status]}`}>
                   {statusLabel[apartment.status]}
                 </span>

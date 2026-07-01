@@ -48,9 +48,6 @@ export const MainLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isHome = location.pathname === "/";
-  const isApartmentDetail = /^\/projekti\/heroja-pinkija-13\/ponuda-stanova\/[^/]+$/.test(
-    location.pathname,
-  );
   const currentYear = new Date().getFullYear();
   const [isNavOpen, setIsNavOpen] = useState(false);
 
@@ -102,7 +99,7 @@ export const MainLayout = () => {
         </div>
       </header>
 
-      {!isHome && !isApartmentDetail ? (
+      {!isHome ? (
         <button
           className="page-back-button"
           type="button"
