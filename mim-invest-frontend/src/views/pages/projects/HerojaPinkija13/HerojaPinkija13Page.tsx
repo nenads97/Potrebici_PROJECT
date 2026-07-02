@@ -17,12 +17,14 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { ContactModalButton } from "../../../../features/inquiries/components/ContactModal";
 import {
   apartments,
   projectInfo,
   statusLabel,
   statusVariant,
 } from "../../../../features/projects/data/herojaPinkija13.data";
+import { PageMeta } from "../../../../shared/components/PageMeta";
 
 const projectImages = {
   hero: "/images/heroja-pinkija-13/gradilisna-tabla.jpg",
@@ -165,6 +167,19 @@ const featuredApartmentPlans: Record<string, string> = {
   "5": "/images/apartment-plans/showcase-stan-5-10-15.png",
 };
 
+const projectContactModal = {
+  eyebrow: "Heroja Pinkija 13",
+  title: "Pisite nam za informacije o projektu",
+  description:
+    "Posaljite upit za cenu, dostupnost stanova, uslove kupovine ili termin obilaska. Prodajni tim ce vam se javiti sa konkretnim informacijama.",
+  inquiryType: "availability" as const,
+  details: [
+    { label: "Projekat", value: "Heroja Pinkija 13" },
+    { label: "Lokacija", value: "Pocetak Telepa" },
+  ],
+  messagePlaceholder: "Napisite koji stan, kvadratura ili termin obilaska vas zanima.",
+};
+
 const reveal = {
   hidden: { opacity: 0, y: 22 },
   show: { opacity: 1, y: 0 },
@@ -186,6 +201,10 @@ export const HerojaPinkija13Page = () => {
 
   return (
     <main className="project-showcase">
+      <PageMeta
+        title="Heroja Pinkija 13 | M & M Gradnja"
+        description="Pregled projekta Heroja Pinkija 13 u Novom Sadu: stanovi, lokacija, rokovi, status radova i direktan upit prodaji."
+      />
       <section className="project-showcase-hero">
         <div className="page-container project-showcase-hero__grid">
           <motion.div
@@ -216,10 +235,13 @@ export const HerojaPinkija13Page = () => {
                 <Home />
                 Pogledajte stanove
               </Link>
-              <Link className="site-button site-button--outline" to="/kontakt">
+              <ContactModalButton
+                className="site-button site-button--outline"
+                modalOptions={projectContactModal}
+              >
                 <CalendarDays />
-                Zakazite obilazak
-              </Link>
+                Pisite nam
+              </ContactModalButton>
             </motion.div>
           </motion.div>
 
@@ -621,11 +643,14 @@ export const HerojaPinkija13Page = () => {
               <Home />
               Ponuda stanova
             </Link>
-            <Link className="project-showcase-cta__link" to="/kontakt">
+            <ContactModalButton
+              className="project-showcase-cta__link"
+              modalOptions={projectContactModal}
+            >
               <CalendarDays />
-              Zakazite obilazak
+              Pisite nam
               <ArrowUpRight />
-            </Link>
+            </ContactModalButton>
           </motion.div>
         </motion.div>
       </section>

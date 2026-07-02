@@ -13,7 +13,21 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-import { contactEmail, contactPhone } from "../../features/projects/data/herojaPinkija13.data";
+import { ContactModalButton } from "../../features/inquiries/components/ContactModal";
+import { contactPhone } from "../../features/projects/data/herojaPinkija13.data";
+import { PageMeta } from "../../shared/components/PageMeta";
+
+const privacyContactModal = {
+  eyebrow: "Politika privatnosti",
+  title: "Pitanje u vezi sa obradom podataka",
+  description:
+    "Napisite na koji upit ili komunikaciju se pitanje odnosi. Javicemo vam se sa odgovorom ili narednim koracima.",
+  submitLabel: "Posaljite zahtev",
+  successMessage: "Hvala. Zahtev je poslat i kontaktiracemo vas povodom obrade podataka.",
+  inquiryType: "general" as const,
+  details: [{ label: "Tema", value: "Politika privatnosti" }],
+  messagePlaceholder: "Napisite zahtev za pristup, ispravku, brisanje ili pitanje o obradi podataka.",
+};
 
 const heroHighlights = [
   { value: "Transparentno", label: "objasnjena svrha obrade" },
@@ -112,6 +126,10 @@ export const PrivacyPolicyPage = () => {
 
   return (
     <main className="privacy-page">
+      <PageMeta
+        title="Politika privatnosti | M & M Gradnja"
+        description="Saznajte kako M & M Gradnja obradjuje podatke poslate kroz upite za stanove, obilazak projekta i kontakt sa prodajom."
+      />
       <section className="privacy-hero">
         <div className="page-container privacy-hero__grid">
           <motion.div
@@ -132,10 +150,13 @@ export const PrivacyPolicyPage = () => {
               obilazak projekta ili kontakt sa prodajnim timom.
             </motion.p>
             <motion.div className="page-actions" variants={reveal}>
-              <a className="site-button site-button--accent" href={`mailto:${contactEmail}`}>
+              <ContactModalButton
+                className="site-button site-button--accent"
+                modalOptions={privacyContactModal}
+              >
                 <Mail />
                 Pisite nam
-              </a>
+              </ContactModalButton>
               <a className="site-button site-button--outline" href={`tel:${contactPhone}`}>
                 <Phone />
                 Pozovite prodaju
@@ -338,10 +359,13 @@ export const PrivacyPolicyPage = () => {
           </motion.div>
 
           <motion.div className="privacy-contact__actions" variants={reveal}>
-            <a className="site-button site-button--dark" href={`mailto:${contactEmail}`}>
+            <ContactModalButton
+              className="site-button site-button--dark"
+              modalOptions={privacyContactModal}
+            >
               <Mail />
               Posaljite zahtev
-            </a>
+            </ContactModalButton>
             <a className="privacy-contact__link" href={`tel:${contactPhone}`}>
               <Phone />
               {contactPhone}

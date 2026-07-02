@@ -11,6 +11,9 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { ContactModalButton } from "../../features/inquiries/components/ContactModal";
+import { PageMeta } from "../../shared/components/PageMeta";
+
 const aboutHeroImage = "/images/heroja-pinkija-13/gradilisna-tabla.jpg";
 const projectImage = "/images/heroja-pinkija-13/radovi-u-toku.jpg";
 
@@ -78,6 +81,10 @@ export const AboutPage = () => {
 
   return (
     <main className="about-page">
+      <PageMeta
+        title="O nama | M & M Gradnja"
+        description="Upoznajte M & M Gradnja, investitore projekta Heroja Pinkija 13, sa fokusom na transparentnu ponudu stanova i direktnu komunikaciju."
+      />
       <section className="about-hero">
         <div className="page-container about-hero__grid">
           <motion.div
@@ -106,10 +113,10 @@ export const AboutPage = () => {
                 <Home />
                 Pogledajte ponudu stanova
               </Link>
-              <Link className="site-button site-button--outline" to="/kontakt">
+              <ContactModalButton className="site-button site-button--outline">
                 <MessageCircle />
-                Kontaktirajte investitore
-              </Link>
+                Pisite nam
+              </ContactModalButton>
             </motion.div>
           </motion.div>
 
@@ -314,11 +321,11 @@ export const AboutPage = () => {
               <Home />
               Ponuda stanova
             </Link>
-            <Link className="about-trust__text-link" to="/kontakt">
+            <ContactModalButton className="about-trust__text-link">
               <CalendarDays />
-              Zakazite razgovor
+              Pisite nam
               <ArrowUpRight />
-            </Link>
+            </ContactModalButton>
           </motion.div>
         </motion.div>
       </section>

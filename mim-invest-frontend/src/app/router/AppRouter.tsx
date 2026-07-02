@@ -44,6 +44,10 @@ const ApartmentsPage = lazyNamed(
   () => import("../../views/pages/projects/HerojaPinkija13/ApartmentsPage"),
   "ApartmentsPage",
 );
+const ApartmentsTablePage = lazyNamed(
+  () => import("../../views/pages/projects/HerojaPinkija13/ApartmentsPage"),
+  "ApartmentsTablePage",
+);
 const HerojaPinkija13Page = lazyNamed(
   () => import("../../views/pages/projects/HerojaPinkija13/HerojaPinkija13Page"),
   "HerojaPinkija13Page",
@@ -139,6 +143,10 @@ const AppRouter = () => {
             <Route path="/lokacija" element={<LocationPage />} />
             <Route path="/politika-privatnosti" element={<PrivacyPolicyPage />} />
             <Route path="/apartmani/:apartmentNumber" element={<LegacyApartmentRedirect />} />
+            <Route
+              path="/projekti"
+              element={<Navigate replace to="/projekti/heroja-pinkija-13/o-projektu" />}
+            />
             <Route path="/projekti/heroja-pinkija-13" element={<HerojaPinkija13Page />} />
             <Route
               path="/projekti/heroja-pinkija-13/o-projektu"
@@ -154,7 +162,7 @@ const AppRouter = () => {
             />
             <Route
               path="/projekti/heroja-pinkija-13/spisak-stanova"
-              element={<ApartmentsPage />}
+              element={<ApartmentsTablePage />}
             />
           </Route>
         </Routes>

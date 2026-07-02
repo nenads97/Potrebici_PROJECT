@@ -1,6 +1,8 @@
 import { Building2, CalendarDays, Car, Mail, MapPin, Navigation, Phone, Trees } from "lucide-react";
 
+import { ContactModalButton } from "../../features/inquiries/components/ContactModal";
 import { contactEmail, contactPhone } from "../../features/projects/data/herojaPinkija13.data";
+import { PageMeta } from "../../shared/components/PageMeta";
 
 const location = {
   address: "Heroja Pinkija 13, Novi Sad",
@@ -28,10 +30,12 @@ const locationBenefits = [
 ];
 
 export const LocationPage = () => {
-  const viewingSubject = encodeURIComponent(`Zakazivanje obilaska lokacije ${location.address}`);
-
   return (
     <main>
+      <PageMeta
+        title="Lokacija Heroja Pinkija 13 | M & M Gradnja"
+        description="Pogledajte lokaciju projekta Heroja Pinkija 13 na pocetku Telepa u Novom Sadu, uz vezu sa gradom i sadrzaje u blizini."
+      />
       <section className="page-section page-section--surface">
         <div className="page-container split-grid split-grid--center">
           <div className="fade-up">
@@ -48,10 +52,21 @@ export const LocationPage = () => {
                 <Navigation />
                 Otvori Google Maps
               </a>
-              <a className="site-button site-button--outline" href={`mailto:${contactEmail}?subject=${viewingSubject}`}>
+              <ContactModalButton
+                className="site-button site-button--outline"
+                modalOptions={{
+                  eyebrow: "Lokacija projekta",
+                  title: "Pitajte nas za obilazak lokacije",
+                  description:
+                    "Ostavite kontakt i napisite kada biste voleli da obidjete lokaciju ili dobijete dodatne informacije o projektu.",
+                  inquiryType: "viewing",
+                  details: [{ label: "Lokacija", value: location.address }],
+                  messagePlaceholder: "Napisite pitanje o lokaciji ili predlog termina za obilazak.",
+                }}
+              >
                 <CalendarDays />
                 Pisite prodaji
-              </a>
+              </ContactModalButton>
             </div>
           </div>
 

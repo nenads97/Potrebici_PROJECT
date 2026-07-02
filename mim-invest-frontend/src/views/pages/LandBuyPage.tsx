@@ -16,6 +16,7 @@ import {
 
 import { contactEmail, contactPhone } from "../../features/projects/data/herojaPinkija13.data";
 import { submitLandOffer } from "../../features/inquiries/api/inquiryFunctions.api";
+import { PageMeta } from "../../shared/components/PageMeta";
 
 const landHeroImage = "/images/kupovina-placeva-hero.png";
 
@@ -71,6 +72,10 @@ const fadeUp = {
 export const LandBuyPage = () => {
   return (
     <main className="land-page">
+      <PageMeta
+        title="Kupujemo placeve | M & M Gradnja"
+        description="M & M Gradnja razmatra placeve i kuce za rusenje u Novom Sadu i okolini za buduce stambene projekte."
+      />
       <section className="land-hero">
         <img src={landHeroImage} alt="Parcela pogodna za stambenu gradnju" />
         <div className="land-hero__overlay" />
@@ -343,7 +348,10 @@ const PropertyOfferForm = () => {
         </label>
 
         {formMessage ? (
-          <p className={`form-feedback form-feedback--${formStatus}`} role="status">
+          <p
+            className={`form-feedback form-feedback--${formStatus}`}
+            role={formStatus === "error" ? "alert" : "status"}
+          >
             {formMessage}
           </p>
         ) : null}

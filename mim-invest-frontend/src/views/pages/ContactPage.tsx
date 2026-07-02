@@ -1,19 +1,16 @@
-import type { FormEvent } from "react";
-import { useState } from "react";
 import {
   ArrowUpRight,
-  CalendarDays,
   FileText,
   Mail,
   MapPin,
   MessageCircle,
   Navigation,
   Phone,
-  Send,
 } from "lucide-react";
 
+import { ContactModalButton } from "../../features/inquiries/components/ContactModal";
 import { contactEmail, contactPhone } from "../../features/projects/data/herojaPinkija13.data";
-import { submitContactInquiry } from "../../features/inquiries/api/inquiryFunctions.api";
+import { PageMeta } from "../../shared/components/PageMeta";
 
 const contactHeroImage =
   "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2200&q=85";
@@ -47,7 +44,7 @@ const contactMethods = [
     title: contactEmail,
     text: "Posaljite upit sa stanom koji vas zanima ili pitanjem o projektu.",
     href: `mailto:${contactEmail}`,
-    action: "Posaljite e-mail",
+    action: "Pisite nam",
   },
   {
     icon: MapPin,
@@ -65,9 +62,26 @@ const visitSteps = [
   "Dogovaramo obilazak i saljemo dodatne informacije o izabranom stanu.",
 ];
 
+const contactPageModal = {
+  eyebrow: "Kontakt",
+  title: "Pisite nam za stanove i obilazak",
+  description:
+    "Posaljite upit za konkretan stan, kvadraturu, cenu, uslove kupovine ili termin obilaska projekta Heroja Pinkija 13.",
+  inquiryType: "general" as const,
+  details: [
+    { label: "Projekat", value: "Heroja Pinkija 13" },
+    { label: "Kontakt", value: "Direktna prodaja" },
+  ],
+  messagePlaceholder: "Napisite koji stan, kvadratura ili termin obilaska vas zanima.",
+};
+
 export const ContactPage = () => {
   return (
     <main>
+      <PageMeta
+        title="Kontakt | M & M Gradnja"
+        description="Kontaktirajte prodaju za stanove, dostupnost, cenu i obilazak projekta Heroja Pinkija 13 u Novom Sadu."
+      />
       <section className="page-section page-section--surface contact-hero">
         <div className="page-container split-grid split-grid--end">
           <div className="fade-up">
@@ -78,10 +92,13 @@ export const ContactPage = () => {
               cenu, tlocrt i obilazak objekta Heroja Pinkija 13.
             </p>
             <div className="page-actions">
-              <a className="site-button site-button--accent" href="#kontakt-forma">
-                <CalendarDays />
-                Zakazite obilazak
-              </a>
+              <ContactModalButton
+                className="site-button site-button--accent"
+                modalOptions={contactPageModal}
+              >
+                <MessageCircle />
+                Pisite nam
+              </ContactModalButton>
               <a className="site-button site-button--outline" href={`tel:${contactPhone}`}>
                 <Phone />
                 Pozovite {contactPhone}
@@ -140,10 +157,20 @@ export const ContactPage = () => {
                 <small>{label}</small>
                 <h3>{title}</h3>
                 <p>{text}</p>
-                <a href={href}>
-                  {action}
-                  <ArrowUpRight className="icon-inline" />
-                </a>
+                {label === "E-mail" ? (
+                  <ContactModalButton
+                    className="info-card__action"
+                    modalOptions={contactPageModal}
+                  >
+                    {action}
+                    <ArrowUpRight className="icon-inline" />
+                  </ContactModalButton>
+                ) : (
+                  <a href={href}>
+                    {action}
+                    <ArrowUpRight className="icon-inline" />
+                  </a>
+                )}
               </article>
             ))}
           </div>
@@ -185,7 +212,7 @@ export const ContactPage = () => {
         <div className="page-container split-grid">
           <div>
             <p className="section-eyebrow">Pisite nam</p>
-            <h2 className="section-title section-title--medium">Posaljite upit prodaji.</h2>
+            <h2 className="section-title section-title--medium">Posaljite kratak upit prodaji.</h2>
             <p className="section-copy">
               Napisite sta vas zanima: konkretan stan, kvadratura, termin obilaska
               ili uslovi kupovine. Odgovor cemo usmeriti na tacno ono sto vam treba.
@@ -202,122 +229,29 @@ export const ContactPage = () => {
             </div>
           </div>
 
-          <ContactForm />
+          <div className="soft-card contact-modal-cta-card">
+            <span className="icon-bubble">
+              <FileText />
+            </span>
+            <div>
+              <h3>Jedna forma za sve upite.</h3>
+              <p>
+                Isti kontakt modal koristi se kroz ceo sajt, pa kupac ne gubi
+                kontekst stranice sa koje se javlja.
+              </p>
+            </div>
+            <ContactModalButton
+              className="site-button site-button--dark"
+              modalOptions={contactPageModal}
+            >
+              <MessageCircle />
+              Pisite nam
+              <ArrowUpRight />
+            </ContactModalButton>
+          </div>
         </div>
       </section>
     </main>
-  );
-};
-
-const ContactForm = () => {
-  const [formStatus, setFormStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
-  const [formMessage, setFormMessage] = useState("");
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const form = event.currentTarget;
-    setFormStatus("sending");
-    setFormMessage("");
-
-    const formData = new FormData(form);
-    const getValue = (name: string) => String(formData.get(name) ?? "").trim();
-
-    try {
-      await submitContactInquiry({
-        fullName: getValue("name"),
-        phone: getValue("phone"),
-        email: getValue("email"),
-        message: getValue("message"),
-        projectSlug: "heroja-pinkija-13",
-        inquiryType: "general",
-        sourcePage: window.location.pathname,
-        consentAccepted: formData.get("consent") === "on",
-        website: getValue("website"),
-      });
-
-      form.reset();
-      setFormStatus("success");
-      setFormMessage("Hvala. Upit je poslat i prodajni tim ce vas kontaktirati.");
-    } catch (error) {
-      setFormStatus("error");
-      setFormMessage(error instanceof Error ? error.message : "Slanje nije uspelo.");
-    }
-  };
-
-  return (
-    <form className="soft-card inquiry-form" onSubmit={handleSubmit}>
-      <div className="inquiry-form__head">
-        <FileText className="icon-inline" />
-        <div>
-          <strong>Podaci za prodajni tim</strong>
-          <p>Ime i e-mail su obavezni za odgovor na upit.</p>
-        </div>
-      </div>
-
-      <div className="inquiry-form__body">
-        <div className="form-grid form-grid--two">
-          <ContactField id="contact-name" label="Ime i prezime" name="name" required />
-          <ContactField id="contact-phone" label="Telefon" name="phone" type="tel" />
-          <ContactField id="contact-email" label="E-mail" name="email" type="email" required />
-        </div>
-
-        <div className="form-field inquiry-form__textarea">
-          <label className="form-field form-field--hidden" htmlFor="contact-website">
-            Website
-            <input id="contact-website" name="website" tabIndex={-1} type="text" autoComplete="off" />
-          </label>
-
-          <label className="form-label" htmlFor="contact-message">
-            Poruka
-          </label>
-          <textarea
-            className="form-textarea"
-            id="contact-message"
-            name="message"
-            placeholder="Napisite koji stan, kvadratura ili termin obilaska vas zanima."
-            rows={7}
-          />
-        </div>
-
-        <label className="form-consent">
-          <input name="consent" required type="checkbox" />
-          <span>Saglasan/saglasna sam da me kontaktirate povodom poslatog upita.</span>
-        </label>
-
-        {formMessage ? (
-          <p className={`form-feedback form-feedback--${formStatus}`} role="status">
-            {formMessage}
-          </p>
-        ) : null}
-
-        <button className="site-button site-button--dark" type="submit" disabled={formStatus === "sending"}>
-          <Send />
-          {formStatus === "sending" ? "Slanje..." : "Posalji upit"}
-          <ArrowUpRight />
-        </button>
-      </div>
-    </form>
-  );
-};
-
-type ContactFieldProps = {
-  id: string;
-  label: string;
-  name: string;
-  required?: boolean;
-  type?: string;
-};
-
-const ContactField = ({ id, label, name, required = false, type = "text" }: ContactFieldProps) => {
-  return (
-    <div className="form-field">
-      <label className="form-label" htmlFor={id}>
-        {label}
-        {required ? " *" : ""}
-      </label>
-      <input className="form-input" id={id} name={name} required={required} type={type} />
-    </div>
   );
 };
 

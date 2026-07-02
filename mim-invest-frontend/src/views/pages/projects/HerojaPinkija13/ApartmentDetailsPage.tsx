@@ -6,7 +6,6 @@ import {
   Bath,
   BedDouble,
   Building2,
-  CalendarDays,
   CheckCircle2,
   Compass,
   Home,
@@ -18,9 +17,10 @@ import {
 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 
+import { ContactModalButton } from "../../../../features/inquiries/components/ContactModal";
+import type { ContactModalOptions } from "../../../../features/inquiries/components/ContactModalContext";
 import {
   apartments,
-  contactEmail,
   contactPhone,
   locationAdvantages,
   statusLabel,
@@ -30,6 +30,7 @@ import type {
   Apartment,
   ApartmentRoomArea,
 } from "../../../../features/projects/types/project.types";
+import { PageMeta } from "../../../../shared/components/PageMeta";
 
 const projectBasePath = "/projekti/heroja-pinkija-13";
 const apartmentsPath = `${projectBasePath}/ponuda-stanova`;
@@ -68,6 +69,10 @@ export const ApartmentDetailsPage = () => {
   if (!apartment) {
     return (
       <main className="not-found-page">
+        <PageMeta
+          title="Stan nije pronadjen | Heroja Pinkija 13"
+          description="Izabrani stan nije pronadjen. Pogledajte aktuelnu ponudu stanova u projektu Heroja Pinkija 13."
+        />
         <div className="soft-card not-found-page__card">
           <p className="section-eyebrow">Detalji stana</p>
           <h1>Stan nije pronadjen</h1>
@@ -80,8 +85,6 @@ export const ApartmentDetailsPage = () => {
     );
   }
 
-  const subject = encodeURIComponent(`Upit za stan ${apartment.number}`);
-  const viewingSubject = encodeURIComponent(`Zakazivanje obilaska za stan ${apartment.number}`);
   const sameTypeApartments = apartments
     .filter(
       (item) =>
@@ -96,9 +99,31 @@ export const ApartmentDetailsPage = () => {
       : apartments
           .filter((item) => item.number !== apartment.number && item.status !== "Sold")
           .slice(0, 3);
+  const apartmentContactModal = {
+    eyebrow: `Stan ${apartment.number}`,
+    title: `Pisite nam za stan ${apartment.number}`,
+    description:
+      "Ostavite podatke i prodajni tim ce vam poslati informacije o dostupnosti, ceni, uslovima kupovine ili terminu obilaska.",
+    inquiryType: "unit" as const,
+    projectSlug: "heroja-pinkija-13",
+    unitCode: `Stan ${apartment.number}`,
+    details: [
+      { label: "Stan", value: apartment.number },
+      { label: "Sprat", value: apartment.floor },
+      { label: "Povrsina", value: apartment.size },
+      { label: "Struktura", value: apartment.rooms },
+      { label: "Status", value: statusLabel[apartment.status] },
+    ],
+    messagePlaceholder:
+      "Napisite da li vas zanima cena, dostupnost, obilazak ili dodatne informacije o ovom stanu.",
+  };
 
   return (
     <main className="apartment-detail apartment-detail--editorial">
+      <PageMeta
+        title={`Stan ${apartment.number} | Heroja Pinkija 13`}
+        description={`Detalji stana ${apartment.number}: ${apartment.size}, ${apartment.floor}, ${apartment.rooms}. Pogledajte tlocrt i posaljite upit prodaji.`}
+      />
       <section className="apartment-detail-hero">
         <div className="page-container">
           <nav className="apartment-breadcrumb" aria-label="Putanja stranice">
@@ -125,20 +150,19 @@ export const ApartmentDetailsPage = () => {
               </div>
 
               <div className="page-actions">
-                <a
+                <ContactModalButton
                   className="site-button site-button--accent"
-                  href={`mailto:${contactEmail}?subject=${viewingSubject}`}
-                >
-                  <CalendarDays />
-                  Zakazite razgovor
-                </a>
-                <a
-                  className="apartment-detail-hero__text-link"
-                  href={`mailto:${contactEmail}?subject=${subject}`}
+                  modalOptions={apartmentContactModal}
                 >
                   <MessageCircle />
-                  Posaljite upit
-                  <ArrowUpRight />
+                  Pisite nam
+                </ContactModalButton>
+                <a
+                  className="apartment-detail-hero__text-link"
+                  href={`tel:${contactPhone}`}
+                >
+                  <Phone />
+                  Pozovite prodaju
                 </a>
               </div>
             </div>
@@ -216,7 +240,7 @@ export const ApartmentDetailsPage = () => {
             <ApartmentFloorPlanFigure apartment={apartment} />
           </div>
 
-          <ApartmentPurchaseGuide apartment={apartment} subject={subject} />
+          <ApartmentPurchaseGuide apartment={apartment} modalOptions={apartmentContactModal} />
         </div>
       </section>
 
@@ -266,28 +290,6 @@ export const ApartmentDetailsPage = () => {
                 </span>
               </Link>
             ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="apartment-detail__cta">
-        <div className="page-container apartment-detail__cta-inner">
-          <div>
-            <p className="section-eyebrow">Sledeci korak</p>
-            <h2>Proverite cenu i uslove kupovine za stan {apartment.number}.</h2>
-          </div>
-          <div>
-            <a className="site-button site-button--light" href={`tel:${contactPhone}`}>
-              <Phone />
-              Pozovite
-            </a>
-            <a
-              className="site-button site-button--light"
-              href={`mailto:${contactEmail}?subject=${subject}`}
-            >
-              <MessageCircle />
-              Posalji upit
-            </a>
           </div>
         </div>
       </section>
@@ -543,10 +545,10 @@ const ApartmentFloorPlanFigure = ({ apartment }: { apartment: Apartment }) => (
 
 const ApartmentPurchaseGuide = ({
   apartment,
-  subject,
+  modalOptions,
 }: {
   apartment: Apartment;
-  subject: string;
+  modalOptions: ContactModalOptions;
 }) => (
   <section className="apartment-purchase-guide" aria-labelledby="apartment-purchase-guide-title">
     <div className="apartment-purchase-guide__advantages">
@@ -613,16 +615,16 @@ const ApartmentPurchaseGuide = ({
       </dl>
     </div>
 
-    <PurchasePanel apartment={apartment} subject={subject} />
+    <PurchasePanel apartment={apartment} modalOptions={modalOptions} />
   </section>
 );
 
 const PurchasePanel = ({
   apartment,
-  subject,
+  modalOptions,
 }: {
   apartment: Apartment;
-  subject: string;
+  modalOptions: ContactModalOptions;
 }) => (
   <aside className="apartment-purchase" aria-labelledby="apartment-purchase-title">
     <div className="apartment-purchase__copy">
@@ -637,13 +639,13 @@ const PurchasePanel = ({
       <PurchaseRow label="Ostava" value="Odvojena kupovina" />
     </dl>
     <div className="apartment-purchase__actions">
-      <a
+      <ContactModalButton
         className="site-button site-button--accent"
-        href={`mailto:${contactEmail}?subject=${subject}`}
+        modalOptions={modalOptions}
       >
-        <CalendarDays />
-        Zakazite razgovor
-      </a>
+        <MessageCircle />
+        Pisite nam
+      </ContactModalButton>
       <a className="apartment-purchase__phone" href={`tel:${contactPhone}`}>
         <Phone />
         {contactPhone}

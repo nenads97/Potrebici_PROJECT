@@ -2,8 +2,8 @@ import { useMemo, useRef } from "react";
 import { ArrowLeft, ArrowRight, BedDouble, Layers3, RotateCcw, Ruler } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 
+import { ContactModalButton } from "../../inquiries/components/ContactModal";
 import {
-  contactPhone,
   statusLabel,
   statusVariant,
 } from "../data/herojaPinkija13.data";
@@ -276,9 +276,20 @@ export const ApartmentAvailability = ({
                 <RotateCcw />
                 Ponistite filtere
               </button>
-              <a className="site-button site-button--outline" href={`tel:${contactPhone}`}>
-                Pozovite prodaju
-              </a>
+              <ContactModalButton
+                className="site-button site-button--outline"
+                modalOptions={{
+                  eyebrow: "Ponuda stanova",
+                  title: "Pisite nam za pomoc pri izboru",
+                  description:
+                    "Ako trenutni filter nema rezultata, posaljite nam sta trazite i provericemo koje jedinice mogu da vam odgovaraju.",
+                  inquiryType: "availability",
+                  details: [{ label: "Projekat", value: "Heroja Pinkija 13" }],
+                  messagePlaceholder: "Napisite zeljenu strukturu, kvadraturu, sprat ili budzet.",
+                }}
+              >
+                Pisite nam
+              </ContactModalButton>
             </div>
           </div>
         ) : null}

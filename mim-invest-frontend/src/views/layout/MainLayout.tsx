@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 
+import { ContactModalButton } from "../../features/inquiries/components/ContactModal";
 import { contactEmail, contactPhone } from "../../features/projects/data/herojaPinkija13.data";
 import { BrandLogo } from "../../shared/components/BrandLogo";
 
@@ -92,10 +93,10 @@ export const MainLayout = () => {
             </Link>
           </nav>
 
-          <Link className="site-button site-button--accent site-header__cta" to="/kontakt">
+          <ContactModalButton className="site-button site-button--accent site-header__cta">
             <MessageCircle />
             Pisite nam
-          </Link>
+          </ContactModalButton>
         </div>
       </header>
 
@@ -121,10 +122,10 @@ export const MainLayout = () => {
               <h2>Razgovarajte direktno sa nasim prodajnim timom.</h2>
             </div>
 
-            <Link className="site-button site-button--accent" to="/kontakt">
+            <ContactModalButton className="site-button site-button--accent">
               <MessageCircle />
-              Posaljite upit
-            </Link>
+              Pisite nam
+            </ContactModalButton>
           </div>
         </div>
 

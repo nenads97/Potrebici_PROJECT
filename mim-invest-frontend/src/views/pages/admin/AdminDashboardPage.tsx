@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  ArrowUpRight,
   FileUp,
   Filter,
   Mail,
@@ -60,12 +61,12 @@ const sectionCopy: Record<AdminSection, { eyebrow: string; title: string; body: 
   units: {
     eyebrow: "Ponuda",
     title: "Stanovi i statusi",
-    body: "Operativna promena statusa stanova pre povezivanja sa Supabase bazom.",
+    body: "Brza promena dostupnosti stanova koja se direktno odrazava na javnu ponudu.",
   },
   project: {
     eyebrow: "Sadrzaj",
     title: "Projekat",
-    body: "Osnovni tekstovi i rokovi koji ce kasnije ici u tabelu projects.",
+    body: "Osnovni tekstovi, lokacija i rokovi koji hrane javnu prezentaciju projekta.",
   },
   media: {
     eyebrow: "Fajlovi",
@@ -317,8 +318,12 @@ const InquiryPanel = ({
 }: InquiryPanelProps) => {
   const filtered = filterWorkflowItems(inquiries, query, statusFilter);
 
-  const updateInquiry = (id: string, changes: Partial<AdminInquiry>) => {
+  const patchInquiry = (id: string, changes: Partial<AdminInquiry>) => {
     onUpdate(inquiries.map((item) => (item.id === id ? { ...item, ...changes } : item)));
+  };
+
+  const persistInquiryChanges = (id: string, changes: Partial<AdminInquiry>) => {
+    patchInquiry(id, changes);
     onPersist(id, changes);
   };
 
@@ -353,7 +358,7 @@ const InquiryPanel = ({
               </div>
               <WorkflowSelect
                 value={inquiry.adminStatus}
-                onChange={(adminStatus) => updateInquiry(inquiry.id, { adminStatus })}
+                onChange={(adminStatus) => persistInquiryChanges(inquiry.id, { adminStatus })}
               />
             </div>
 
@@ -368,6 +373,21 @@ const InquiryPanel = ({
               </a>
             </div>
 
+            <div className="admin-card__links" aria-label="Kontekst upita">
+              {inquiry.unitCode ? (
+                <a href={getApartmentPublicPath(inquiry.unitCode)} target="_blank" rel="noreferrer">
+                  Otvori stan
+                  <ArrowUpRight />
+                </a>
+              ) : null}
+              {inquiry.sourcePage ? (
+                <a href={inquiry.sourcePage} target="_blank" rel="noreferrer">
+                  Izvor upita
+                  <ArrowUpRight />
+                </a>
+              ) : null}
+            </div>
+
             <p className="admin-card__message">{inquiry.message}</p>
 
             <label className="form-field">
@@ -375,9 +395,19 @@ const InquiryPanel = ({
               <textarea
                 className="form-textarea admin-note"
                 value={inquiry.adminNote}
-                onChange={(event) => updateInquiry(inquiry.id, { adminNote: event.target.value })}
+                onChange={(event) => patchInquiry(inquiry.id, { adminNote: event.target.value })}
               />
             </label>
+            <div className="admin-note-actions">
+              <button
+                className="site-button site-button--outline admin-note-save"
+                type="button"
+                onClick={() => onPersist(inquiry.id, { adminNote: inquiry.adminNote })}
+              >
+                <Save />
+                Sacuvaj belesku
+              </button>
+            </div>
           </article>
         ))}
       </div>
@@ -406,8 +436,12 @@ const LandOfferPanel = ({
 }: LandOfferPanelProps) => {
   const filtered = filterWorkflowItems(offers, query, statusFilter);
 
-  const updateOffer = (id: string, changes: Partial<AdminLandOffer>) => {
+  const patchOffer = (id: string, changes: Partial<AdminLandOffer>) => {
     onUpdate(offers.map((item) => (item.id === id ? { ...item, ...changes } : item)));
+  };
+
+  const persistOfferChanges = (id: string, changes: Partial<AdminLandOffer>) => {
+    patchOffer(id, changes);
     onPersist(id, changes);
   };
 
@@ -442,7 +476,7 @@ const LandOfferPanel = ({
               </div>
               <WorkflowSelect
                 value={offer.adminStatus}
-                onChange={(adminStatus) => updateOffer(offer.id, { adminStatus })}
+                onChange={(adminStatus) => persistOfferChanges(offer.id, { adminStatus })}
               />
             </div>
 
@@ -457,6 +491,15 @@ const LandOfferPanel = ({
               </a>
             </div>
 
+            {offer.sourcePage ? (
+              <div className="admin-card__links" aria-label="Kontekst ponude">
+                <a href={offer.sourcePage} target="_blank" rel="noreferrer">
+                  Izvor ponude
+                  <ArrowUpRight />
+                </a>
+              </div>
+            ) : null}
+
             <p className="admin-card__message">{offer.details}</p>
 
             <label className="form-field">
@@ -464,9 +507,19 @@ const LandOfferPanel = ({
               <textarea
                 className="form-textarea admin-note"
                 value={offer.adminNote}
-                onChange={(event) => updateOffer(offer.id, { adminNote: event.target.value })}
+                onChange={(event) => patchOffer(offer.id, { adminNote: event.target.value })}
               />
             </label>
+            <div className="admin-note-actions">
+              <button
+                className="site-button site-button--outline admin-note-save"
+                type="button"
+                onClick={() => onPersist(offer.id, { adminNote: offer.adminNote })}
+              >
+                <Save />
+                Sacuvaj belesku
+              </button>
+            </div>
           </article>
         ))}
       </div>
@@ -753,7 +806,7 @@ const MediaPanel = ({ mediaItems, onUpdate, onPersist }: MediaPanelProps) => {
           <FileUp />
           <div>
             <h2>Dodavanje fajla</h2>
-            <p>Upload ce se povezati sa Supabase Storage-om. Za sada se uredjuje metadata.</p>
+            <p>Uredite metadata za slike, tlocrte i PDF fajlove koji se objavljuju na sajtu.</p>
           </div>
         </div>
         <button className="site-button site-button--outline" type="button">
@@ -830,6 +883,14 @@ function formatDate(value: string) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(value));
+}
+
+function getApartmentPublicPath(unitCode: string) {
+  const apartmentNumber = unitCode.match(/\d+/)?.[0];
+
+  return apartmentNumber
+    ? `/projekti/heroja-pinkija-13/ponuda-stanova/${apartmentNumber}`
+    : "/projekti/heroja-pinkija-13/ponuda-stanova";
 }
 
 function getErrorMessage(error: unknown) {

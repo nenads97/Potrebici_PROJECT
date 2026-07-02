@@ -15,7 +15,9 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { ContactModalButton } from "../../features/inquiries/components/ContactModal";
 import { contactEmail, contactPhone } from "../../features/projects/data/herojaPinkija13.data";
+import { PageMeta } from "../../shared/components/PageMeta";
 
 const images = {
   hero: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2200&q=85",
@@ -143,6 +145,10 @@ export const HomePage = () => {
 
   return (
     <main>
+      <PageMeta
+        title="M & M Gradnja | Stanovi Heroja Pinkija 13 Novi Sad"
+        description="Premium prezentacija projekta Heroja Pinkija 13 u Novom Sadu, sa ponudom stanova, tlocrtima, lokacijom i direktnim upitom prodaji."
+      />
       <section className="home-hero" ref={heroRef}>
         <motion.img
           src={images.hero}
@@ -186,10 +192,10 @@ export const HomePage = () => {
               <Home />
               Pogledaj stanove
             </Link>
-            <Link className="site-button site-button--light" to="/kontakt">
+            <ContactModalButton className="site-button site-button--light">
               <MessageCircle />
-              Zakazi obilazak
-            </Link>
+              Pisite nam
+            </ContactModalButton>
           </div>
         </motion.div>
       </section>
@@ -329,8 +335,8 @@ export const HomePage = () => {
                   Detalji za vlasnike
                   <ArrowUpRight />
                 </Link>
-                <Link className="site-button site-button--outline" to="/kontakt">
-                  Kontakt
+                <Link className="site-button site-button--outline" to="/kupujemo-placeve">
+                  Posaljite ponudu
                 </Link>
               </div>
             </div>
@@ -385,10 +391,10 @@ export const HomePage = () => {
           </div>
 
           <div className="home-contact__actions">
-            <Link className="site-button site-button--dark" to="/kontakt">
+            <ContactModalButton className="site-button site-button--dark">
               <MessageCircle />
-              Kontaktirajte nas
-            </Link>
+              Pisite nam
+            </ContactModalButton>
             <a className="site-button site-button--outline" href={`tel:${contactPhone}`}>
               <Phone />
               Pozovite {contactPhone}
