@@ -1,12 +1,72 @@
 import { isSupabaseConfigured, supabase } from "../../../shared/supabase/client";
-import type { Apartment, ApartmentStatus } from "../types/project.types";
-import { apartments as fallbackApartments } from "./herojaPinkija13.data";
+import type { Apartment, ApartmentStatus, ProjectInfo, TimelineItem } from "../types/project.types";
+import {
+  apartments as fallbackApartments,
+  projectInfo as fallbackProjectInfo,
+  projectTimeline as fallbackProjectTimeline,
+} from "./herojaPinkija13.data";
+
+const projectSlug = "heroja-pinkija-13";
+const publicFetchTimeoutMs = 800;
 
 const statusMap: Record<string, ApartmentStatus> = {
   available: "Available",
   reserved: "Reserved",
   sold: "Sold",
 };
+
+const projectStatusMap: Record<string, string> = {
+  planned: "Planirano",
+  active: "Izgradnja u toku",
+  completed: "Zavrseno",
+  hidden: "Sakriveno",
+};
+
+const monthNames = [
+  "januar",
+  "februar",
+  "mart",
+  "april",
+  "maj",
+  "jun",
+  "jul",
+  "avgust",
+  "septembar",
+  "oktobar",
+  "novembar",
+  "decembar",
+];
+
+export function formatProjectDateLong(dateValue?: string | null) {
+  if (!dateValue) {
+    return "";
+  }
+
+  const date = new Date(`${dateValue}T00:00:00`);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return `${date.getDate()}. ${monthNames[date.getMonth()]} ${date.getFullYear()}.`;
+}
+
+export function formatProjectDateCompact(dateValue?: string | null) {
+  if (!dateValue) {
+    return "";
+  }
+
+  const date = new Date(`${dateValue}T00:00:00`);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+
+  return `${day}.${month}.${date.getFullYear()}.`;
+}
 
 function getApartmentStructure(apartmentNumber: string) {
   const normalizedNumber = Number(apartmentNumber);
@@ -32,15 +92,21 @@ export async function fetchApartments() {
     return fallbackApartments;
   }
 
-  const { data, error } = await supabase
-    .from("units")
-    .select("*")
-    .eq("unit_type", "apartment")
-    .eq("is_published", true)
-    .order("sort_order", { ascending: true });
+  const { data, error } = await withSupabaseTimeout(
+    supabase
+      .from("units")
+      .select("*")
+      .eq("unit_type", "apartment")
+      .eq("is_published", true)
+      .order("sort_order", { ascending: true }),
+  );
 
   if (error) {
     throw error;
+  }
+
+  if (!data?.length) {
+    return fallbackApartments;
   }
 
   return (data ?? []).map<Apartment>((unit) => {
@@ -61,6 +127,8 @@ export async function fetchApartments() {
       orientation: unit.orientation ?? fallback.orientation,
       highlight: unit.short_description ?? fallback.highlight,
       description: unit.full_description ?? fallback.description,
+      seoTitle: unit.seo_title ?? undefined,
+      seoDescription: unit.seo_description ?? undefined,
       bathrooms: unit.bathrooms ?? fallback.bathrooms,
       terrace: unit.terrace ?? fallback.terrace,
       heroFloorPlan: fallback.heroFloorPlan,
@@ -75,5 +143,129 @@ export async function fetchApartments() {
         ? unit.features.filter((item: unknown): item is string => typeof item === "string")
         : fallback.features,
     };
+  });
+}
+
+export async function fetchProjectInfo(): Promise<ProjectInfo> {
+  if (!isSupabaseConfigured || !supabase) {
+    return fallbackProjectInfo;
+  }
+
+  const { data, error } = await withSupabaseTimeout(
+    supabase
+      .from("projects")
+      .select(
+        "name,address,city,district,project_status,status_label,short_description,full_description,lead,description,location_description,floor_structure,construction_start_date,construction_end_date,hero_image_url,seo_title,seo_description",
+      )
+      .eq("slug", projectSlug)
+      .eq("is_published", true)
+      .maybeSingle(),
+  );
+
+  if (error) {
+    throw error;
+  }
+
+  if (!data) {
+    return fallbackProjectInfo;
+  }
+
+  return {
+    name: data.name,
+    address: data.address,
+    city: data.city,
+    district: data.district ?? fallbackProjectInfo.district,
+    status: data.status_label ?? projectStatusMap[data.project_status] ?? fallbackProjectInfo.status,
+    lead: data.short_description ?? data.lead ?? fallbackProjectInfo.lead,
+    description: data.full_description ?? data.description ?? fallbackProjectInfo.description,
+    locationDescription: data.location_description ?? fallbackProjectInfo.locationDescription,
+    floorStructure: data.floor_structure ?? fallbackProjectInfo.floorStructure,
+    constructionStart:
+      formatProjectDateLong(data.construction_start_date) || fallbackProjectInfo.constructionStart,
+    plannedCompletion:
+      formatProjectDateLong(data.construction_end_date) || fallbackProjectInfo.plannedCompletion,
+    constructionStartDate: data.construction_start_date ?? fallbackProjectInfo.constructionStartDate,
+    constructionEndDate: data.construction_end_date ?? fallbackProjectInfo.constructionEndDate,
+    heroImage: data.hero_image_url ?? fallbackProjectInfo.heroImage,
+    seoTitle: data.seo_title ?? fallbackProjectInfo.seoTitle,
+    seoDescription: data.seo_description ?? fallbackProjectInfo.seoDescription,
+  };
+}
+
+export async function fetchProjectTimeline(): Promise<TimelineItem[]> {
+  if (!isSupabaseConfigured || !supabase) {
+    return fallbackProjectTimeline;
+  }
+
+  const { data: project, error: projectError } = await withSupabaseTimeout(
+    supabase
+      .from("projects")
+      .select("id")
+      .eq("slug", projectSlug)
+      .eq("is_published", true)
+      .maybeSingle(),
+  );
+
+  if (projectError) {
+    throw projectError;
+  }
+
+  if (!project) {
+    return fallbackProjectTimeline;
+  }
+
+  const { data, error } = await withSupabaseTimeout(
+    supabase
+      .from("construction_updates")
+      .select("id,update_date,tag,title,short_description,status_label,timeline_state,sort_order")
+      .eq("project_id", project.id)
+      .eq("is_published", true)
+      .order("sort_order", { ascending: true })
+      .order("update_date", { ascending: true }),
+  );
+
+  if (error) {
+    throw error;
+  }
+
+  if (!data?.length) {
+    return fallbackProjectTimeline;
+  }
+
+  return data.map((item) => ({
+    id: item.id,
+    date:
+      formatProjectDateCompact(item.update_date) ||
+      item.tag ||
+      timelineStateLabels[item.timeline_state],
+    title: item.title,
+    body: item.short_description ?? "",
+    statusLabel: item.status_label ?? timelineStateLabels[item.timeline_state],
+    state: item.timeline_state,
+  }));
+}
+
+const timelineStateLabels: Record<TimelineItem["state"], string> = {
+  done: "Zavrseno",
+  active: "Aktuelno",
+  upcoming: "Planirano",
+};
+
+function withSupabaseTimeout<T>(query: PromiseLike<T>): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timeoutId = window.setTimeout(() => {
+      reject(new Error("Supabase javni upit je istekao."));
+    }, publicFetchTimeoutMs);
+
+    Promise.resolve(query).then(
+      (value) => {
+        window.clearTimeout(timeoutId);
+        resolve(value);
+      },
+      (error: unknown) => {
+        window.clearTimeout(timeoutId);
+        reject(error);
+      },
+    );
   });
 }

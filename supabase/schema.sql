@@ -395,6 +395,21 @@ $$;
 grant usage on schema app_private to authenticated;
 grant execute on function app_private.is_admin() to authenticated;
 
+-- Harden future public schema objects for Supabase Data API changes.
+-- Every public table below still gets explicit grants and RLS policies; new
+-- tables/functions must do the same instead of relying on platform defaults.
+alter default privileges for role postgres in schema public
+  revoke select, insert, update, delete on tables from anon, authenticated, service_role;
+
+alter default privileges for role postgres in schema public
+  revoke execute on functions from anon, authenticated, service_role;
+
+alter default privileges for role postgres in schema public
+  revoke usage, select on sequences from anon, authenticated, service_role;
+
+alter default privileges for role postgres in schema public
+  revoke execute on functions from public;
+
 alter table public.admin_profiles enable row level security;
 alter table public.site_settings enable row level security;
 alter table public.projects enable row level security;

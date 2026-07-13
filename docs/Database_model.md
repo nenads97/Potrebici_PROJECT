@@ -60,8 +60,11 @@ slug text unique
 address text
 city text
 district text
+status_label text
 short_description text
 full_description text
+lead text
+description text
 location_description text
 floor_structure text
 construction_start_date date
@@ -73,7 +76,7 @@ total_business_apartments int
 total_storage_units int
 total_garage_parking_spaces int
 total_yard_parking_spaces int
-hero_image_path text
+hero_image_url text
 seo_title text
 seo_description text
 sort_order int
@@ -86,6 +89,12 @@ updated_at timestamptz
 Storage units and garage parking spaces are separate paid options and must not be
 presented as included apartment features.
 
+Frontend v1 now reads the public "O projektu" basics from `projects` when Supabase is configured:
+`name`, `address`, `city`, `district`, `status_label`, `short_description`,
+`full_description`, `location_description`, `floor_structure`, construction dates,
+`hero_image_url` and SEO fields. Detailed benefits, parking/storage copy and advanced timeline
+content still need a dedicated editable-section model before they become fully CMS-driven.
+
 ### units
 
 Apartments, commercial spaces, business apartments. Do not list every parking/storage unit publicly in v1.
@@ -96,7 +105,7 @@ Essential columns:
 ```txt
 id uuid pk
 project_id uuid fk projects.id
-unit_code text
+code text
 slug text
 unit_type text -- apartment|commercial_space|business_apartment
 floor_label text
@@ -105,13 +114,13 @@ area_m2 numeric
 room_structure text
 status text -- available|reserved|sold
 orientation text
-bathrooms int
+bathrooms text
 terrace text
 short_description text
 full_description text
 features jsonb
-main_image_path text
-floor_plan_pdf_path text
+main_image_url text
+floor_plan_pdf_url text
 price_display_mode text -- default on_request
 sort_order int
 is_featured boolean
@@ -120,13 +129,44 @@ seo_title text
 seo_description text
 created_at timestamptz
 updated_at timestamptz
-unique(project_id, unit_code)
+unique(project_id, code)
 unique(project_id, slug)
+```
+
+Napomena: operational `contact_inquiries.unit_code` cuva tekstualni kod koji je kupac poslao
+u upitu, dok je kanonska kolona na inventaru stanova `units.code`.
+
+### project_pdfs
+
+Legacy metadata za PDF fajlove projekta. Novi admin tok favorizuje `project_media`,
+ali tabela i dalje postoji u SQL modelu za odvojene PDF planove i brosure.
+
+Essential columns:
+
+```txt
+id uuid pk
+project_id uuid fk projects.id
+title text
+pdf_type text -- apartment_floor_plan|building_floor_plan|garage_plan|storage_plan|general_brochure
+file_url text
+description text
+sort_order int
+is_published boolean
+created_at timestamptz
+updated_at timestamptz
 ```
 
 ### project_media
 
 Metadata for files in Supabase Storage.
+
+Current seed data includes:
+
+- project photos for Heroja Pinkija 13;
+- a construction update image;
+- showcase floor-plan images used on apartment-offer cards;
+- per-apartment floor-plan images used on apartment detail pages;
+- comparison floor-plan images used beside the room grid where available.
 
 Essential columns:
 
@@ -167,14 +207,21 @@ Essential columns:
 id uuid pk
 project_id uuid fk
 update_date date
+tag text
 title text
 short_description text
+image_gallery jsonb
 status_label text
+timeline_state text -- done|active|upcoming
 sort_order int
 is_published boolean
 created_at timestamptz
 updated_at timestamptz
 ```
+
+Frontend v1 sada cita `construction_updates` za javni timeline projekta kada je Supabase
+konfigurisan. Admin panel uredjuje `title`, `tag`, `status_label`,
+`short_description`, `update_date`, `timeline_state`, `sort_order` i `is_published`.
 
 ### page_sections
 
@@ -259,6 +306,19 @@ error_message text
 created_at timestamptz
 ```
 
+### form_rate_limit_events
+
+Lightweight abuse-protection log for public form submissions. The Edge Functions store
+hashes only; raw email/IP values are not persisted in this table.
+
+```txt
+id uuid pk
+action text -- submit-contact-inquiry:email|submit-contact-inquiry:ip|submit-land-offer:email|submit-land-offer:ip
+identifier_hash text -- sha256 hash of normalized email or client network identifier
+source_page text
+created_at timestamptz
+```
+
 ## Edge Functions
 
 Required:
@@ -273,7 +333,7 @@ Each function must:
 - validate required fields
 - validate email/phone/text lengths
 - check honeypot
-- apply rate limiting or abuse protection
+- apply email-hash and IP-hash rate limiting
 - insert DB record
 - send confirmation email
 - send sales notification email
@@ -303,5 +363,7 @@ The typed Supabase client is located at:
 mim-invest-frontend/src/shared/supabase/client.ts
 mim-invest-frontend/src/shared/supabase/database.types.ts
 ```
+
+`client.ts` uses `createClient<Database>(...)`, so frontend Supabase calls are checked against the local table and column model. When the SQL schema changes, regenerate or update `database.types.ts` in the same change so admin/public queries do not silently drift from the database.
 
 Only public reads should happen in the browser. Service role keys, Brevo keys and direct database URLs must stay server-side only.

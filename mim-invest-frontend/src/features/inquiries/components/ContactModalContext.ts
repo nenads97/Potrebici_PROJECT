@@ -14,6 +14,7 @@ export type ContactModalOptions = {
   title?: string;
   description?: string;
   submitLabel?: string;
+  reassuranceText?: string;
   successMessage?: string;
   inquiryType?: ContactInquiryType;
   projectSlug?: string;
@@ -31,7 +32,14 @@ export type ContactModalContextValue = {
 export const defaultModalOptions: Required<
   Pick<
     ContactModalOptions,
-    "eyebrow" | "title" | "description" | "submitLabel" | "successMessage" | "inquiryType" | "projectSlug"
+    | "eyebrow"
+    | "title"
+    | "description"
+    | "submitLabel"
+    | "reassuranceText"
+    | "successMessage"
+    | "inquiryType"
+    | "projectSlug"
   >
 > &
   Pick<ContactModalOptions, "details" | "messagePlaceholder" | "sourcePage" | "unitCode"> = {
@@ -40,6 +48,7 @@ export const defaultModalOptions: Required<
   description:
     "Ostavite podatke i napisite sta vas zanima. Prodajni tim ce vam se javiti sa informacijama o dostupnosti, ceni i narednim koracima.",
   submitLabel: "Posaljite upit",
+  reassuranceText: "Odgovaramo u najkracem roku. Slanje upita vas ne obavezuje na kupovinu.",
   successMessage: "Hvala. Upit je poslat i prodajni tim ce vas kontaktirati.",
   inquiryType: "general",
   projectSlug: "heroja-pinkija-13",

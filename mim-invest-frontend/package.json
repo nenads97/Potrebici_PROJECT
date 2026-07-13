@@ -7,6 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "audit:surface": "node scripts/audit-public-surface.mjs",
+    "audit:deps": "npm audit --audit-level=low",
+    "smoke:supabase:readonly": "node scripts/smoke-supabase-readonly.mjs",
+    "smoke:supabase:launch": "node scripts/smoke-supabase-readonly.mjs --require-project-media",
+    "quality": "npm run audit:surface && npm run lint && npm run build && npm run audit:deps",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -16,8 +21,7 @@
     "lucide-react": "^1.14.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "react-router-dom": "^7.15.0",
-    "sass": "^1.99.0"
+    "react-router-dom": "^7.15.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -29,6 +33,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
+    "sass": "^1.99.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.10"

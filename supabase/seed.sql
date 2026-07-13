@@ -165,7 +165,7 @@ select
   unit_rows.terrace,
   unit_rows.short_description,
   'Prodaja stanova je pocela. Za cenu, uslove kupovine i tacan status kontaktirajte prodaju.',
-  '["Podno grejanje", "Lift od podzemne garaze do svih spratova", "Mogucnost kupovine garaznog mesta", "Ostava dostupna uz stan"]'::jsonb,
+  '["Podno grejanje", "Lift od podzemne garaze do svih spratova", "Garazno mesto dostupno za odvojenu kupovinu", "Ostava dostupna za odvojenu kupovinu"]'::jsonb,
   'on_request'::public.price_display_mode,
   unit_rows.code::integer,
   true
@@ -183,6 +183,98 @@ on conflict (project_id, code) do update set
   features = excluded.features,
   sort_order = excluded.sort_order,
   is_published = excluded.is_published;
+
+with project as (
+  select id from public.projects where slug = 'heroja-pinkija-13'
+),
+known_seed_paths(file_path) as (
+  values
+    ('/images/heroja-pinkija-13/gradilisna-tabla.jpg'),
+    ('/images/heroja-pinkija-13/gradilisna-tabla-slika.jpg'),
+    ('/images/heroja-pinkija-13/radovi-u-toku.jpg'),
+    ('/images/apartment-plans/showcase-stan-1-6-11.png'),
+    ('/images/apartment-plans/showcase-stan-2-7-12.png'),
+    ('/images/apartment-plans/showcase-stan-3-8-13.png'),
+    ('/images/apartment-plans/showcase-stan-4-9-14.png'),
+    ('/images/apartment-plans/showcase-stan-5-10-15.png'),
+    ('/images/apartment-plans/stan-1-6-11.png'),
+    ('/images/apartment-plans/stan-1-6-11-comparison.png'),
+    ('/images/apartment-plans/stan-2-7-12.png'),
+    ('/images/apartment-plans/stan-3-8-13.png'),
+    ('/images/apartment-plans/stan-4-9-14.png'),
+    ('/images/apartment-plans/stan-5-10-15.png')
+),
+project_units as (
+  select units.id
+  from public.units
+  join project on project.id = units.project_id
+)
+delete from public.project_media media
+using known_seed_paths
+where media.file_path = known_seed_paths.file_path
+  and (
+    media.project_id = (select id from project)
+    or media.unit_id in (select id from project_units)
+  );
+
+with project as (
+  select id from public.projects where slug = 'heroja-pinkija-13'
+),
+media_rows(unit_code, title, media_type, file_path, alt_text, description, sort_order, is_published) as (
+  values
+    (null, 'Heroja Pinkija 13 - gradilisna tabla', 'project_image'::public.project_media_type, '/images/heroja-pinkija-13/gradilisna-tabla.jpg', 'Gradilisna tabla projekta Heroja Pinkija 13', 'Hero slika na stranici projekta.', 1, true),
+    (null, 'Heroja Pinkija 13 - detalj gradilisne table', 'project_image'::public.project_media_type, '/images/heroja-pinkija-13/gradilisna-tabla-slika.jpg', 'Detalj gradilisne table projekta Heroja Pinkija 13', 'Rezervna projektna fotografija za buduce sekcije.', 2, false),
+    (null, 'Radovi u toku', 'construction_update_image'::public.project_media_type, '/images/heroja-pinkija-13/radovi-u-toku.jpg', 'Radovi u toku na projektu Heroja Pinkija 13', 'Slika za sekciju lokacije/statusa radova.', 3, true),
+    ('1', 'Showcase tlocrt stanova 1, 6 i 11', 'unit_image'::public.project_media_type, '/images/apartment-plans/showcase-stan-1-6-11.png', 'Showcase tlocrt stanova 1, 6 i 11', 'Slika za karticu u sekciji Ponuda stanova na stranici projekta.', 11, true),
+    ('2', 'Showcase tlocrt stanova 2, 7 i 12', 'unit_image'::public.project_media_type, '/images/apartment-plans/showcase-stan-2-7-12.png', 'Showcase tlocrt stanova 2, 7 i 12', 'Slika za karticu u sekciji Ponuda stanova na stranici projekta.', 12, true),
+    ('3', 'Showcase tlocrt stanova 3, 8 i 13', 'unit_image'::public.project_media_type, '/images/apartment-plans/showcase-stan-3-8-13.png', 'Showcase tlocrt stanova 3, 8 i 13', 'Slika za karticu u sekciji Ponuda stanova na stranici projekta.', 13, true),
+    ('4', 'Showcase tlocrt stanova 4, 9 i 14', 'unit_image'::public.project_media_type, '/images/apartment-plans/showcase-stan-4-9-14.png', 'Showcase tlocrt stanova 4, 9 i 14', 'Slika za karticu u sekciji Ponuda stanova na stranici projekta.', 14, true),
+    ('5', 'Showcase tlocrt stanova 5, 10 i 15', 'unit_image'::public.project_media_type, '/images/apartment-plans/showcase-stan-5-10-15.png', 'Showcase tlocrt stanova 5, 10 i 15', 'Slika za karticu u sekciji Ponuda stanova na stranici projekta.', 15, true),
+    ('1', 'Tlocrt stana 1', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-1-6-11.png', 'Tlocrt stana 1 u projektu Heroja Pinkija 13', 'Tlocrt za detalj stana i poredjenje prostorija.', 101, true),
+    ('2', 'Tlocrt stana 2', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-2-7-12.png', 'Tlocrt stana 2 u projektu Heroja Pinkija 13', 'Tlocrt za detalj stana i poredjenje prostorija.', 102, true),
+    ('3', 'Tlocrt stana 3', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-3-8-13.png', 'Tlocrt stana 3 u projektu Heroja Pinkija 13', 'Tlocrt za detalj stana i poredjenje prostorija.', 103, true),
+    ('4', 'Tlocrt stana 4', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-4-9-14.png', 'Tlocrt stana 4 u projektu Heroja Pinkija 13', 'Tlocrt za detalj stana i poredjenje prostorija.', 104, true),
+    ('5', 'Tlocrt stana 5', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-5-10-15.png', 'Tlocrt stana 5 u projektu Heroja Pinkija 13', 'Tlocrt za detalj stana i poredjenje prostorija.', 105, true),
+    ('6', 'Tlocrt stana 6', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-1-6-11.png', 'Tlocrt stana 6 u projektu Heroja Pinkija 13', 'Tlocrt za detalj stana i poredjenje prostorija.', 106, true),
+    ('7', 'Tlocrt stana 7', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-2-7-12.png', 'Tlocrt stana 7 u projektu Heroja Pinkija 13', 'Tlocrt za detalj stana i poredjenje prostorija.', 107, true),
+    ('8', 'Tlocrt stana 8', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-3-8-13.png', 'Tlocrt stana 8 u projektu Heroja Pinkija 13', 'Tlocrt za detalj stana i poredjenje prostorija.', 108, true),
+    ('9', 'Tlocrt stana 9', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-4-9-14.png', 'Tlocrt stana 9 u projektu Heroja Pinkija 13', 'Tlocrt za detalj stana i poredjenje prostorija.', 109, true),
+    ('10', 'Tlocrt stana 10', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-5-10-15.png', 'Tlocrt stana 10 u projektu Heroja Pinkija 13', 'Tlocrt za detalj stana i poredjenje prostorija.', 110, true),
+    ('11', 'Tlocrt stana 11', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-1-6-11.png', 'Tlocrt stana 11 u projektu Heroja Pinkija 13', 'Tlocrt za detalj stana i poredjenje prostorija.', 111, true),
+    ('12', 'Tlocrt stana 12', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-2-7-12.png', 'Tlocrt stana 12 u projektu Heroja Pinkija 13', 'Tlocrt za detalj stana i poredjenje prostorija.', 112, true),
+    ('13', 'Tlocrt stana 13', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-3-8-13.png', 'Tlocrt stana 13 u projektu Heroja Pinkija 13', 'Tlocrt za detalj stana i poredjenje prostorija.', 113, true),
+    ('14', 'Tlocrt stana 14', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-4-9-14.png', 'Tlocrt stana 14 u projektu Heroja Pinkija 13', 'Tlocrt za detalj stana i poredjenje prostorija.', 114, true),
+    ('15', 'Tlocrt stana 15', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-5-10-15.png', 'Tlocrt stana 15 u projektu Heroja Pinkija 13', 'Tlocrt za detalj stana i poredjenje prostorija.', 115, true),
+    ('1', 'Projektni tlocrt stana 1 za poredjenje', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-1-6-11-comparison.png', 'Projektni tlocrt stana 1 za poredjenje sa gridom prostorija', 'Originalni projektni tlocrt koji se koristi pored grida prostorija.', 201, true),
+    ('6', 'Projektni tlocrt stana 6 za poredjenje', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-1-6-11-comparison.png', 'Projektni tlocrt stana 6 za poredjenje sa gridom prostorija', 'Originalni projektni tlocrt koji se koristi pored grida prostorija.', 206, true),
+    ('11', 'Projektni tlocrt stana 11 za poredjenje', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-1-6-11-comparison.png', 'Projektni tlocrt stana 11 za poredjenje sa gridom prostorija', 'Originalni projektni tlocrt koji se koristi pored grida prostorija.', 211, true)
+)
+insert into public.project_media (
+  project_id,
+  unit_id,
+  title,
+  media_type,
+  file_path,
+  alt_text,
+  description,
+  sort_order,
+  is_published
+)
+select
+  case when media_rows.unit_code is null then project.id else null end,
+  units.id,
+  media_rows.title,
+  media_rows.media_type,
+  media_rows.file_path,
+  media_rows.alt_text,
+  media_rows.description,
+  media_rows.sort_order,
+  media_rows.is_published
+from media_rows
+cross join project
+left join public.units
+  on units.project_id = project.id
+  and units.code = media_rows.unit_code;
 
 with project as (
   select id from public.projects where slug = 'heroja-pinkija-13'
@@ -229,7 +321,7 @@ values (
   true,
   'Kupujemo placeve',
   'kupujemo-placeve',
-  '/images/kupovina-placeva-hero.png',
+  '/images/kupovina-placeva-hero.jpg',
   'M & M Gradnja razmatra atraktivne lokacije za buduce stambene projekte.',
   '["Plac ili kuca za rusenje", "Novi Sad i bliza okolina", "Stambena namena", "Pravno cista situacija"]'::jsonb,
   '["Posaljite osnovne podatke o parceli, kuci ili lokaciji.", "Nas tim proverava potencijal lokacije i kontaktira vas za dodatne informacije.", "Dogovaramo sledeci korak, procenu i uslove saradnje."]'::jsonb,

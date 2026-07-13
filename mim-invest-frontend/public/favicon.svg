@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="M &amp; M Gradnja">
+  <rect width="64" height="64" rx="14" fill="#303943" />
+  <path
+    d="M18 49V20.8L32 13v36M32 49V22.6l14-7.8V49M18 32.2l14-7.8m0 12 14-7.8"
+    fill="none"
+    stroke="#d6bc94"
+    stroke-width="3.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M18 49h28"
+    fill="none"
+    stroke="#f4eadc"
+    stroke-width="3.6"
+    stroke-linecap="round"
+  />
+</svg>

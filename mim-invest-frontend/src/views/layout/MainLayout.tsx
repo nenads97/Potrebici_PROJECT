@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import type { MouseEvent } from "react";
+import { useId, useRef, useState } from "react";
+import type { FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import {
   ArrowLeft,
   ArrowUp,
@@ -13,7 +13,7 @@ import {
   Phone,
   X,
 } from "lucide-react";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { ContactModalButton } from "../../features/inquiries/components/ContactModal";
 import { contactEmail, contactPhone } from "../../features/projects/data/herojaPinkija13.data";
@@ -48,12 +48,30 @@ const projectLinks = [
 export const MainLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const isHome = location.pathname === "/";
+  const normalizedPathname = normalizePath(location.pathname);
+  const isHome = normalizedPathname === "/";
+  const shouldShowFooterCta = shouldShowPublicFooterCta(normalizedPathname);
   const currentYear = new Date().getFullYear();
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const backFallbackPath = getBackFallbackPath(normalizedPathname);
+
+  const handleBackClick = () => {
+    const historyState = window.history.state as { idx?: number } | null;
+
+    if (typeof historyState?.idx === "number" && historyState.idx > 0) {
+      navigate(-1);
+      return;
+    }
+
+    navigate(backFallbackPath);
+  };
 
   return (
     <div className="site-shell">
+      <a className="skip-link" href="#main-content">
+        Preskocite na glavni sadrzaj
+      </a>
+
       <header className="site-header-wrap">
         <div className="site-header">
           <Link className="site-header__brand" to="/" aria-label="M & M Gradnja pocetna">
@@ -81,16 +99,36 @@ export const MainLayout = () => {
               }
             }}
           >
-            <HeaderDropdown label="Kompanija" links={companyLinks} />
-            <HeaderDropdown label="Projekti" links={projectLinks} />
+            <HeaderDropdown
+              currentPathname={location.pathname}
+              isNavigationOpen={isNavOpen}
+              label="Kompanija"
+              links={companyLinks}
+            />
+            <HeaderDropdown
+              currentPathname={location.pathname}
+              isNavigationOpen={isNavOpen}
+              label="Projekti"
+              links={projectLinks}
+            />
 
-            <Link className="site-nav__link" to="/kupujemo-placeve">
+            <NavLink
+              className={({ isActive }) =>
+                `site-nav__link${isActive ? " site-nav__link--active" : ""}`
+              }
+              to="/kupujemo-placeve"
+            >
               Kupujemo placeve
-            </Link>
+            </NavLink>
 
-            <Link className="site-nav__link" to="/kontakt">
+            <NavLink
+              className={({ isActive }) =>
+                `site-nav__link${isActive ? " site-nav__link--active" : ""}`
+              }
+              to="/kontakt"
+            >
               Kontakt
-            </Link>
+            </NavLink>
           </nav>
 
           <ContactModalButton className="site-button site-button--accent site-header__cta">
@@ -106,28 +144,32 @@ export const MainLayout = () => {
           type="button"
           aria-label="Nazad na prethodnu stranicu"
           title="Nazad"
-          onClick={() => navigate(-1)}
+          onClick={handleBackClick}
         >
           <ArrowLeft />
         </button>
       ) : null}
 
-      <Outlet />
+      <div id="main-content" className="main-content-anchor" tabIndex={-1}>
+        <Outlet />
+      </div>
 
       <footer className="site-footer">
-        <div className="site-footer__cta">
-          <div className="site-footer__cta-inner">
-            <div>
-              <span className="site-footer__eyebrow">Zainteresovani ste za stan?</span>
-              <h2>Razgovarajte direktno sa nasim prodajnim timom.</h2>
-            </div>
+        {shouldShowFooterCta ? (
+          <div className="site-footer__cta">
+            <div className="site-footer__cta-inner">
+              <div>
+                <span className="site-footer__eyebrow">Zainteresovani ste za stan?</span>
+                <h2>Razgovarajte direktno sa nasim prodajnim timom.</h2>
+              </div>
 
-            <ContactModalButton className="site-button site-button--accent">
-              <MessageCircle />
-              Pisite nam
-            </ContactModalButton>
+              <ContactModalButton className="site-button site-button--accent">
+                <MessageCircle />
+                Pisite nam
+              </ContactModalButton>
+            </div>
           </div>
-        </div>
+        ) : null}
 
         <div className="site-footer__grid">
           <div className="site-footer__brand">
@@ -234,12 +276,24 @@ type HeaderLink = {
 };
 
 type HeaderDropdownProps = {
+  currentPathname: string;
+  isNavigationOpen: boolean;
   label: string;
   links: HeaderLink[];
 };
 
-const HeaderDropdown = ({ label, links }: HeaderDropdownProps) => {
+const HeaderDropdown = ({
+  currentPathname,
+  isNavigationOpen,
+  label,
+  links,
+}: HeaderDropdownProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuId = useId();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const isDropdownActive = links.some((link) => isHeaderLinkActive(link, currentPathname));
+  const isExpanded = isNavigationOpen || isMenuOpen;
 
   const handleMouseLeave = (event: MouseEvent<HTMLDivElement>) => {
     const nextTarget = event.relatedTarget;
@@ -253,48 +307,172 @@ const HeaderDropdown = ({ label, links }: HeaderDropdownProps) => {
     if (activeElement instanceof HTMLElement && dropdownRef.current?.contains(activeElement)) {
       activeElement.blur();
     }
+
+    setIsMenuOpen(false);
+  };
+
+  const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
+    const nextTarget = event.relatedTarget;
+
+    if (nextTarget instanceof Node && dropdownRef.current?.contains(nextTarget)) {
+      return;
+    }
+
+    setIsMenuOpen(false);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Escape") {
+      return;
+    }
+
+    event.preventDefault();
+    setIsMenuOpen(false);
+    triggerRef.current?.focus();
   };
 
   return (
-    <div className="site-nav__dropdown" ref={dropdownRef} onMouseLeave={handleMouseLeave}>
-      <button className="site-nav__trigger" type="button">
+    <div
+      className={`site-nav__dropdown${isMenuOpen ? " site-nav__dropdown--open" : ""}`}
+      ref={dropdownRef}
+      onMouseEnter={() => setIsMenuOpen(true)}
+      onMouseLeave={handleMouseLeave}
+      onFocus={() => setIsMenuOpen(true)}
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+    >
+      <button
+        className={`site-nav__trigger${isDropdownActive ? " site-nav__trigger--active" : ""}`}
+        ref={triggerRef}
+        type="button"
+        aria-controls={menuId}
+        aria-expanded={isExpanded}
+        aria-haspopup="true"
+        onClick={() => setIsMenuOpen(true)}
+      >
         {label}
         <ChevronDown className="icon-inline" />
       </button>
 
-      <div className="site-nav__menu">
+      <div className="site-nav__menu" id={menuId}>
         <div className="site-nav__panel">
-          {links.map((link) => (
-            <div
-              className={`site-nav__item${link.children ? " site-nav__item--has-children" : ""}`}
-              key={link.to}
-            >
-              {link.children ? (
-                <Link className="site-nav__nested-trigger" to={link.to}>
-                  <span>{link.label}</span>
-                  <ChevronRight className="icon-inline" />
-                </Link>
-              ) : (
-                <Link to={link.to}>
-                  <span>{link.label}</span>
-                </Link>
-              )}
+          {links.map((link) => {
+            const isLinkActive = isHeaderLinkActive(link, currentPathname);
+            const isLinkCurrent = isPathActive(link.to, currentPathname);
 
-              {link.children ? (
-                <div className="site-nav__submenu">
-                  {link.children.map((child) => (
-                    <Link key={child.to} to={child.to}>
-                      {child.label}
-                    </Link>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          ))}
+            return (
+              <div
+                className={`site-nav__item${link.children ? " site-nav__item--has-children" : ""}`}
+                key={link.to}
+              >
+                {link.children ? (
+                  <Link
+                    className={`site-nav__nested-trigger${isLinkActive ? " is-active" : ""}`}
+                    to={link.to}
+                    aria-current={isLinkCurrent ? "page" : undefined}
+                  >
+                    <span>{link.label}</span>
+                    <ChevronRight className="icon-inline" />
+                  </Link>
+                ) : (
+                  <Link
+                    className={isLinkActive ? "is-active" : undefined}
+                    to={link.to}
+                    aria-current={isLinkCurrent ? "page" : undefined}
+                  >
+                    <span>{link.label}</span>
+                  </Link>
+                )}
+
+                {link.children ? (
+                  <div className="site-nav__submenu">
+                    {link.children.map((child) => {
+                      const isChildActive = isPathActive(child.to, currentPathname);
+
+                      return (
+                        <Link
+                          className={isChildActive ? "is-active" : undefined}
+                          key={child.to}
+                          to={child.to}
+                          aria-current={isChildActive ? "page" : undefined}
+                        >
+                          {child.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
   );
+};
+
+function isHeaderLinkActive(link: HeaderLink, currentPathname: string) {
+  return (
+    isPathActive(link.to, currentPathname) ||
+    Boolean(link.children?.some((child) => isPathActive(child.to, currentPathname)))
+  );
+}
+
+function isPathActive(path: string, currentPathname: string) {
+  const normalizedPath = normalizePath(path);
+  const normalizedCurrentPath = normalizePath(currentPathname);
+  const aliases = routeAliases[normalizedPath] ?? [];
+
+  return (
+    normalizedCurrentPath === normalizedPath ||
+    normalizedCurrentPath.startsWith(`${normalizedPath}/`) ||
+    aliases.some((alias) => normalizedCurrentPath === normalizePath(alias))
+  );
+}
+
+function normalizePath(path: string) {
+  return path.length > 1 ? path.replace(/\/+$/, "") : path;
+}
+
+function getBackFallbackPath(pathname: string) {
+  const normalizedPathname = normalizePath(pathname);
+
+  if (isApartmentDetailPath(normalizedPathname)) {
+    return "/projekti/heroja-pinkija-13/ponuda-stanova";
+  }
+
+  if (normalizedPathname === "/projekti/heroja-pinkija-13/spisak-stanova") {
+    return "/projekti/heroja-pinkija-13/ponuda-stanova";
+  }
+
+  if (normalizedPathname === "/projekti/heroja-pinkija-13/ponuda-stanova") {
+    return "/projekti/heroja-pinkija-13/o-projektu";
+  }
+
+  if (
+    normalizedPathname === "/projekti/heroja-pinkija-13" ||
+    normalizedPathname === "/projekti/heroja-pinkija-13/o-projektu"
+  ) {
+    return "/";
+  }
+
+  return "/";
+}
+
+function shouldShowPublicFooterCta(pathname: string) {
+  return (
+    pathname !== "/kontakt" &&
+    pathname !== "/kupujemo-placeve" &&
+    !isApartmentDetailPath(pathname)
+  );
+}
+
+function isApartmentDetailPath(pathname: string) {
+  return /^\/projekti\/heroja-pinkija-13\/ponuda-stanova\/[^/]+$/.test(pathname);
+}
+
+const routeAliases: Record<string, string[]> = {
+  "/projekti/heroja-pinkija-13/o-projektu": ["/projekti/heroja-pinkija-13"],
 };
 
 type FooterColumnProps = {

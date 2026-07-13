@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowUpRight,
@@ -12,6 +13,7 @@ import {
   Home,
   Layers3,
   MapPin,
+  MessageCircle,
   Package,
   Ruler,
 } from "lucide-react";
@@ -20,34 +22,24 @@ import { Link } from "react-router-dom";
 import { ContactModalButton } from "../../../../features/inquiries/components/ContactModal";
 import {
   apartments,
-  projectInfo,
+  contactEmail,
+  contactPhone,
+  projectInfo as fallbackProjectInfo,
+  projectTimeline as fallbackProjectTimeline,
   statusLabel,
   statusVariant,
 } from "../../../../features/projects/data/herojaPinkija13.data";
+import {
+  fetchProjectInfo,
+  fetchProjectTimeline,
+  formatProjectDateCompact,
+} from "../../../../features/projects/data/projectSupabase.api";
 import { PageMeta } from "../../../../shared/components/PageMeta";
 
 const projectImages = {
   hero: "/images/heroja-pinkija-13/gradilisna-tabla.jpg",
   works: "/images/heroja-pinkija-13/radovi-u-toku.jpg",
 };
-
-const heroFacts = [
-  { label: "Stanovi", value: "15" },
-  { label: "Struktura", value: projectInfo.floorStructure },
-  { label: "Grejanje", value: "Podno" },
-  { label: "Planirani zavrsetak", value: "15.11.2027." },
-];
-
-const overviewFacts = [
-  { icon: Building2, label: "Tip objekta", value: "Stambena zgrada" },
-  { icon: MapPin, label: "Lokacija", value: "Heroja Pinkija 13, Novi Sad" },
-  { icon: Home, label: "Stambene jedinice", value: "15 stanova" },
-  { icon: Layers3, label: "Struktura objekta", value: projectInfo.floorStructure },
-  { icon: Car, label: "Garazna mesta", value: "13 mesta, odvojena kupovina" },
-  { icon: Package, label: "Ostave", value: "15 ostava, odvojena kupovina" },
-  { icon: Clock3, label: "Trenutna faza", value: "Iskop zavrsen, temelji u toku" },
-  { icon: CalendarDays, label: "Planirani zavrsetak", value: "15.11.2027." },
-];
 
 const projectBenefits = [
   {
@@ -80,80 +72,6 @@ const projectBenefits = [
   },
 ];
 
-const constructionTimeline = [
-  {
-    date: "16.03.2026.",
-    title: "Pocetak radova",
-    text: "Radovi na objektu su zapoceti prema projektnoj dinamici.",
-    status: "Zavrseno",
-    variant: "done",
-  },
-  {
-    date: "2026.",
-    title: "Iskop",
-    text: "Faza iskopa je zavrsena i gradiliste je preslo u narednu etapu.",
-    status: "Zavrseno",
-    variant: "done",
-  },
-  {
-    date: "Aktuelno",
-    title: "Temelji",
-    text: "Trenutna faza projekta obuhvata radove na temeljima objekta.",
-    status: "Aktuelno",
-    variant: "active",
-  },
-  {
-    date: "15.11.2027.",
-    title: "Planirani zavrsetak",
-    text: "Predvidjeni termin zavrsetka izgradnje prema dostupnim podacima projekta.",
-    status: "Planirano",
-    variant: "upcoming",
-  },
-];
-
-const detailGroups = [
-  {
-    eyebrow: "Objekat",
-    title: "Osnovni podaci",
-    items: [
-      { label: "Investitor", value: "M & M Gradnja" },
-      { label: "Tip objekta", value: "Stambena zgrada" },
-      { label: "Struktura", value: projectInfo.floorStructure },
-      { label: "Stambene jedinice", value: "15 stanova" },
-    ],
-  },
-  {
-    eyebrow: "Stanovanje",
-    title: "Komfor",
-    items: [
-      { label: "Grejanje", value: "Podno grejanje" },
-      { label: "Vertikalna komunikacija", value: "Lift do svih spratova" },
-      { label: "Raspored", value: "5 stanova po stambenoj etazi" },
-      { label: "Strukture stanova", value: "Garsonjere, dvosobni i trosobni" },
-    ],
-  },
-  {
-    eyebrow: "Dodatne jedinice",
-    title: "Parking i ostave",
-    items: [
-      { label: "Garazna mesta", value: "13 mesta" },
-      { label: "Ostave", value: "15 ostava" },
-      { label: "Dvorisni parking", value: "10 mesta" },
-      { label: "Nacin kupovine", value: "Odvojeno od stana" },
-    ],
-  },
-  {
-    eyebrow: "Realizacija",
-    title: "Rokovi i status",
-    items: [
-      { label: "Pocetak radova", value: "16.03.2026." },
-      { label: "Zavrsena faza", value: "Iskop" },
-      { label: "Aktuelna faza", value: "Temelji u toku" },
-      { label: "Planirani zavrsetak", value: "15.11.2027." },
-    ],
-  },
-];
-
 const featuredApartmentNumbers = new Set(["1", "2", "3", "4", "5"]);
 const featuredApartments = apartments.filter((apartment) =>
   featuredApartmentNumbers.has(apartment.number),
@@ -165,19 +83,6 @@ const featuredApartmentPlans: Record<string, string> = {
   "3": "/images/apartment-plans/showcase-stan-3-8-13.png",
   "4": "/images/apartment-plans/showcase-stan-4-9-14.png",
   "5": "/images/apartment-plans/showcase-stan-5-10-15.png",
-};
-
-const projectContactModal = {
-  eyebrow: "Heroja Pinkija 13",
-  title: "Pisite nam za informacije o projektu",
-  description:
-    "Posaljite upit za cenu, dostupnost stanova, uslove kupovine ili termin obilaska. Prodajni tim ce vam se javiti sa konkretnim informacijama.",
-  inquiryType: "availability" as const,
-  details: [
-    { label: "Projekat", value: "Heroja Pinkija 13" },
-    { label: "Lokacija", value: "Pocetak Telepa" },
-  ],
-  messagePlaceholder: "Napisite koji stan, kvadratura ili termin obilaska vas zanima.",
 };
 
 const reveal = {
@@ -198,12 +103,143 @@ const revealContainer = {
 export const HerojaPinkija13Page = () => {
   const reduceMotion = useReducedMotion();
   const motionState = reduceMotion ? "show" : "hidden";
+  const [project, setProject] = useState(fallbackProjectInfo);
+  const [timeline, setTimeline] = useState(fallbackProjectTimeline);
+  const activeTimelineStep =
+    timeline.find((step) => step.state === "active") ??
+    timeline.find((step) => step.state === "upcoming") ??
+    timeline[timeline.length - 1];
+  const completionCompact =
+    formatProjectDateCompact(project.constructionEndDate) ||
+    formatProjectDateCompact(fallbackProjectInfo.constructionEndDate) ||
+    "15.11.2027.";
+  const startCompact =
+    formatProjectDateCompact(project.constructionStartDate) ||
+    formatProjectDateCompact(fallbackProjectInfo.constructionStartDate) ||
+    "16.03.2026.";
+  const projectHeroImage = project.heroImage || projectImages.hero;
+  const projectAddress = `${project.address}, ${project.city}`;
+  const heroFacts = [
+    { label: "Stanovi", value: "15" },
+    { label: "Struktura", value: project.floorStructure },
+    { label: "Grejanje", value: "Podno" },
+    { label: "Planirani zavrsetak", value: completionCompact },
+  ];
+  const overviewFacts = [
+    { icon: Building2, label: "Tip objekta", value: "Stambena zgrada" },
+    { icon: MapPin, label: "Lokacija", value: projectAddress },
+    { icon: Home, label: "Stambene jedinice", value: "15 stanova" },
+    { icon: Layers3, label: "Struktura objekta", value: project.floorStructure },
+    { icon: Car, label: "Garazna mesta", value: "13 mesta, odvojena kupovina" },
+    { icon: Package, label: "Ostave", value: "15 ostava, odvojena kupovina" },
+    { icon: Clock3, label: "Trenutna faza", value: "Iskop zavrsen, temelji u toku" },
+    { icon: CalendarDays, label: "Planirani zavrsetak", value: completionCompact },
+  ];
+  const detailGroups = [
+    {
+      eyebrow: "Objekat",
+      title: "Osnovni podaci",
+      items: [
+        { label: "Investitor", value: "M & M Gradnja" },
+        { label: "Tip objekta", value: "Stambena zgrada" },
+        { label: "Struktura", value: project.floorStructure },
+        { label: "Stambene jedinice", value: "15 stanova" },
+      ],
+    },
+    {
+      eyebrow: "Stanovanje",
+      title: "Komfor",
+      items: [
+        { label: "Grejanje", value: "Podno grejanje" },
+        { label: "Vertikalna komunikacija", value: "Lift do svih spratova" },
+        { label: "Raspored", value: "5 stanova po stambenoj etazi" },
+        { label: "Strukture stanova", value: "Garsonjere, dvosobni i trosobni" },
+      ],
+    },
+    {
+      eyebrow: "Dodatne jedinice",
+      title: "Parking i ostave",
+      items: [
+        { label: "Garazna mesta", value: "13 mesta" },
+        { label: "Ostave", value: "15 ostava" },
+        { label: "Dvorisni parking", value: "10 mesta" },
+        { label: "Nacin kupovine", value: "Odvojeno od stana" },
+      ],
+    },
+    {
+      eyebrow: "Realizacija",
+      title: "Rokovi i status",
+      items: [
+        { label: "Pocetak radova", value: startCompact },
+        { label: "Zavrsena faza", value: "Iskop" },
+        { label: "Aktuelna faza", value: project.status },
+        { label: "Planirani zavrsetak", value: completionCompact },
+      ],
+    },
+  ];
+  const projectContactModal = {
+    eyebrow: project.name,
+    title: "Pisite nam za informacije o projektu",
+    description:
+      "Posaljite upit za cenu, dostupnost stanova, uslove kupovine ili termin obilaska. Prodajni tim ce vam se javiti sa konkretnim informacijama.",
+    inquiryType: "availability" as const,
+    details: [
+      { label: "Projekat", value: project.name },
+      { label: "Lokacija", value: project.district ? `${project.district}, ${project.city}` : project.city },
+    ],
+    messagePlaceholder: "Napisite koji stan, kvadratura ili termin obilaska vas zanima.",
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    void Promise.all([fetchProjectInfo(), fetchProjectTimeline()])
+      .then(([projectInfo, projectTimeline]) => {
+        if (isMounted) {
+          setProject(projectInfo);
+          setTimeline(projectTimeline);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setProject(fallbackProjectInfo);
+          setTimeline(fallbackProjectTimeline);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <main className="project-showcase">
       <PageMeta
-        title="Heroja Pinkija 13 | M & M Gradnja"
-        description="Pregled projekta Heroja Pinkija 13 u Novom Sadu: stanovi, lokacija, rokovi, status radova i direktan upit prodaji."
+        title={project.seoTitle ?? "Heroja Pinkija 13 | M & M Gradnja"}
+        description={
+          project.seoDescription ??
+          "Pregled projekta Heroja Pinkija 13 u Novom Sadu: stanovi, lokacija, rokovi, status radova i direktan upit prodaji."
+        }
+        canonicalPath="/projekti/heroja-pinkija-13/o-projektu"
+        image={projectHeroImage}
+        structuredData={({ canonicalUrl, imageUrl, origin }) => ({
+          "@context": "https://schema.org",
+          "@type": "ApartmentComplex",
+          name: project.name,
+          description: project.description,
+          url: canonicalUrl,
+          image: imageUrl,
+          telephone: contactPhone,
+          email: contactEmail,
+          tourBookingPage: `${origin}/kontakt`,
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: project.address,
+            addressLocality: project.city,
+            addressRegion: "Vojvodina",
+            addressCountry: "RS",
+          },
+        })}
       />
       <section className="project-showcase-hero">
         <div className="page-container project-showcase-hero__grid">
@@ -217,15 +253,14 @@ export const HerojaPinkija13Page = () => {
               Aktuelni projekat
             </motion.p>
             <motion.h1 className="section-title" variants={reveal}>
-              Heroja Pinkija 13.
+              {project.name}.
             </motion.h1>
             <motion.p className="project-showcase-hero__location" variants={reveal}>
               <MapPin />
-              Pocetak Telepa, Novi Sad
+              {project.district ? `${project.district}, ${project.city}` : projectAddress}
             </motion.p>
             <motion.p className="section-copy section-copy--large" variants={reveal}>
-              Stambena zgrada sa 15 funkcionalno organizovanih stanova, podnim
-              grejanjem, liftom i dodatnom ponudom garaznih mesta i ostava.
+              {project.lead}
             </motion.p>
             <motion.div className="page-actions" variants={reveal}>
               <Link
@@ -239,7 +274,7 @@ export const HerojaPinkija13Page = () => {
                 className="site-button site-button--outline"
                 modalOptions={projectContactModal}
               >
-                <CalendarDays />
+                <MessageCircle />
                 Pisite nam
               </ContactModalButton>
             </motion.div>
@@ -254,14 +289,16 @@ export const HerojaPinkija13Page = () => {
           >
             <div className="project-showcase-hero__image">
               <img
-                src={projectImages.hero}
-                alt="Eksterijer projekta Heroja Pinkija 13"
+                src={projectHeroImage}
+                alt={`Eksterijer projekta ${project.name}`}
                 width="818"
                 height="783"
+                fetchPriority="high"
+                decoding="async"
               />
               <span className="project-showcase-hero__status">
                 <span />
-                Prodaja u toku
+                {project.status}
               </span>
             </div>
             <dl className="project-showcase-hero__facts">
@@ -371,7 +408,7 @@ export const HerojaPinkija13Page = () => {
             </p>
             <div className="project-showcase-progress__current">
               <span>Aktuelna faza</span>
-              <strong>Temelji u toku</strong>
+              <strong>{activeTimelineStep?.title ?? project.status}</strong>
             </div>
           </motion.div>
 
@@ -379,22 +416,22 @@ export const HerojaPinkija13Page = () => {
             className="project-showcase-progress__timeline"
             variants={revealContainer}
           >
-            {constructionTimeline.map((step, index) => (
+            {timeline.map((step, index) => (
               <motion.li
-                className={`project-showcase-progress__step project-showcase-progress__step--${step.variant}`}
+                className={`project-showcase-progress__step project-showcase-progress__step--${step.state}`}
                 key={step.title}
                 variants={reveal}
               >
                 <div className="project-showcase-progress__marker">
-                  {step.variant === "done" ? <Check /> : <span>{index + 1}</span>}
+                  {step.state === "done" ? <Check /> : <span>{index + 1}</span>}
                 </div>
                 <div>
                   <div className="project-showcase-progress__step-head">
                     <span>{step.date}</span>
-                    <small>{step.status}</small>
+                    <small>{step.statusLabel}</small>
                   </div>
                   <h3>{step.title}</h3>
-                  <p>{step.text}</p>
+                  <p>{step.body}</p>
                 </div>
               </motion.li>
             ))}
@@ -568,6 +605,7 @@ export const HerojaPinkija13Page = () => {
               width="1663"
               height="1247"
               loading="lazy"
+              decoding="async"
             />
             <span>
               <MapPin />
@@ -592,8 +630,7 @@ export const HerojaPinkija13Page = () => {
               Pocetak Telepa, povezan sa gradom.
             </motion.h2>
             <motion.p className="section-copy" variants={reveal}>
-              Objekat se nalazi na adresi Heroja Pinkija 13 u Novom Sadu, u delu
-              Telepa sa linijom 12 ka centru i svakodnevnim sadrzajima u blizini.
+              {project.locationDescription ?? fallbackProjectInfo.locationDescription}
             </motion.p>
             <motion.ul variants={reveal}>
               <li>
@@ -629,7 +666,7 @@ export const HerojaPinkija13Page = () => {
         >
           <motion.div variants={reveal}>
             <p className="section-eyebrow">Sledeci korak</p>
-            <h2>Izaberite stan ili zakazite razgovor sa prodajom.</h2>
+            <h2>Izaberite stan ili posaljite upit prodaji.</h2>
             <p>
               Proverite kvadrature i rasporede ili nam se obratite za cenu,
               uslove kupovine i termin obilaska.
@@ -647,7 +684,7 @@ export const HerojaPinkija13Page = () => {
               className="project-showcase-cta__link"
               modalOptions={projectContactModal}
             >
-              <CalendarDays />
+              <MessageCircle />
               Pisite nam
               <ArrowUpRight />
             </ContactModalButton>

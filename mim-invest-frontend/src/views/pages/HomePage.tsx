@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { AnimatePresence, motion, useScroll, useSpring, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 import {
   ArrowUpRight,
   Building2,
@@ -43,6 +43,11 @@ const fadeUp = {
   show: { opacity: 1, y: 0 },
 };
 
+const staticFadeUp = {
+  hidden: { opacity: 1, y: 0 },
+  show: { opacity: 1, y: 0 },
+};
+
 const heroTextContainer = {
   hidden: {},
   show: {
@@ -57,6 +62,13 @@ const heroTextLine = {
   hidden: { opacity: 0, y: 28, filter: "blur(8px)" },
   show: { opacity: 1, y: 0, filter: "blur(0px)" },
 };
+
+const staticHeroTextLine = {
+  hidden: { opacity: 1, y: 0, filter: "blur(0px)" },
+  show: { opacity: 1, y: 0, filter: "blur(0px)" },
+};
+
+const instantTransition = { duration: 0 };
 
 const lifestyleItems = [
   {
@@ -127,6 +139,7 @@ type ProjectTab = "active" | "upcoming" | "completed";
 export const HomePage = () => {
   const heroRef = useRef<HTMLElement>(null);
   const [activeTab, setActiveTab] = useState<ProjectTab>("active");
+  const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
@@ -142,19 +155,47 @@ export const HomePage = () => {
   const contentY = useTransform(smoothScroll, [0, 0.68], ["0px", "-58px"]);
   const contentScale = useTransform(smoothScroll, [0, 0.68], [1, 0.96]);
   const contentBlur = useTransform(smoothScroll, [0, 0.62], ["blur(0px)", "blur(10px)"]);
+  const reveal = reduceMotion ? staticFadeUp : fadeUp;
+  const heroText = reduceMotion ? staticHeroTextLine : heroTextLine;
+  const revealTransition = reduceMotion ? instantTransition : { duration: 0.55 };
 
   return (
     <main>
       <PageMeta
         title="M & M Gradnja | Stanovi Heroja Pinkija 13 Novi Sad"
         description="Premium prezentacija projekta Heroja Pinkija 13 u Novom Sadu, sa ponudom stanova, tlocrtima, lokacijom i direktnim upitom prodaji."
+        structuredData={({ canonicalUrl, origin }) => ({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "M & M Gradnja",
+          url: canonicalUrl,
+          logo: `${origin}/images/TRADE.png`,
+          email: contactEmail,
+          telephone: contactPhone,
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "Heroja Pinkija 13",
+            addressLocality: "Novi Sad",
+            addressCountry: "RS",
+          },
+          contactPoint: {
+            "@type": "ContactPoint",
+            telephone: contactPhone,
+            email: contactEmail,
+            contactType: "sales",
+            areaServed: "RS",
+            availableLanguage: ["sr-Latn"],
+          },
+        })}
       />
       <section className="home-hero" ref={heroRef}>
         <motion.img
           src={images.hero}
           alt="Savremena stambena zgrada sa uredjenom fasadom"
           className="home-hero__image"
-          style={{ y: imageY, scale: imageScale }}
+          fetchPriority="high"
+          decoding="async"
+          style={reduceMotion ? undefined : { y: imageY, scale: imageScale }}
         />
         <div className="home-hero__overlay" />
         <div className="home-hero__fade" />
@@ -164,19 +205,23 @@ export const HomePage = () => {
           initial="hidden"
           animate="show"
           variants={heroTextContainer}
-          style={{
-            opacity: contentOpacity,
-            y: contentY,
-            scale: contentScale,
-            filter: contentBlur,
-          }}
+          style={
+            reduceMotion
+              ? undefined
+              : {
+                  opacity: contentOpacity,
+                  y: contentY,
+                  scale: contentScale,
+                  filter: contentBlur,
+                }
+          }
         >
           <h1>
             {heroLines.map((line) => (
               <motion.span
                 key={line}
-                variants={heroTextLine}
-                transition={{ duration: 0.82, ease: "easeOut" }}
+                variants={heroText}
+                transition={reduceMotion ? instantTransition : { duration: 0.82, ease: "easeOut" }}
               >
                 {line}
               </motion.span>
@@ -228,8 +273,8 @@ export const HomePage = () => {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.3 }}
-            variants={fadeUp}
-            transition={{ duration: 0.55 }}
+            variants={reveal}
+            transition={revealTransition}
           >
             <div>
               <p className="section-eyebrow">Projekti</p>
@@ -281,9 +326,11 @@ export const HomePage = () => {
           </div>
 
           <AnimatePresence mode="wait">
-            {activeTab === "active" ? <ActiveProjectCard key="active" /> : null}
-            {activeTab === "upcoming" ? <UpcomingProjectsCard key="upcoming" /> : null}
-            {activeTab === "completed" ? <CompletedProjectsCard key="completed" /> : null}
+            {activeTab === "active" ? <ActiveProjectCard key="active" reduceMotion={Boolean(reduceMotion)} /> : null}
+            {activeTab === "upcoming" ? <UpcomingProjectsCard key="upcoming" reduceMotion={Boolean(reduceMotion)} /> : null}
+            {activeTab === "completed" ? (
+              <CompletedProjectsCard key="completed" reduceMotion={Boolean(reduceMotion)} />
+            ) : null}
           </AnimatePresence>
         </div>
       </section>
@@ -295,8 +342,8 @@ export const HomePage = () => {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.3 }}
-            variants={fadeUp}
-            transition={{ duration: 0.55 }}
+            variants={reveal}
+            transition={revealTransition}
           >
             <div>
               <p className="section-eyebrow">Kupujemo placeve</p>
@@ -316,8 +363,8 @@ export const HomePage = () => {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.25 }}
-            variants={fadeUp}
-            transition={{ duration: 0.55, delay: 0.08 }}
+            variants={reveal}
+            transition={reduceMotion ? instantTransition : { duration: 0.55, delay: 0.08 }}
           >
             <div className="land-preview-card__copy">
               <span className="icon-bubble">
@@ -376,8 +423,8 @@ export const HomePage = () => {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
-          variants={fadeUp}
-          transition={{ duration: 0.55 }}
+          variants={reveal}
+          transition={revealTransition}
         >
           <div>
             <p className="section-eyebrow">Prodaja i obilazak</p>
@@ -417,15 +464,19 @@ export const HomePage = () => {
   );
 };
 
-const ActiveProjectCard = () => {
+type PortfolioCardProps = {
+  reduceMotion: boolean;
+};
+
+const ActiveProjectCard = ({ reduceMotion }: PortfolioCardProps) => {
   return (
     <motion.article
       className="portfolio-card"
       initial="hidden"
       animate="show"
-      exit={{ opacity: 0, y: 14 }}
-      variants={fadeUp}
-      transition={{ duration: 0.55 }}
+      exit={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
+      variants={reduceMotion ? staticFadeUp : fadeUp}
+      transition={reduceMotion ? instantTransition : { duration: 0.55 }}
     >
       <div className="portfolio-card__copy">
         <p className="section-eyebrow">U prodaji</p>
@@ -469,12 +520,20 @@ const ActiveProjectCard = () => {
             className="portfolio-card__image portfolio-card__image--facade"
             src={images.living}
             alt="Render fasade projekta Heroja Pinkija 13"
+            width="560"
+            height="676"
+            loading="lazy"
+            decoding="async"
           />
           <div>
             <img
               className="portfolio-card__image portfolio-card__image--works"
               src={images.terrace}
               alt="Radovi u toku na projektu Heroja Pinkija 13"
+              width="1663"
+              height="1247"
+              loading="lazy"
+              decoding="async"
             />
             <div className="portfolio-note">
               <div>
@@ -502,15 +561,15 @@ const ActiveProjectCard = () => {
   );
 };
 
-const UpcomingProjectsCard = () => {
+const UpcomingProjectsCard = ({ reduceMotion }: PortfolioCardProps) => {
   return (
     <motion.article
       className="portfolio-card portfolio-card--muted"
       initial="hidden"
       animate="show"
-      exit={{ opacity: 0, y: 14 }}
-      variants={fadeUp}
-      transition={{ duration: 0.55 }}
+      exit={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
+      variants={reduceMotion ? staticFadeUp : fadeUp}
+      transition={reduceMotion ? instantTransition : { duration: 0.55 }}
     >
       <div className="portfolio-card__copy portfolio-card__copy--surface">
         <p className="section-eyebrow">U pripremi</p>
@@ -539,15 +598,15 @@ const UpcomingProjectsCard = () => {
   );
 };
 
-const CompletedProjectsCard = () => {
+const CompletedProjectsCard = ({ reduceMotion }: PortfolioCardProps) => {
   return (
     <motion.article
       className="portfolio-card portfolio-card--muted"
       initial="hidden"
       animate="show"
-      exit={{ opacity: 0, y: 14 }}
-      variants={fadeUp}
-      transition={{ duration: 0.55 }}
+      exit={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
+      variants={reduceMotion ? staticFadeUp : fadeUp}
+      transition={reduceMotion ? instantTransition : { duration: 0.55 }}
     >
       <div className="portfolio-card__copy portfolio-card__copy--dark">
         <p className="section-eyebrow">Realizovani projekti</p>

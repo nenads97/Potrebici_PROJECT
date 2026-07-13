@@ -27,6 +27,8 @@ export type Apartment = {
   orientation: string;
   highlight: string;
   description: string;
+  seoTitle?: string;
+  seoDescription?: string;
   priceRange: string;
   availabilityNote: string;
   bathrooms: string;
@@ -50,9 +52,15 @@ export type ProjectInfo = {
   status: string;
   lead: string;
   description: string;
+  locationDescription?: string;
   floorStructure: string;
   constructionStart: string;
   plannedCompletion: string;
+  constructionStartDate?: string;
+  constructionEndDate?: string;
+  heroImage?: string;
+  seoTitle?: string;
+  seoDescription?: string;
 };
 
 export type ProjectStat = {
@@ -82,6 +90,7 @@ export type TimelineItem = {
   date: string;
   title: string;
   body: string;
+  statusLabel?: string;
   state: "done" | "active" | "upcoming";
 };
 

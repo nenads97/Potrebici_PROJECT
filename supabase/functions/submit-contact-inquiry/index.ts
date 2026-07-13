@@ -7,13 +7,25 @@ import {
   sendBrevoEmail,
 } from "../_shared/mail.ts";
 import {
+  checkFormRateLimit,
+  recordFormRateLimitEvents,
+} from "../_shared/rate-limit.ts";
+import {
   isSpamHoneypot,
   optionalString,
   requiredString,
-  sha256,
   validEmail,
   validPhone,
 } from "../_shared/validation.ts";
+
+type ContactInquiryType = "general" | "unit" | "viewing" | "availability";
+
+const inquiryTypeLabels: Record<ContactInquiryType, string> = {
+  general: "Opsti upit",
+  unit: "Konkretan stan",
+  viewing: "Obilazak",
+  availability: "Dostupnost",
+};
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -33,10 +45,17 @@ Deno.serve(async (req) => {
 
     const fullName = requiredString(payload.fullName, "Ime i prezime");
     const email = validEmail(payload.email);
-    const phone = validPhone(payload.phone);
+    const inquiryType = validInquiryType(payload.inquiryType);
+    const phone = inquiryType.ok
+      ? validPhone(payload.phone, isSalesPhoneRequired(inquiryType.value))
+      : validPhone(payload.phone);
     const message = optionalString(payload.message, 4000);
+    const projectSlug = optionalString(payload.projectSlug, 120);
+    const unitCode = optionalString(payload.unitCode, 80);
+    const sourcePage = validInternalSourcePage(payload.sourcePage);
 
-    const invalid = [fullName, email, phone, message].find((item) => !item.ok);
+    const invalid = [fullName, email, inquiryType, phone, message, projectSlug, unitCode, sourcePage]
+      .find((item) => !item.ok);
     if (invalid && !invalid.ok) {
       return jsonResponse({ error: invalid.message }, 400);
     }
@@ -46,30 +65,28 @@ Deno.serve(async (req) => {
     }
 
     const supabase = createServiceClient();
-    const identifierHash = await sha256(email.value.toLowerCase());
-    const rateLimitWindow = new Date(Date.now() - 15 * 60 * 1000).toISOString();
-    const { count: recentSubmissions } = await supabase
-      .from("form_rate_limit_events")
-      .select("id", { count: "exact", head: true })
-      .eq("action", "submit-contact-inquiry")
-      .eq("identifier_hash", identifierHash)
-      .gte("created_at", rateLimitWindow);
+    const rateLimit = await checkFormRateLimit(supabase, {
+      action: "submit-contact-inquiry",
+      email: email.value,
+      request: req,
+      sourcePage: sourcePage.value,
+    });
 
-    if ((recentSubmissions ?? 0) >= 5) {
-      return jsonResponse({ error: "Previse pokusaja. Pokusajte ponovo kasnije." }, 429);
+    if (!rateLimit.ok) {
+      return jsonResponse({ error: rateLimit.message }, 429);
     }
 
     const { data: inquiry, error } = await supabase
       .from("contact_inquiries")
       .insert({
-        project_slug: payload.projectSlug ?? "heroja-pinkija-13",
-        unit_code: payload.unitCode ?? null,
-        inquiry_type: payload.inquiryType ?? "general",
+        project_slug: projectSlug.value ?? "heroja-pinkija-13",
+        unit_code: unitCode.value,
+        inquiry_type: inquiryType.value,
         full_name: fullName.value,
         phone: phone.value,
         email: email.value,
         message: message.value,
-        source_page: payload.sourcePage ?? null,
+        source_page: sourcePage.value,
         consent_accepted: true,
       })
       .select("id")
@@ -79,11 +96,22 @@ Deno.serve(async (req) => {
       throw error;
     }
 
-    await supabase.from("form_rate_limit_events").insert({
-      action: "submit-contact-inquiry",
-      identifier_hash: identifierHash,
-      source_page: payload.sourcePage ?? null,
-    });
+    await recordFormRateLimitEvents(supabase, rateLimit.events);
+
+    const salesContextText = [
+      `Tip upita: ${inquiryTypeLabels[inquiryType.value]}`,
+      `Stan: ${unitCode.value ?? "-"}`,
+      `Izvor: ${sourcePage.value ?? "-"}`,
+      `Projekat: ${projectSlug.value ?? "heroja-pinkija-13"}`,
+    ].join("\n");
+    const salesContextHtml = [
+      ["Tip upita", inquiryTypeLabels[inquiryType.value]],
+      ["Stan", unitCode.value ?? "-"],
+      ["Izvor", sourcePage.value ?? "-"],
+      ["Projekat", projectSlug.value ?? "heroja-pinkija-13"],
+    ]
+      .map(([label, value]) => `<p><strong>${label}:</strong> ${escapeHtml(value)}</p>`)
+      .join("");
 
     await sendAndLog({
       relatedEntityId: inquiry.id,
@@ -98,9 +126,11 @@ Deno.serve(async (req) => {
       relatedEntityId: inquiry.id,
       recipientEmail: await getSalesEmail(),
       deliveryKind: "sales_notification",
-      subject: "Novi upit za stanove",
-      text: `Novi upit\nIme: ${fullName.value}\nTelefon: ${phone.value ?? "-"}\nEmail: ${email.value}\nPoruka: ${message.value ?? "-"}`,
-      html: `<h2>Novi upit</h2><p><strong>Ime:</strong> ${escapeHtml(fullName.value)}</p><p><strong>Telefon:</strong> ${escapeHtml(phone.value ?? "-")}</p><p><strong>Email:</strong> ${escapeHtml(email.value)}</p><p><strong>Poruka:</strong><br>${escapeHtml(message.value ?? "-")}</p>`,
+      subject: unitCode.value
+        ? `Novi upit za ${unitCode.value}`
+        : "Novi upit za stanove",
+      text: `Novi upit\n${salesContextText}\nIme: ${fullName.value}\nTelefon: ${phone.value ?? "-"}\nEmail: ${email.value}\nPoruka: ${message.value ?? "-"}`,
+      html: `<h2>Novi upit</h2>${salesContextHtml}<p><strong>Ime:</strong> ${escapeHtml(fullName.value)}</p><p><strong>Telefon:</strong> ${escapeHtml(phone.value ?? "-")}</p><p><strong>Email:</strong> ${escapeHtml(email.value)}</p><p><strong>Poruka:</strong><br>${escapeHtml(message.value ?? "-")}</p>`,
     });
 
     return jsonResponse({ ok: true, id: inquiry.id });
@@ -138,4 +168,39 @@ async function sendAndLog(input: {
 
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Doslo je do greske pri slanju upita.";
+}
+
+function validInquiryType(value: unknown) {
+  if (value === undefined || value === null || value === "") {
+    return { ok: true, value: "general" } as const;
+  }
+
+  if (
+    value === "general" ||
+    value === "unit" ||
+    value === "viewing" ||
+    value === "availability"
+  ) {
+    return { ok: true, value } as const;
+  }
+
+  return { ok: false, message: "Nepoznat tip upita." } as const;
+}
+
+function isSalesPhoneRequired(inquiryType: ContactInquiryType) {
+  return inquiryType === "unit" || inquiryType === "viewing" || inquiryType === "availability";
+}
+
+function validInternalSourcePage(value: unknown) {
+  const text = typeof value === "string" ? value.trim() : "";
+
+  if (!text) {
+    return { ok: true, value: null } as const;
+  }
+
+  if (text.length > 500 || !text.startsWith("/") || text.startsWith("//")) {
+    return { ok: false, message: "Neispravan izvor upita." } as const;
+  }
+
+  return { ok: true, value: text } as const;
 }

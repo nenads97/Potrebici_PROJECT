@@ -1,4 +1,4 @@
-import { Building2, CalendarDays, Car, Mail, MapPin, Navigation, Phone, Trees } from "lucide-react";
+import { Building2, Car, Mail, MapPin, MessageCircle, Navigation, Phone, Trees } from "lucide-react";
 
 import { ContactModalButton } from "../../features/inquiries/components/ContactModal";
 import { contactEmail, contactPhone } from "../../features/projects/data/herojaPinkija13.data";
@@ -35,6 +35,30 @@ export const LocationPage = () => {
       <PageMeta
         title="Lokacija Heroja Pinkija 13 | M & M Gradnja"
         description="Pogledajte lokaciju projekta Heroja Pinkija 13 na pocetku Telepa u Novom Sadu, uz vezu sa gradom i sadrzaje u blizini."
+        structuredData={({ canonicalUrl, imageUrl, origin }) => ({
+          "@context": "https://schema.org",
+          "@type": "ApartmentComplex",
+          name: "Heroja Pinkija 13",
+          description:
+            "Lokacija projekta Heroja Pinkija 13 na pocetku Telepa u Novom Sadu, uz vezu sa gradom i sadrzaje u blizini.",
+          url: canonicalUrl,
+          image: imageUrl,
+          telephone: contactPhone,
+          email: contactEmail,
+          tourBookingPage: `${origin}/kontakt`,
+          geo: {
+            "@type": "GeoCoordinates",
+            latitude: 45.237485,
+            longitude: 19.822429,
+          },
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "Heroja Pinkija 13",
+            addressLocality: "Novi Sad",
+            addressRegion: "Vojvodina",
+            addressCountry: "RS",
+          },
+        })}
       />
       <section className="page-section page-section--surface">
         <div className="page-container split-grid split-grid--center">
@@ -48,7 +72,7 @@ export const LocationPage = () => {
             </p>
 
             <div className="page-actions">
-              <a className="site-button site-button--accent" href={location.mapsUrl} target="_blank" rel="noreferrer">
+              <a className="site-button site-button--accent" href={location.mapsUrl} target="_blank" rel="noopener noreferrer">
                 <Navigation />
                 Otvori Google Maps
               </a>
@@ -64,8 +88,8 @@ export const LocationPage = () => {
                   messagePlaceholder: "Napisite pitanje o lokaciji ili predlog termina za obilazak.",
                 }}
               >
-                <CalendarDays />
-                Pisite prodaji
+                <MessageCircle />
+                Pisite nam
               </ContactModalButton>
             </div>
           </div>

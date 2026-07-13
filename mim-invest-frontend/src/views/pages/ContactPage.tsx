@@ -1,6 +1,5 @@
 import {
   ArrowUpRight,
-  FileText,
   Mail,
   MapPin,
   MessageCircle,
@@ -32,23 +31,23 @@ const heroHighlights = [
 const contactMethods = [
   {
     icon: Phone,
-    label: "Telefon",
+    label: "Brz poziv",
     title: formatPhone(contactPhone),
     text: "Pozovite prodaju za dostupnost stanova, cene, kvadrature i uslove kupovine.",
     href: `tel:${contactPhone}`,
-    action: "Pozovite sada",
+    action: "Pozovite prodaju",
   },
   {
     icon: Mail,
-    label: "E-mail",
-    title: contactEmail,
+    label: "Pisani upit",
+    title: "Pisite nam",
     text: "Posaljite upit sa stanom koji vas zanima ili pitanjem o projektu.",
     href: `mailto:${contactEmail}`,
     action: "Pisite nam",
   },
   {
     icon: MapPin,
-    label: "Adresa",
+    label: "Obilazak lokacije",
     title: location.address,
     text: `${location.city}, ${location.country}. Lokacija je na pocetku Telepa, uz dobru vezu sa gradom.`,
     href: "#kontakt-mapa",
@@ -81,6 +80,34 @@ export const ContactPage = () => {
       <PageMeta
         title="Kontakt | M & M Gradnja"
         description="Kontaktirajte prodaju za stanove, dostupnost, cenu i obilazak projekta Heroja Pinkija 13 u Novom Sadu."
+        structuredData={({ canonicalUrl, origin }) => ({
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          name: "Kontakt | M & M Gradnja",
+          url: canonicalUrl,
+          mainEntity: {
+            "@type": "Organization",
+            name: "M & M Gradnja",
+            url: origin,
+            email: contactEmail,
+            telephone: contactPhone,
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: location.address,
+              postalCode: "21000",
+              addressLocality: "Novi Sad",
+              addressCountry: "RS",
+            },
+            contactPoint: {
+              "@type": "ContactPoint",
+              telephone: contactPhone,
+              email: contactEmail,
+              contactType: "sales",
+              areaServed: "RS",
+              availableLanguage: ["sr-Latn"],
+            },
+          },
+        })}
       />
       <section className="page-section page-section--surface contact-hero">
         <div className="page-container split-grid split-grid--end">
@@ -107,7 +134,12 @@ export const ContactPage = () => {
           </div>
 
           <div className="image-card contact-hero-card">
-            <img src={contactHeroImage} alt="M & M Gradnja objekat" />
+            <img
+              src={contactHeroImage}
+              alt="M & M Gradnja objekat"
+              fetchPriority="high"
+              decoding="async"
+            />
             <div>
               <p className="section-eyebrow">Direktna prodaja</p>
               <a href={`tel:${contactPhone}`}>
@@ -157,7 +189,7 @@ export const ContactPage = () => {
                 <small>{label}</small>
                 <h3>{title}</h3>
                 <p>{text}</p>
-                {label === "E-mail" ? (
+                {label === "Pisani upit" ? (
                   <ContactModalButton
                     className="info-card__action"
                     modalOptions={contactPageModal}
@@ -204,50 +236,6 @@ export const ContactPage = () => {
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />
-          </div>
-        </div>
-      </section>
-
-      <section id="kontakt-forma" className="page-section page-section--surface">
-        <div className="page-container split-grid">
-          <div>
-            <p className="section-eyebrow">Pisite nam</p>
-            <h2 className="section-title section-title--medium">Posaljite kratak upit prodaji.</h2>
-            <p className="section-copy">
-              Napisite sta vas zanima: konkretan stan, kvadratura, termin obilaska
-              ili uslovi kupovine. Odgovor cemo usmeriti na tacno ono sto vam treba.
-            </p>
-            <div className="contact-links">
-              <a href={`tel:${contactPhone}`}>
-                <Phone className="icon-inline" />
-                {formatPhone(contactPhone)}
-              </a>
-              <a href={`mailto:${contactEmail}`}>
-                <MessageCircle className="icon-inline" />
-                {contactEmail}
-              </a>
-            </div>
-          </div>
-
-          <div className="soft-card contact-modal-cta-card">
-            <span className="icon-bubble">
-              <FileText />
-            </span>
-            <div>
-              <h3>Jedna forma za sve upite.</h3>
-              <p>
-                Isti kontakt modal koristi se kroz ceo sajt, pa kupac ne gubi
-                kontekst stranice sa koje se javlja.
-              </p>
-            </div>
-            <ContactModalButton
-              className="site-button site-button--dark"
-              modalOptions={contactPageModal}
-            >
-              <MessageCircle />
-              Pisite nam
-              <ArrowUpRight />
-            </ContactModalButton>
           </div>
         </div>
       </section>

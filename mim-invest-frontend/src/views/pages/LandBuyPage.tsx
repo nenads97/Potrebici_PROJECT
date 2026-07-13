@@ -1,6 +1,6 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowUpRight,
   ClipboardCheck,
@@ -18,7 +18,7 @@ import { contactEmail, contactPhone } from "../../features/projects/data/herojaP
 import { submitLandOffer } from "../../features/inquiries/api/inquiryFunctions.api";
 import { PageMeta } from "../../shared/components/PageMeta";
 
-const landHeroImage = "/images/kupovina-placeva-hero.png";
+const landHeroImage = "/images/kupovina-placeva-hero.jpg";
 
 const heroHighlights = [
   { value: "Novi Sad", label: "fokus lokacije" },
@@ -69,23 +69,42 @@ const fadeUp = {
   show: { opacity: 1, y: 0 },
 };
 
+const staticFadeUp = {
+  hidden: { opacity: 1, y: 0 },
+  show: { opacity: 1, y: 0 },
+};
+
+const instantTransition = { duration: 0 };
+
 export const LandBuyPage = () => {
+  const reduceMotion = useReducedMotion();
+  const reveal = reduceMotion ? staticFadeUp : fadeUp;
+  const revealTransition = reduceMotion ? instantTransition : { duration: 0.55 };
+
   return (
     <main className="land-page">
       <PageMeta
         title="Kupujemo placeve | M & M Gradnja"
         description="M & M Gradnja razmatra placeve i kuce za rusenje u Novom Sadu i okolini za buduce stambene projekte."
+        image={landHeroImage}
       />
       <section className="land-hero">
-        <img src={landHeroImage} alt="Parcela pogodna za stambenu gradnju" />
+        <img
+          src={landHeroImage}
+          alt="Parcela pogodna za stambenu gradnju"
+          width="1672"
+          height="941"
+          fetchPriority="high"
+          decoding="async"
+        />
         <div className="land-hero__overlay" />
 
         <motion.div
           className="page-container land-hero__content"
           initial="hidden"
           animate="show"
-          variants={fadeUp}
-          transition={{ duration: 0.6 }}
+          variants={reveal}
+          transition={reduceMotion ? instantTransition : { duration: 0.6 }}
         >
           <p className="section-eyebrow">Kupujemo placeve</p>
           <h1>Imate plac ili kucu za stambenu gradnju?</h1>
@@ -108,9 +127,9 @@ export const LandBuyPage = () => {
 
         <motion.div
           className="page-container land-hero__stats"
-          initial={{ opacity: 0, y: 18 }}
+          initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay: 0.12 }}
+          transition={reduceMotion ? instantTransition : { duration: 0.55, delay: 0.12 }}
         >
           {heroHighlights.map((item) => (
             <div key={item.value}>
@@ -127,8 +146,8 @@ export const LandBuyPage = () => {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.3 }}
-            variants={fadeUp}
-            transition={{ duration: 0.55 }}
+            variants={reveal}
+            transition={revealTransition}
           >
             <p className="section-eyebrow">Formular za ponudu</p>
             <h2 className="section-title section-title--medium">Prvi korak je kratak upit.</h2>
@@ -160,8 +179,8 @@ export const LandBuyPage = () => {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.3 }}
-            variants={fadeUp}
-            transition={{ duration: 0.55 }}
+            variants={reveal}
+            transition={revealTransition}
           >
             <p className="section-eyebrow">Sta trazimo</p>
             <h2 className="section-title section-title--medium">
@@ -183,11 +202,11 @@ export const LandBuyPage = () => {
               <motion.article
                 className="info-card"
                 key={title}
-                initial={{ opacity: 0, y: 16 }}
+                initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.45, delay: index * 0.06 }}
-                whileHover={{ y: -4 }}
+                transition={reduceMotion ? instantTransition : { duration: 0.45, delay: index * 0.06 }}
+                whileHover={reduceMotion ? undefined : { y: -4 }}
               >
                 <span className="icon-bubble">
                   <Icon />
@@ -207,8 +226,8 @@ export const LandBuyPage = () => {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.25 }}
-            variants={fadeUp}
-            transition={{ duration: 0.55 }}
+            variants={reveal}
+            transition={revealTransition}
           >
             <div>
               <ClipboardCheck className="icon-inline" />
@@ -226,8 +245,8 @@ export const LandBuyPage = () => {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.25 }}
-            variants={fadeUp}
-            transition={{ duration: 0.55, delay: 0.08 }}
+            variants={reveal}
+            transition={reduceMotion ? instantTransition : { duration: 0.55, delay: 0.08 }}
           >
             <p className="section-eyebrow">Sigurna saradnja</p>
             <h2 className="section-title section-title--medium">
@@ -259,6 +278,7 @@ export const LandBuyPage = () => {
 const PropertyOfferForm = () => {
   const [formStatus, setFormStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [formMessage, setFormMessage] = useState("");
+  const reduceMotion = useReducedMotion();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -296,11 +316,12 @@ const PropertyOfferForm = () => {
     <motion.form
       className="soft-card inquiry-form"
       onSubmit={handleSubmit}
+      aria-busy={formStatus === "sending"}
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, amount: 0.2 }}
-      variants={fadeUp}
-      transition={{ duration: 0.55, delay: 0.08 }}
+      variants={reduceMotion ? staticFadeUp : fadeUp}
+      transition={reduceMotion ? instantTransition : { duration: 0.55, delay: 0.08 }}
     >
       <div className="inquiry-form__head">
         <FileText className="icon-inline" />
@@ -312,15 +333,25 @@ const PropertyOfferForm = () => {
 
       <div className="inquiry-form__body">
         <div className="form-grid form-grid--two">
-          <FormField id="land-name" label="Ime" name="name" required />
-          <FormField id="land-phone" label="Telefon" name="phone" type="tel" required />
-          <FormField id="land-email" label="E-mail" name="email" type="email" required />
-          <FormField id="land-address" label="Adresa nekretnine" name="address" />
+          <FormField id="land-name" label="Ime" name="name" autoComplete="name" required />
+          <FormField
+            id="land-phone"
+            label="Telefon"
+            name="phone"
+            type="tel"
+            autoComplete="tel"
+            inputMode="tel"
+            required
+          />
+          <FormField id="land-email" label="E-mail" name="email" type="email" autoComplete="email" required />
+          <FormField id="land-address" label="Adresa nekretnine" name="address" autoComplete="street-address" />
           <FormField
             id="land-plot-area"
             label="Povrsina parcele (m2)"
             name="plotArea"
             type="number"
+            inputMode="numeric"
+            min="0"
           />
         </div>
 
@@ -342,8 +373,8 @@ const PropertyOfferForm = () => {
           />
         </div>
 
-        <label className="form-consent">
-          <input name="consent" required type="checkbox" />
+        <label className="form-consent" htmlFor="land-consent">
+          <input id="land-consent" name="consent" required type="checkbox" />
           <span>Saglasan/saglasna sam da me kontaktirate povodom poslate ponude.</span>
         </label>
 
@@ -351,16 +382,20 @@ const PropertyOfferForm = () => {
           <p
             className={`form-feedback form-feedback--${formStatus}`}
             role={formStatus === "error" ? "alert" : "status"}
+            aria-live={formStatus === "error" ? "assertive" : "polite"}
           >
             {formMessage}
           </p>
         ) : null}
 
-        <button className="site-button site-button--dark" type="submit" disabled={formStatus === "sending"}>
-          <MessageCircle />
-          {formStatus === "sending" ? "Slanje..." : "Posaljite podatke"}
-          <ArrowUpRight />
-        </button>
+        <div className="inquiry-form__submit-group">
+          <button className="site-button site-button--dark" type="submit" disabled={formStatus === "sending"}>
+            <MessageCircle />
+            {formStatus === "sending" ? "Slanje..." : "Posaljite podatke"}
+            <ArrowUpRight />
+          </button>
+          <p>Prva provera je bez obaveze. Javljamo se nakon sto pogledamo osnovne podatke o lokaciji.</p>
+        </div>
       </div>
     </motion.form>
   );
@@ -372,16 +407,37 @@ type FormFieldProps = {
   name: string;
   required?: boolean;
   type?: string;
+  autoComplete?: string;
+  inputMode?: "none" | "text" | "decimal" | "numeric" | "tel" | "search" | "email" | "url";
+  min?: string;
 };
 
-const FormField = ({ id, label, name, required = false, type = "text" }: FormFieldProps) => {
+const FormField = ({
+  id,
+  label,
+  name,
+  required = false,
+  type = "text",
+  autoComplete,
+  inputMode,
+  min,
+}: FormFieldProps) => {
   return (
     <div className="form-field">
       <label className="form-label" htmlFor={id}>
         {label}
         {required ? " *" : ""}
       </label>
-      <input className="form-input" id={id} name={name} required={required} type={type} />
+      <input
+        className="form-input"
+        id={id}
+        name={name}
+        required={required}
+        type={type}
+        autoComplete={autoComplete}
+        inputMode={inputMode}
+        min={min}
+      />
     </div>
   );
 };

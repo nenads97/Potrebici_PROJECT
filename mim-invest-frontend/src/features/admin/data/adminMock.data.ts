@@ -1,5 +1,6 @@
-import { apartments, projectInfo } from "../../projects/data/herojaPinkija13.data";
+import { apartments, projectInfo, projectTimeline } from "../../projects/data/herojaPinkija13.data";
 import type {
+  AdminConstructionUpdate,
   AdminInquiry,
   AdminLandOffer,
   AdminMediaItem,
@@ -109,6 +110,12 @@ export const adminUnits: AdminUnit[] = apartments.map((apartment) => ({
   roomStructure: apartment.rooms,
   status: unitStatusMap[apartment.status],
   shortDescription: apartment.highlight,
+  fullDescription: apartment.description,
+  seoTitle: `Stan ${apartment.number} | Heroja Pinkija 13`,
+  seoDescription: `Detalji stana ${apartment.number}: ${apartment.size}, ${apartment.floor}, ${apartment.rooms}.`,
+  publicPath: `/projekti/heroja-pinkija-13/ponuda-stanova/${apartment.number}`,
+  planVariant: apartment.planVariant,
+  floorPlanPath: apartment.heroFloorPlan.src,
   isPublished: true,
 }));
 
@@ -116,39 +123,71 @@ export const adminProjectDraft: AdminProjectDraft = {
   id: "mock-project-heroja-pinkija-13",
   name: projectInfo.name,
   address: `${projectInfo.address}, ${projectInfo.city}`,
+  statusLabel: projectInfo.status,
   shortDescription: projectInfo.lead,
+  fullDescription: projectInfo.description,
   locationDescription:
+    projectInfo.locationDescription ??
     "Pocetak Telepa, dobra veza sa Limanom, centrom, Kejom i glavnim gradskim sadrzajima.",
   floorStructure: projectInfo.floorStructure,
-  constructionStartDate: "2026-03-16",
-  constructionEndDate: "2027-11-15",
+  constructionStartDate: projectInfo.constructionStartDate ?? "2026-03-16",
+  constructionEndDate: projectInfo.constructionEndDate ?? "2027-11-15",
+  heroImageUrl: projectInfo.heroImage ?? "/images/heroja-pinkija-13/gradilisna-tabla.jpg",
+  seoTitle: projectInfo.seoTitle ?? "Heroja Pinkija 13 | M & M Gradnja",
+  seoDescription:
+    projectInfo.seoDescription ??
+    "Pregled projekta Heroja Pinkija 13 u Novom Sadu: stanovi, lokacija, rokovi, status radova i direktan upit prodaji.",
   projectStatus: "active",
 };
+
+export const adminConstructionUpdates: AdminConstructionUpdate[] = projectTimeline.map(
+  (step, index) => ({
+    id: `construction-${step.id}`,
+    title: step.title,
+    tag: index === 0 ? "Pocetak" : index === projectTimeline.length - 1 ? "Plan" : "Radovi",
+    statusLabel:
+      step.statusLabel ??
+      (step.state === "done" ? "Zavrseno" : step.state === "active" ? "Aktuelno" : "Planirano"),
+    shortDescription: step.body,
+    updateDate:
+      step.id === "start"
+        ? "2026-03-16"
+        : step.id === "finish"
+          ? "2027-11-15"
+          : "",
+    timelineState: step.state,
+    sortOrder: index + 1,
+    isPublished: true,
+  }),
+);
 
 export const adminMediaItems: AdminMediaItem[] = [
   {
     id: "media-001",
-    title: "Render fasade",
+    projectId: adminProjectDraft.id,
+    title: "Gradilisna tabla",
     mediaType: "project_image",
-    filePath: "projects/heroja-pinkija-13/render-fasade.jpg",
-    altText: "Render zgrade Heroja Pinkija 13",
+    filePath: "/images/heroja-pinkija-13/gradilisna-tabla.jpg",
+    altText: "Gradilisna tabla projekta Heroja Pinkija 13",
     isPublished: true,
   },
   {
     id: "media-002",
-    title: "Spratna osnova",
-    mediaType: "building_floor_plan_pdf",
-    filePath: "projects/heroja-pinkija-13/spratna-osnova.pdf",
-    altText: "Spratna osnova objekta",
-    isPublished: true,
+    projectId: adminProjectDraft.id,
+    title: "Detalj gradilisne table",
+    mediaType: "project_image",
+    filePath: "/images/heroja-pinkija-13/gradilisna-tabla-slika.jpg",
+    altText: "Detalj gradilisne table projekta Heroja Pinkija 13",
+    isPublished: false,
   },
   {
     id: "media-003",
-    title: "Fotografija gradilista",
+    projectId: adminProjectDraft.id,
+    title: "Radovi u toku",
     mediaType: "construction_update_image",
-    filePath: "projects/heroja-pinkija-13/gradiliste-maj-2026.jpg",
-    altText: "Trenutno stanje radova u maju 2026.",
-    isPublished: false,
+    filePath: "/images/heroja-pinkija-13/radovi-u-toku.jpg",
+    altText: "Radovi u toku na projektu Heroja Pinkija 13",
+    isPublished: true,
   },
   {
     id: "media-004",
@@ -188,6 +227,54 @@ export const adminMediaItems: AdminMediaItem[] = [
     mediaType: "unit_image",
     filePath: "/images/apartment-plans/stan-5-10-15.png",
     altText: "Tlocrt stanova 5, 10 i 15",
+    isPublished: true,
+  },
+  {
+    id: "media-009",
+    title: "Projektni tlocrt stanova 1, 6 i 11 za poredjenje",
+    mediaType: "unit_image",
+    filePath: "/images/apartment-plans/stan-1-6-11-comparison.png",
+    altText: "Projektni tlocrt stanova 1, 6 i 11 za poredjenje sa gridom prostorija",
+    isPublished: true,
+  },
+  {
+    id: "media-010",
+    title: "Showcase tlocrt stanova 1, 6 i 11",
+    mediaType: "unit_image",
+    filePath: "/images/apartment-plans/showcase-stan-1-6-11.png",
+    altText: "Showcase tlocrt stanova 1, 6 i 11",
+    isPublished: true,
+  },
+  {
+    id: "media-011",
+    title: "Showcase tlocrt stanova 2, 7 i 12",
+    mediaType: "unit_image",
+    filePath: "/images/apartment-plans/showcase-stan-2-7-12.png",
+    altText: "Showcase tlocrt stanova 2, 7 i 12",
+    isPublished: true,
+  },
+  {
+    id: "media-012",
+    title: "Showcase tlocrt stanova 3, 8 i 13",
+    mediaType: "unit_image",
+    filePath: "/images/apartment-plans/showcase-stan-3-8-13.png",
+    altText: "Showcase tlocrt stanova 3, 8 i 13",
+    isPublished: true,
+  },
+  {
+    id: "media-013",
+    title: "Showcase tlocrt stanova 4, 9 i 14",
+    mediaType: "unit_image",
+    filePath: "/images/apartment-plans/showcase-stan-4-9-14.png",
+    altText: "Showcase tlocrt stanova 4, 9 i 14",
+    isPublished: true,
+  },
+  {
+    id: "media-014",
+    title: "Showcase tlocrt stanova 5, 10 i 15",
+    mediaType: "unit_image",
+    filePath: "/images/apartment-plans/showcase-stan-5-10-15.png",
+    altText: "Showcase tlocrt stanova 5, 10 i 15",
     isPublished: true,
   },
 ];

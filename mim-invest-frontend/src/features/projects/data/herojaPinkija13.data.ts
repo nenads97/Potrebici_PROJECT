@@ -36,9 +36,17 @@ export const projectInfo: ProjectInfo = {
     "Moderan stambeno-poslovni objekat na pocetku Telepa, osmisljen za miran zivot uz brzu vezu sa gradom.",
   description:
     "Projekat M & M Gradnja objedinjuje stanove, poslovne apartmane i lokale, uz posebnu ponudu garaznih mesta, dvorisnih parking mesta i ostava za odvojenu kupovinu.",
+  locationDescription:
+    "Objekat se nalazi na adresi Heroja Pinkija 13 u Novom Sadu, u delu Telepa sa linijom 12 ka centru i svakodnevnim sadrzajima u blizini.",
   floorStructure: "PO + PR + 3",
   constructionStart: "16. mart 2026.",
   plannedCompletion: "15. novembar 2027.",
+  constructionStartDate: "2026-03-16",
+  constructionEndDate: "2027-11-15",
+  heroImage: "/images/heroja-pinkija-13/gradilisna-tabla.jpg",
+  seoTitle: "Heroja Pinkija 13 | M & M Gradnja",
+  seoDescription:
+    "Pregled projekta Heroja Pinkija 13 u Novom Sadu: stanovi, lokacija, rokovi, status radova i direktan upit prodaji.",
 };
 
 export const projectStats: ProjectStat[] = [

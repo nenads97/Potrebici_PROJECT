@@ -2,7 +2,6 @@ import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowUpRight,
   BadgeCheck,
-  CalendarDays,
   Handshake,
   HardHat,
   Home,
@@ -133,6 +132,8 @@ export const AboutPage = () => {
                 alt="Projekat Heroja Pinkija 13 sa gradilisnom tablom"
                 width="818"
                 height="783"
+                fetchPriority="high"
+                decoding="async"
               />
               <span className="about-hero__caption">Aktuelna realizacija</span>
             </div>
@@ -240,6 +241,7 @@ export const AboutPage = () => {
               width="1663"
               height="1247"
               loading="lazy"
+              decoding="async"
             />
             <div className="about-project__media-label">
               <HardHat />
@@ -322,7 +324,7 @@ export const AboutPage = () => {
               Ponuda stanova
             </Link>
             <ContactModalButton className="about-trust__text-link">
-              <CalendarDays />
+              <MessageCircle />
               Pisite nam
               <ArrowUpRight />
             </ContactModalButton>

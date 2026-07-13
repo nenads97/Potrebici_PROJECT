@@ -20,29 +20,133 @@ import { Link, useParams } from "react-router-dom";
 import { ContactModalButton } from "../../../../features/inquiries/components/ContactModal";
 import type { ContactModalOptions } from "../../../../features/inquiries/components/ContactModalContext";
 import {
-  apartments,
+  apartments as fallbackApartments,
   contactPhone,
   locationAdvantages,
   statusLabel,
   statusVariant,
 } from "../../../../features/projects/data/herojaPinkija13.data";
+import { fetchApartments } from "../../../../features/projects/data/projectSupabase.api";
 import type {
   Apartment,
   ApartmentRoomArea,
+  ApartmentStatus,
 } from "../../../../features/projects/types/project.types";
 import { PageMeta } from "../../../../shared/components/PageMeta";
 
 const projectBasePath = "/projekti/heroja-pinkija-13";
 const apartmentsPath = `${projectBasePath}/ponuda-stanova`;
 
+type ApartmentCtaCopy = {
+  buttonLabel: string;
+  modalTitle: string;
+  modalDescription: string;
+  submitLabel: string;
+  messagePlaceholder: string;
+  purchaseTitle: string;
+  purchaseLead: string;
+  purchaseSteps: [string, string, string];
+};
+
+function getApartmentCtaCopy(
+  status: ApartmentStatus,
+  apartmentNumber: string,
+  availabilityNote: string,
+): ApartmentCtaCopy {
+  if (status === "Reserved") {
+    return {
+      buttonLabel: "Pitajte za status",
+      modalTitle: `Proverite status stana ${apartmentNumber}`,
+      modalDescription:
+        "Stan je trenutno oznacen kao rezervisan. Ostavite podatke i prodajni tim ce proveriti da li je rezervacija aktivna ili predloziti slicne rasporede.",
+      submitLabel: "Posaljite upit za status",
+      messagePlaceholder:
+        "Napisite da vas zanima status rezervacije ili slican stan po rasporedu, spratu ili kvadraturi.",
+      purchaseTitle: "Proverite status rezervacije.",
+      purchaseLead:
+        "Rezervisani stanovi se mogu promeniti u dogovoru sa kupcem. Posaljite upit i provericemo najaktuelniji status ili slicne opcije.",
+      purchaseSteps: [
+        "Posaljete upit za proveru statusa.",
+        "Proveravamo da li je rezervacija i dalje aktivna.",
+        "Saljemo vam status ili predlog slicnih dostupnih stanova.",
+      ],
+    };
+  }
+
+  if (status === "Sold") {
+    return {
+      buttonLabel: "Pitajte za slicne stanove",
+      modalTitle: `Pitajte za slicne stanove kao stan ${apartmentNumber}`,
+      modalDescription:
+        "Ovaj stan je oznacen kao prodat. Ostavite podatke i prodajni tim ce vam predloziti dostupne stanove slicne kvadrature, strukture ili rasporeda.",
+      submitLabel: "Posaljite upit za slicne stanove",
+      messagePlaceholder:
+        "Napisite sta vam se dopada kod ovog stana i koju kvadraturu, strukturu ili sprat biste razmatrali.",
+      purchaseTitle: "Ovaj stan je prodat, ali upit i dalje ima smisla.",
+      purchaseLead:
+        "Ako vam odgovara raspored ili kvadratura ovog stana, prodaja moze da proveri slicne dostupne opcije u projektu.",
+      purchaseSteps: [
+        "Posaljete upit za slicne stanove.",
+        "Uporedjujemo dostupne jedinice po kvadraturi i rasporedu.",
+        "Saljemo vam najblize opcije i sledeci korak.",
+      ],
+    };
+  }
+
+  return {
+    buttonLabel: "Pisite nam",
+    modalTitle: `Pisite nam za stan ${apartmentNumber}`,
+    modalDescription:
+      "Ostavite podatke i prodajni tim ce vam poslati informacije o dostupnosti, ceni, uslovima kupovine ili terminu obilaska.",
+    submitLabel: "Posaljite upit",
+    messagePlaceholder:
+      "Napisite da li vas zanima cena, dostupnost, obilazak ili dodatne informacije o ovom stanu.",
+    purchaseTitle: "Direktan sledeci korak.",
+    purchaseLead: availabilityNote,
+    purchaseSteps: [
+      "Posaljete upit za ovaj stan.",
+      "Dobijate cenu, dostupnost i uslove kupovine.",
+      "Dogovaramo razgovor ili obilazak lokacije.",
+    ],
+  };
+}
+
 export const ApartmentDetailsPage = () => {
   const { apartmentNumber } = useParams();
+  const [availableApartments, setAvailableApartments] = useState<Apartment[]>(fallbackApartments);
+  const [allowLocalFallback, setAllowLocalFallback] = useState(true);
   const apartment = useMemo(
-    () => apartments.find((item) => item.number === apartmentNumber),
-    [apartmentNumber],
+    () =>
+      availableApartments.find((item) => item.number === apartmentNumber) ??
+      (allowLocalFallback
+        ? fallbackApartments.find((item) => item.number === apartmentNumber)
+        : undefined),
+    [allowLocalFallback, apartmentNumber, availableApartments],
   );
   const [activeRoomId, setActiveRoomId] = useState<string | null>(null);
   const [isHeroPlanOpen, setIsHeroPlanOpen] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetchApartments()
+      .then((items) => {
+        if (isMounted) {
+          setAvailableApartments(items);
+          setAllowLocalFallback(false);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setAvailableApartments(fallbackApartments);
+          setAllowLocalFallback(true);
+        }
+      })
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!isHeroPlanOpen) {
@@ -72,6 +176,8 @@ export const ApartmentDetailsPage = () => {
         <PageMeta
           title="Stan nije pronadjen | Heroja Pinkija 13"
           description="Izabrani stan nije pronadjen. Pogledajte aktuelnu ponudu stanova u projektu Heroja Pinkija 13."
+          canonicalPath={apartmentsPath}
+          robots="noindex,follow"
         />
         <div className="soft-card not-found-page__card">
           <p className="section-eyebrow">Detalji stana</p>
@@ -85,7 +191,7 @@ export const ApartmentDetailsPage = () => {
     );
   }
 
-  const sameTypeApartments = apartments
+  const sameTypeApartments = availableApartments
     .filter(
       (item) =>
         item.number !== apartment.number &&
@@ -96,14 +202,19 @@ export const ApartmentDetailsPage = () => {
   const relatedApartments =
     sameTypeApartments.length >= 2
       ? sameTypeApartments
-      : apartments
+      : availableApartments
           .filter((item) => item.number !== apartment.number && item.status !== "Sold")
           .slice(0, 3);
+  const apartmentCtaCopy = getApartmentCtaCopy(
+    apartment.status,
+    apartment.number,
+    apartment.availabilityNote,
+  );
   const apartmentContactModal = {
     eyebrow: `Stan ${apartment.number}`,
-    title: `Pisite nam za stan ${apartment.number}`,
-    description:
-      "Ostavite podatke i prodajni tim ce vam poslati informacije o dostupnosti, ceni, uslovima kupovine ili terminu obilaska.",
+    title: apartmentCtaCopy.modalTitle,
+    description: apartmentCtaCopy.modalDescription,
+    submitLabel: apartmentCtaCopy.submitLabel,
     inquiryType: "unit" as const,
     projectSlug: "heroja-pinkija-13",
     unitCode: `Stan ${apartment.number}`,
@@ -114,15 +225,18 @@ export const ApartmentDetailsPage = () => {
       { label: "Struktura", value: apartment.rooms },
       { label: "Status", value: statusLabel[apartment.status] },
     ],
-    messagePlaceholder:
-      "Napisite da li vas zanima cena, dostupnost, obilazak ili dodatne informacije o ovom stanu.",
+    messagePlaceholder: apartmentCtaCopy.messagePlaceholder,
   };
 
   return (
     <main className="apartment-detail apartment-detail--editorial">
       <PageMeta
-        title={`Stan ${apartment.number} | Heroja Pinkija 13`}
-        description={`Detalji stana ${apartment.number}: ${apartment.size}, ${apartment.floor}, ${apartment.rooms}. Pogledajte tlocrt i posaljite upit prodaji.`}
+        title={apartment.seoTitle ?? `Stan ${apartment.number} | Heroja Pinkija 13`}
+        description={
+          apartment.seoDescription ??
+          `Detalji stana ${apartment.number}: ${apartment.size}, ${apartment.floor}, ${apartment.rooms}. Pogledajte tlocrt i posaljite upit prodaji.`
+        }
+        image={apartment.heroFloorPlan.src}
       />
       <section className="apartment-detail-hero">
         <div className="page-container">
@@ -155,7 +269,7 @@ export const ApartmentDetailsPage = () => {
                   modalOptions={apartmentContactModal}
                 >
                   <MessageCircle />
-                  Pisite nam
+                  {apartmentCtaCopy.buttonLabel}
                 </ContactModalButton>
                 <a
                   className="apartment-detail-hero__text-link"
@@ -240,7 +354,11 @@ export const ApartmentDetailsPage = () => {
             <ApartmentFloorPlanFigure apartment={apartment} />
           </div>
 
-          <ApartmentPurchaseGuide apartment={apartment} modalOptions={apartmentContactModal} />
+          <ApartmentPurchaseGuide
+            apartment={apartment}
+            ctaCopy={apartmentCtaCopy}
+            modalOptions={apartmentContactModal}
+          />
         </div>
       </section>
 
@@ -545,9 +663,11 @@ const ApartmentFloorPlanFigure = ({ apartment }: { apartment: Apartment }) => (
 
 const ApartmentPurchaseGuide = ({
   apartment,
+  ctaCopy,
   modalOptions,
 }: {
   apartment: Apartment;
+  ctaCopy: ApartmentCtaCopy;
   modalOptions: ContactModalOptions;
 }) => (
   <section className="apartment-purchase-guide" aria-labelledby="apartment-purchase-guide-title">
@@ -615,22 +735,24 @@ const ApartmentPurchaseGuide = ({
       </dl>
     </div>
 
-    <PurchasePanel apartment={apartment} modalOptions={modalOptions} />
+    <PurchasePanel apartment={apartment} ctaCopy={ctaCopy} modalOptions={modalOptions} />
   </section>
 );
 
 const PurchasePanel = ({
   apartment,
+  ctaCopy,
   modalOptions,
 }: {
   apartment: Apartment;
+  ctaCopy: ApartmentCtaCopy;
   modalOptions: ContactModalOptions;
 }) => (
   <aside className="apartment-purchase" aria-labelledby="apartment-purchase-title">
     <div className="apartment-purchase__copy">
       <p className="section-eyebrow">Informacije o kupovini</p>
-      <h3 id="apartment-purchase-title">Direktan sledeci korak.</h3>
-      <p>{apartment.availabilityNote}</p>
+      <h3 id="apartment-purchase-title">{ctaCopy.purchaseTitle}</h3>
+      <p>{ctaCopy.purchaseLead}</p>
     </div>
     <dl>
       <PurchaseRow label="Cena" value={apartment.priceRange} />
@@ -638,13 +760,21 @@ const PurchasePanel = ({
       <PurchaseRow label="Garazno mesto" value="Odvojena kupovina" />
       <PurchaseRow label="Ostava" value="Odvojena kupovina" />
     </dl>
+    <ol className="apartment-purchase__steps" aria-label="Kako izgleda sledeci korak">
+      {ctaCopy.purchaseSteps.map((step, index) => (
+        <li key={step}>
+          <span>{String(index + 1).padStart(2, "0")}</span>
+          <strong>{step}</strong>
+        </li>
+      ))}
+    </ol>
     <div className="apartment-purchase__actions">
       <ContactModalButton
         className="site-button site-button--accent"
         modalOptions={modalOptions}
       >
         <MessageCircle />
-        Pisite nam
+        {ctaCopy.buttonLabel}
       </ContactModalButton>
       <a className="apartment-purchase__phone" href={`tel:${contactPhone}`}>
         <Phone />

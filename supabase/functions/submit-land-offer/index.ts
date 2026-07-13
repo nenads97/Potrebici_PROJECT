@@ -7,10 +7,13 @@ import {
   sendBrevoEmail,
 } from "../_shared/mail.ts";
 import {
+  checkFormRateLimit,
+  recordFormRateLimitEvents,
+} from "../_shared/rate-limit.ts";
+import {
   isSpamHoneypot,
   optionalString,
   requiredString,
-  sha256,
   validEmail,
   validNumber,
   validPhone,
@@ -38,8 +41,9 @@ Deno.serve(async (req) => {
     const propertyAddress = optionalString(payload.propertyAddress, 260);
     const plotAreaM2 = validNumber(payload.plotAreaM2);
     const details = optionalString(payload.details, 5000);
+    const sourcePage = validInternalSourcePage(payload.sourcePage);
 
-    const invalid = [fullName, phone, email, propertyAddress, plotAreaM2, details].find(
+    const invalid = [fullName, phone, email, propertyAddress, plotAreaM2, details, sourcePage].find(
       (item) => !item.ok,
     );
     if (invalid && !invalid.ok) {
@@ -51,17 +55,16 @@ Deno.serve(async (req) => {
     }
 
     const supabase = createServiceClient();
-    const identifierHash = await sha256(email.value.toLowerCase());
-    const rateLimitWindow = new Date(Date.now() - 15 * 60 * 1000).toISOString();
-    const { count: recentSubmissions } = await supabase
-      .from("form_rate_limit_events")
-      .select("id", { count: "exact", head: true })
-      .eq("action", "submit-land-offer")
-      .eq("identifier_hash", identifierHash)
-      .gte("created_at", rateLimitWindow);
+    const rateLimit = await checkFormRateLimit(supabase, {
+      action: "submit-land-offer",
+      email: email.value,
+      request: req,
+      sourcePage: sourcePage.value,
+      ipLimit: 8,
+    });
 
-    if ((recentSubmissions ?? 0) >= 5) {
-      return jsonResponse({ error: "Previse pokusaja. Pokusajte ponovo kasnije." }, 429);
+    if (!rateLimit.ok) {
+      return jsonResponse({ error: rateLimit.message }, 429);
     }
 
     const { data: offer, error } = await supabase
@@ -73,7 +76,7 @@ Deno.serve(async (req) => {
         property_address: propertyAddress.value,
         plot_area_m2: plotAreaM2.value,
         details: details.value,
-        source_page: payload.sourcePage ?? "/kupujemo-placeve",
+        source_page: sourcePage.value ?? "/kupujemo-placeve",
         consent_accepted: true,
       })
       .select("id")
@@ -83,11 +86,7 @@ Deno.serve(async (req) => {
       throw error;
     }
 
-    await supabase.from("form_rate_limit_events").insert({
-      action: "submit-land-offer",
-      identifier_hash: identifierHash,
-      source_page: payload.sourcePage ?? null,
-    });
+    await recordFormRateLimitEvents(supabase, rateLimit.events);
 
     await sendAndLog({
       relatedEntityId: offer.id,
@@ -142,4 +141,18 @@ async function sendAndLog(input: {
 
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Doslo je do greske pri slanju ponude.";
+}
+
+function validInternalSourcePage(value: unknown) {
+  const text = typeof value === "string" ? value.trim() : "";
+
+  if (!text) {
+    return { ok: true, value: null } as const;
+  }
+
+  if (text.length > 500 || !text.startsWith("/") || text.startsWith("//")) {
+    return { ok: false, message: "Neispravan izvor ponude." } as const;
+  }
+
+  return { ok: true, value: text } as const;
 }

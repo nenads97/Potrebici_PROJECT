@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /admin
+Disallow: /apartmani/
+Allow: /
+
+Sitemap: https://mimgradnja.rs/sitemap.xml

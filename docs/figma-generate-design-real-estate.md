@@ -67,7 +67,7 @@ letter-spacing 0
 2. Hero
    - H1 `Heroja Pinkija 13`.
    - status/location copy.
-   - CTAs: `Pogledaj stanove`, `Kontaktiraj investitora`.
+   - CTAs: `Pogledaj stanove`, `Pisite nam`.
    - project stats.
    - image/render/gallery area.
 
@@ -77,9 +77,10 @@ letter-spacing 0
    - planned completion.
 
 4. Apartment availability
-   - filters: status, structure, later floor.
+   - filters: status, structure, floor.
    - statuses need text + color.
-   - cards show code, floor, area, structure, status, CTA.
+   - cards show code, floor, area, structure, status, tlocrt/plan preview and CTA.
+   - include a separate tabular/list view for fast comparison.
 
 5. Building structure
    - PO: 15 storage units + 13 garage parking spaces, separate paid options.
@@ -104,6 +105,7 @@ letter-spacing 0
    - visible labels.
    - single column on mobile.
    - no backend implementation text in UI.
+   - primary contact flow should open an in-page modal, not redirect the buyer away from the current apartment/project context.
 
 10. Footer
    - minimal brand/contact/project info.
@@ -121,4 +123,4 @@ letter-spacing 0
 
 ## Ready prompt
 
-Create a premium real-estate website design for `Heroja Pinkija 13` by `M & M Gradnja` in Novi Sad. Include hero, project info, apartment availability, building structure, location, construction timeline, land acquisition preview, contact form, and footer. Use warm neutral premium styling, stable responsive layouts, readable apartment cards, text+color statuses, and no generic SaaS visual language.
+Create a premium real-estate website design for `Heroja Pinkija 13` by `M & M Gradnja` in Novi Sad. Include hero, project info, apartment availability, fast apartment comparison/list view, building structure, location, construction timeline, land acquisition preview, in-page contact modal flow, and footer. Use warm neutral premium styling, stable responsive layouts, readable apartment cards with floor-plan previews, text+color statuses, and no generic SaaS visual language.

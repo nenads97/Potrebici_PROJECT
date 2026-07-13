@@ -51,23 +51,32 @@ Replace the UUID with the real `auth.users.id`.
 
 ## Environment variables
 
-Frontend public reads can use:
+Frontend public reads use the Vite variables in `../mim-invest-frontend/.env.example`:
 
 ```txt
 VITE_SUPABASE_URL=
 VITE_SUPABASE_ANON_KEY=
 ```
 
-Backend/server-only writes should use a service role key or a direct Postgres connection string. Never expose these in frontend code:
+Backend/server-only Edge Function writes use the variables in `./.env.example`.
+Never expose these in frontend code and never prefix them with `VITE_`:
 
 ```txt
+SUPABASE_URL=
 SUPABASE_SERVICE_ROLE_KEY=
-SUPABASE_DB_URL=
+SUPABASE_SECRET_KEYS=
 BREVO_API_KEY=
 BREVO_SENDER_EMAIL=
 BREVO_SENDER_NAME=
 SALES_EMAIL=
 ```
+
+`SUPABASE_SERVICE_ROLE_KEY` is the legacy server-only key path. If the deployment
+environment provides `SUPABASE_SECRET_KEYS`, the shared mail helper can read the
+`default` key from that JSON bundle instead.
+
+`SUPABASE_DB_URL` is only useful for manual SQL/CLI database operations. It is
+not read by the Edge Functions in this repository.
 
 ## Edge Functions and email
 
@@ -83,12 +92,56 @@ Each function validates the payload, checks the honeypot field, rate-limits repe
 Deploy after setting secrets in the Supabase project:
 
 ```powershell
-supabase secrets set BREVO_API_KEY="..." BREVO_SENDER_EMAIL="prodaja@mimgradnja.rs" BREVO_SENDER_NAME="M & M Gradnja" SALES_EMAIL="prodaja@mimgradnja.rs"
+supabase secrets set SUPABASE_URL="https://kamwovkvhkurjvabbfks.supabase.co" SUPABASE_SERVICE_ROLE_KEY="..." BREVO_API_KEY="..." BREVO_SENDER_EMAIL="prodaja@mimgradnja.rs" BREVO_SENDER_NAME="M & M Gradnja" SALES_EMAIL="prodaja@mimgradnja.rs"
 supabase functions deploy submit-contact-inquiry --project-ref kamwovkvhkurjvabbfks
 supabase functions deploy submit-land-offer --project-ref kamwovkvhkurjvabbfks
 ```
 
 `supabase/config.toml` sets `verify_jwt = false` for both public form functions so anonymous visitors can submit forms while privileged database writes remain server-side through the function service credentials.
+
+Pre-production checks:
+
+- run an `OPTIONS` preflight check for both public form functions;
+- send one controlled contact test and one controlled land-offer test only after
+  confirming Brevo sender/domain settings;
+- confirm rows are inserted into `contact_inquiries`, `land_offers`,
+  `form_rate_limit_events` and `email_delivery_log`;
+- confirm RLS still blocks direct anonymous reads from private lead/log tables.
+
+Read-only smoke from the frontend folder:
+
+```powershell
+cd ..\mim-invest-frontend
+npm.cmd run smoke:supabase:readonly
+```
+
+This uses only `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from `.env.local`.
+It checks public REST reads, private lead/log table blocking and public Edge
+Function `OPTIONS` preflight. It intentionally does not send POST requests,
+create rows or trigger Brevo email.
+
+Before launch, use the stricter media-aware variant:
+
+```powershell
+cd ..\mim-invest-frontend
+npm.cmd run smoke:supabase:launch
+```
+
+This is also read-only, but it fails if `project_media` has no published rows.
+Use it after applying `seed.sql` or entering media metadata through admin.
+
+Use `../docs/pre-production-runbook.md` for the complete launch order, including
+the controlled POST tests that intentionally create rows and can trigger email.
+That runbook contains exact PowerShell payload templates and SQL verification
+queries for one contact inquiry and one land offer.
+
+## Data API grants and future tables
+
+`schema.sql` explicitly revokes broad Data API privileges, enables RLS on all
+public tables, and then grants the minimum browser/admin access required by v1.
+It also revokes default privileges for future `public` tables, functions and
+sequences. When adding a new public table, include explicit `GRANT` statements
+and matching RLS policies in the same change.
 
 ## Verification SQL
 
@@ -97,6 +150,7 @@ After setup, these queries should return data:
 ```sql
 select slug, name from public.projects where is_published;
 select code, area_m2, status from public.units order by sort_order limit 5;
+select title, file_path from public.project_media where is_published order by sort_order limit 5;
 select title from public.land_acquisition_page where is_published;
 ```
 

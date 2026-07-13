@@ -23,6 +23,7 @@ import {
   Send,
   X,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import { contactEmail, contactPhone } from "../../projects/data/herojaPinkija13.data";
 import {
@@ -130,12 +131,14 @@ const ContactModal = ({ isOpen, options, onClose }: ContactModalProps) => {
   const emailId = useId();
   const websiteId = useId();
   const messageId = useId();
+  const consentId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
   const [formStatus, setFormStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [formMessage, setFormMessage] = useState("");
 
   const mergedOptions = { ...defaultModalOptions, ...options };
+  const isPhoneRequired = isSalesPhoneRequired(mergedOptions.inquiryType);
 
   useEffect(() => {
     if (!isOpen) {
@@ -292,7 +295,11 @@ const ContactModal = ({ isOpen, options, onClose }: ContactModalProps) => {
             <FileText />
             <div>
               <strong>Podaci za odgovor</strong>
-              <p>Ime i e-mail su obavezni. Telefon pomaze da dogovor bude brzi.</p>
+              <p>
+                {isPhoneRequired
+                  ? "Za ovaj tip upita telefon je obavezan, kako bismo mogli brzo da proverimo detalje i termin."
+                  : "Ime i e-mail su obavezni. Telefon pomaze da dogovor bude brzi."}
+              </p>
             </div>
           </div>
 
@@ -301,21 +308,44 @@ const ContactModal = ({ isOpen, options, onClose }: ContactModalProps) => {
               <label className="form-label" htmlFor={nameId}>
                 Ime i prezime *
               </label>
-              <input ref={firstInputRef} className="form-input" id={nameId} name="name" required type="text" />
+              <input
+                ref={firstInputRef}
+                className="form-input"
+                id={nameId}
+                name="name"
+                required
+                type="text"
+                autoComplete="name"
+              />
             </div>
 
             <div className="form-field">
               <label className="form-label" htmlFor={phoneId}>
-                Telefon
+                Telefon{isPhoneRequired ? " *" : ""}
               </label>
-              <input className="form-input" id={phoneId} name="phone" type="tel" />
+              <input
+                className="form-input"
+                id={phoneId}
+                name="phone"
+                type="tel"
+                autoComplete="tel"
+                inputMode="tel"
+                required={isPhoneRequired}
+              />
             </div>
 
             <div className="form-field contact-modal__email-field">
               <label className="form-label" htmlFor={emailId}>
                 E-mail *
               </label>
-              <input className="form-input" id={emailId} name="email" required type="email" />
+              <input
+                className="form-input"
+                id={emailId}
+                name="email"
+                required
+                type="email"
+                autoComplete="email"
+              />
             </div>
           </div>
 
@@ -333,12 +363,12 @@ const ContactModal = ({ isOpen, options, onClose }: ContactModalProps) => {
               id={messageId}
               name="message"
               placeholder={mergedOptions.messagePlaceholder}
-              rows={5}
+              rows={4}
             />
           </div>
 
-          <label className="form-consent">
-            <input name="consent" required type="checkbox" />
+          <label className="form-consent" htmlFor={consentId}>
+            <input id={consentId} name="consent" required type="checkbox" />
             <span>Saglasan/saglasna sam da me kontaktirate povodom poslatog upita.</span>
           </label>
 
@@ -359,27 +389,38 @@ const ContactModal = ({ isOpen, options, onClose }: ContactModalProps) => {
               <button className="site-button site-button--outline" type="button" onClick={onClose}>
                 Zatvori
               </button>
-              <a className="contact-modal__success-link" href="/projekti/heroja-pinkija-13/ponuda-stanova">
+              <Link
+                className="contact-modal__success-link"
+                to="/projekti/heroja-pinkija-13/ponuda-stanova"
+                onClick={onClose}
+              >
                 Pogledajte ponudu stanova
                 <ArrowUpRight />
-              </a>
+              </Link>
             </div>
           ) : (
-            <button
-              className="site-button site-button--dark contact-modal__submit"
-              type="submit"
-              disabled={formStatus === "sending"}
-            >
-              <Send />
-              {formStatus === "sending" ? "Slanje..." : mergedOptions.submitLabel}
-              <ArrowUpRight />
-            </button>
+            <div className="contact-modal__submit-group">
+              <button
+                className="site-button site-button--dark contact-modal__submit"
+                type="submit"
+                disabled={formStatus === "sending"}
+              >
+                <Send />
+                {formStatus === "sending" ? "Slanje..." : mergedOptions.submitLabel}
+                <ArrowUpRight />
+              </button>
+              <p>{mergedOptions.reassuranceText}</p>
+            </div>
           )}
         </form>
       </div>
     </div>
   );
 };
+
+function isSalesPhoneRequired(inquiryType: ContactModalOptions["inquiryType"]) {
+  return inquiryType === "unit" || inquiryType === "viewing" || inquiryType === "availability";
+}
 
 function buildContextualMessage(options: ContactModalOptions, message: string) {
   const contextLines = [
@@ -403,5 +444,11 @@ function getFocusableElements(container: HTMLElement | null) {
     container.querySelectorAll<HTMLElement>(
       'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
     ),
-  ).filter((element) => !element.hasAttribute("disabled") && element.offsetParent !== null);
+  ).filter((element) => {
+    if (element.hasAttribute("disabled") || element.tabIndex < 0) {
+      return false;
+    }
+
+    return element.offsetParent !== null;
+  });
 }

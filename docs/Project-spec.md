@@ -55,10 +55,16 @@ Real estate website for M & M Gradnja. First project: Heroja Pinkija 13, Novi Sa
 - `/`
 - `/projekti`
 - `/projekti/heroja-pinkija-13`
+- `/projekti/heroja-pinkija-13/o-projektu`
 - `/projekti/heroja-pinkija-13/ponuda-stanova`
+- `/projekti/heroja-pinkija-13/ponuda-stanova/:apartmentNumber`
 - `/projekti/heroja-pinkija-13/spisak-stanova`
+- `/o-nama`
+- `/politika-privatnosti`
+- `/lokacija`
 - `/kupujemo-placeve`
 - `/kontakt`
+- legacy redirect: `/apartmani/:apartmentNumber` -> `/projekti/heroja-pinkija-13/ponuda-stanova/:apartmentNumber`
 
 ## Public content sections
 
@@ -82,10 +88,12 @@ Project detail:
 
 Apartments:
 
-- filters by status and structure.
-- later optionally floor filter.
+- card/listing view with filters by status, structure and floor.
+- tabular `/spisak-stanova` view with filters, print and CSV export.
 - statuses: `available`, `reserved`, `sold`.
 - structures: studio, two-bedroom, three-bedroom.
+- detail pages should load immediately from local fallback data and refresh from Supabase when available.
+- apartment detail pages keep the existing v1 layout and interaction model; do not include apartment details in redesign/cleanup batches unless there is a concrete bug, performance issue or explicit new detail-change request.
 
 Land acquisition:
 
@@ -128,6 +136,7 @@ Admin is Serbian and task-focused.
 Required:
 
 - login
+- dashboard overview
 - view apartment/contact inquiries
 - view land offers
 - update inquiry/offer status: `new`, `contacted`, `closed`
@@ -135,6 +144,7 @@ Required:
 - update apartment status
 - update basic project/unit text
 - manage images/PDF metadata and uploads
+- keep public pages usable even when Supabase is slow by using short timeouts/fallback data where appropriate
 
 Not needed in v1:
 

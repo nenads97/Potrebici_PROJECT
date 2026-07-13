@@ -1,10 +1,20 @@
-import { Building2, FileText, Home, Images, Inbox, LogOut, MapPinned } from "lucide-react";
+import {
+  Building2,
+  FileText,
+  Home,
+  Images,
+  Inbox,
+  LayoutDashboard,
+  LogOut,
+  MapPinned,
+} from "lucide-react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 import { BrandLogo } from "../../shared/components/BrandLogo";
 import { supabase } from "../../shared/supabase/client";
 
 const adminLinks = [
+  { to: "/admin", label: "Pregled", icon: LayoutDashboard },
   { to: "/admin/upiti-stanovi", label: "Upiti za stanove", icon: Inbox },
   { to: "/admin/upiti-placevi", label: "Upiti za placeve", icon: MapPinned },
   { to: "/admin/stanovi", label: "Stanovi i statusi", icon: Home },
@@ -22,6 +32,10 @@ export const AdminLayout = () => {
 
   return (
     <div className="admin-shell">
+      <a className="skip-link" href="#admin-main-content">
+        Preskocite na admin sadrzaj
+      </a>
+
       <aside className="admin-sidebar" aria-label="Admin navigacija">
         <div className="admin-sidebar__brand">
           <BrandLogo />
@@ -65,7 +79,9 @@ export const AdminLayout = () => {
           </button>
         </header>
 
-        <Outlet />
+        <div id="admin-main-content" className="main-content-anchor" tabIndex={-1}>
+          <Outlet />
+        </div>
       </div>
     </div>
   );
