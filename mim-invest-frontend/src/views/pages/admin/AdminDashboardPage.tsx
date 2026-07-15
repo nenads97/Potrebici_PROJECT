@@ -29,13 +29,13 @@ import {
   adminMediaItems,
   adminProjectDraft,
   adminStatusLabels,
-  adminUnitStatusLabels,
+  adminUnitstatusLabels,
   adminUnits,
 } from "../../../features/admin/data/adminMock.data";
 import {
   createMediaItem as persistNewMediaItem,
   deleteMediaItem as persistDeleteMediaItem,
-  fetchAdminState,
+  fetchAdminstate,
   updateConstructionUpdate as persistConstructionUpdate,
   updateInquiry as persistInquiry,
   updateLandOffer as persistLandOffer,
@@ -103,8 +103,8 @@ type AdminUnitContentDraft = {
   seoDescription: string;
 };
 
-const workflowStatuses: AdminWorkflowStatus[] = ["new", "contacted", "closed"];
-const unitStatuses: AdminUnitStatus[] = ["available", "reserved", "sold"];
+const workflowstatuses: AdminWorkflowStatus[] = ["new", "contacted", "closed"];
+const unitstatuses: AdminUnitStatus[] = ["available", "reserved", "sold"];
 
 const inquiryTypeLabels: Record<AdminInquiry["inquiryType"], string> = {
   general: "Opsti upit",
@@ -118,7 +118,7 @@ const mediaTypeLabels: Record<AdminMediaItem["mediaType"], string> = {
   unit_image: "Slika/tlocrt stana",
   apartment_floor_plan_pdf: "PDF tlocrt stana",
   building_floor_plan_pdf: "PDF osnova objekta",
-  garage_plan_pdf: "PDF garaza",
+  garage_plan_pdf: "PDF garaža",
   storage_plan_pdf: "PDF ostave",
   general_brochure_pdf: "Opsta brosura",
   construction_update_image: "Slika radova",
@@ -127,8 +127,8 @@ const mediaTypeLabels: Record<AdminMediaItem["mediaType"], string> = {
 const sectionCopy: Record<AdminSection, { eyebrow: string; title: string; body: string }> = {
   overview: {
     eyebrow: "Admin",
-    title: "Pregled prodaje i sadrzaja",
-    body: "Jedno mesto za nove upite, status stanova, upozorenja za sadrzaj i najbrze akcije prodajnog tima.",
+    title: "Pregled prodaje i sadržaja",
+    body: "Jedno mesto za nove upite, status stanova, upozorenja za sadržaj i najbrže akcije prodajnog tima.",
   },
   inquiries: {
     eyebrow: "Prodaja",
@@ -138,15 +138,15 @@ const sectionCopy: Record<AdminSection, { eyebrow: string; title: string; body: 
   land: {
     eyebrow: "Akvizicija",
     title: "Upiti za placeve",
-    body: "Ponude vlasnika zemljista i starih kuca za buduce projekte.",
+    body: "Ponude vlasnika zemljišta i starih kuća za buduće projekte.",
   },
   units: {
     eyebrow: "Ponuda",
-    title: "Stanovi i statusi",
+    title: "stanovi i statusi",
     body: "Brza promena dostupnosti stanova koja se direktno odrazava na javnu ponudu.",
   },
   project: {
-    eyebrow: "Sadrzaj",
+    eyebrow: "Sadržaj",
     title: "Projekat",
     body: "Osnovni tekstovi, lokacija i rokovi koji hrane javnu prezentaciju projekta.",
   },
@@ -174,7 +174,7 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
   const [constructionUpdates, setConstructionUpdates] = useState(adminConstructionUpdates);
   const [mediaItems, setMediaItems] = useState(adminMediaItems);
   const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | AdminWorkflowStatus>("all");
+  const [statusFilter, setstatusFilter] = useState<"all" | AdminWorkflowStatus>("all");
   const [isLoading, setIsLoading] = useState(isSupabaseConfigured);
   const [feedback, setFeedback] = useState(
     isSupabaseConfigured
@@ -188,7 +188,7 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
 
     async function loadAdminData() {
       try {
-        const data = await fetchAdminState();
+        const data = await fetchAdminstate();
 
         if (!isMounted || !data) {
           return;
@@ -202,7 +202,7 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
         }
         setConstructionUpdates(data.constructionUpdates);
         setMediaItems(data.mediaItems);
-        setFeedback("Podaci su ucitani iz Supabase baze.");
+        setFeedback("Podaci su učitani iz Supabase baze.");
       } catch (error) {
         setFeedback(getErrorMessage(error));
       } finally {
@@ -256,7 +256,7 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
           value: units.filter((unit) => unit.status === "available" && unit.isPublished).length,
         },
         {
-          label: "Stavki za proveru",
+          label: "stavki za proveru",
           value:
             units.filter((unit) => !unit.isPublished).length +
             mediaItems.filter((item) => item.isPublished && hasMissingImageAltText(item)).length,
@@ -396,7 +396,7 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
       </section>
 
       <div className="admin-sync-status" role="status">
-        {isLoading ? "Ucitavanje..." : feedback}
+        {isLoading ? "Učitavanje..." : feedback}
       </div>
 
       {section === "overview" ? (
@@ -414,7 +414,7 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
           query={query}
           statusFilter={statusFilter}
           onQueryChange={setQuery}
-          onStatusFilterChange={setStatusFilter}
+          onstatusFilterChange={setstatusFilter}
           onUpdate={setInquiries}
           onPersist={(id, changes) =>
             persist(
@@ -435,7 +435,7 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
           query={query}
           statusFilter={statusFilter}
           onQueryChange={setQuery}
-          onStatusFilterChange={setStatusFilter}
+          onstatusFilterChange={setstatusFilter}
           onUpdate={setLandOffers}
           onPersist={(id, changes) =>
             persist(
@@ -454,7 +454,7 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
         <UnitPanel
           units={units}
           onUpdate={setUnits}
-          onPersist={(id, changes) => persist(() => persistUnit(id, changes), "Status stana je sacuvan.")}
+          onPersist={(id, changes) => persist(() => persistUnit(id, changes), "status stana je sacuvan.")}
         />
       ) : null}
 
@@ -470,7 +470,7 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
           onConstructionUpdatePersist={(id, changes) =>
             persist(
               () => persistConstructionUpdate(id, changes),
-              "Status radova je sacuvan.",
+              "status radova je sacuvan.",
             )
           }
         />
@@ -539,7 +539,7 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
             }
 
             if (!projectDraft) {
-              const message = "Projekat nije ucitan, pa nova media kartica ne moze biti povezana.";
+              const message = "Projekat nije učitan, pa nova media kartica ne može biti povezana.";
               setFeedback(message);
               return { status: "failed", message };
             }
@@ -622,7 +622,7 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
   const recentLeads = [
     ...inquiries.map((item) => ({
       id: `inquiry-${item.id}`,
-      kind: "Stan",
+      kind: "stan",
       fullName: item.fullName,
       context: item.unitCode ?? "Opsti upit za stan",
       status: item.adminStatus,
@@ -653,7 +653,7 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
     {
       label: "Nove ponude placeva",
       value: newLandOffers.length,
-      text: "Leadovi za buduce lokacije i akviziciju.",
+      text: "Leadovi za buduće lokacije i akviziciju.",
       href: "/admin/upiti-placevi",
       icon: MapPinned,
     },
@@ -698,7 +698,7 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
     },
     {
       label: "Uredi projekat",
-      text: "Osvezite opis, lokaciju, rokove i status radova.",
+      text: "Osvežite opis, lokaciju, rokove i status radova.",
       href: "/admin/projekat",
       icon: Building2,
     },
@@ -711,7 +711,7 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
           <div className="admin-overview-card__head">
             <div>
               <p className="section-eyebrow">Prioriteti danas</p>
-              <h2 id="admin-overview-title">Sta prvo trazi reakciju</h2>
+              <h2 id="admin-overview-title">sta prvo traži reakciju</h2>
             </div>
             <Inbox aria-hidden="true" />
           </div>
@@ -744,12 +744,12 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
           <div className="admin-overview-card__head">
             <div>
               <p className="section-eyebrow">Inventar</p>
-              <h2>Stanovi u prodaji</h2>
+              <h2>stanovi u prodaji</h2>
             </div>
             <Home aria-hidden="true" />
           </div>
 
-          <div className="admin-overview-inventory" aria-label="Statusi stanova">
+          <div className="admin-overview-inventory" aria-label="statusi stanova">
             <div>
               <strong>{availableUnits.length}</strong>
               <span>Slobodno</span>
@@ -767,7 +767,7 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
           <p className="admin-overview-note">
             {hiddenUnits.length > 0
               ? `${hiddenUnits.length} stanova je sakriveno sa javne ponude.`
-              : "Svi ucitani stanovi su objavljeni u admin inventaru."}
+              : "Svi učitani stanovi su objavljeni u admin inventaru."}
           </p>
         </article>
       </div>
@@ -777,7 +777,7 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
           <div className="admin-overview-card__head">
             <div>
               <p className="section-eyebrow">Brze akcije</p>
-              <h2>Najcesci sledeci koraci</h2>
+              <h2>Najčešći sledeći koraci</h2>
             </div>
             <ArrowUpRight aria-hidden="true" />
           </div>
@@ -840,12 +840,12 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
 
       <article className="admin-overview-card admin-overview-health">
         <div>
-          <p className="section-eyebrow">Sadrzaj i fajlovi</p>
-          <h2>Stanje objavljenih asseta</h2>
+          <p className="section-eyebrow">Sadržaj i fajlovi</p>
+          <h2>stanje objavljenih asseta</h2>
           <p>
             Objavljeno je {publishedMedia.length} fajlova.{" "}
             {mediaAltWarnings.length > 0
-              ? `${mediaAltWarnings.length} objavljenih slika nema alt tekst i treba ih srediti pre sledeceg SEO kruga.`
+              ? `${mediaAltWarnings.length} objavljenih slika nema alt tekst i treba ih srediti pre sledećeg SEO kruga.`
               : "Objavljene slike nemaju kriticno alt upozorenje."}
           </p>
         </div>
@@ -863,7 +863,7 @@ type InquiryPanelProps = {
   query: string;
   statusFilter: "all" | AdminWorkflowStatus;
   onQueryChange: (query: string) => void;
-  onStatusFilterChange: (status: "all" | AdminWorkflowStatus) => void;
+  onstatusFilterChange: (status: "all" | AdminWorkflowStatus) => void;
   onUpdate: (items: AdminInquiry[]) => void;
   onPersist: (id: string, changes: Partial<AdminInquiry>) => Promise<AdminPersistResult>;
 };
@@ -873,7 +873,7 @@ const InquiryPanel = ({
   query,
   statusFilter,
   onQueryChange,
-  onStatusFilterChange,
+  onstatusFilterChange,
   onUpdate,
   onPersist,
 }: InquiryPanelProps) => {
@@ -913,7 +913,7 @@ const InquiryPanel = ({
         query={query}
         statusFilter={statusFilter}
         onQueryChange={onQueryChange}
-        onStatusFilterChange={onStatusFilterChange}
+        onstatusFilterChange={onstatusFilterChange}
       />
 
       <div className="admin-list">
@@ -947,7 +947,7 @@ const InquiryPanel = ({
               <WorkflowSelect
                 value={inquiry.adminStatus}
                 onChange={(adminStatus) =>
-                  void persistInquiryChanges(inquiry.id, { adminStatus }, "Status upita je sacuvan.")
+                  void persistInquiryChanges(inquiry.id, { adminStatus }, "status upita je sacuvan.")
                 }
               />
             </div>
@@ -1025,7 +1025,7 @@ type LandOfferPanelProps = {
   query: string;
   statusFilter: "all" | AdminWorkflowStatus;
   onQueryChange: (query: string) => void;
-  onStatusFilterChange: (status: "all" | AdminWorkflowStatus) => void;
+  onstatusFilterChange: (status: "all" | AdminWorkflowStatus) => void;
   onUpdate: (items: AdminLandOffer[]) => void;
   onPersist: (id: string, changes: Partial<AdminLandOffer>) => Promise<AdminPersistResult>;
 };
@@ -1035,7 +1035,7 @@ const LandOfferPanel = ({
   query,
   statusFilter,
   onQueryChange,
-  onStatusFilterChange,
+  onstatusFilterChange,
   onUpdate,
   onPersist,
 }: LandOfferPanelProps) => {
@@ -1075,7 +1075,7 @@ const LandOfferPanel = ({
         query={query}
         statusFilter={statusFilter}
         onQueryChange={onQueryChange}
-        onStatusFilterChange={onStatusFilterChange}
+        onstatusFilterChange={onstatusFilterChange}
       />
 
       <div className="admin-list">
@@ -1104,7 +1104,7 @@ const LandOfferPanel = ({
               <WorkflowSelect
                 value={offer.adminStatus}
                 onChange={(adminStatus) =>
-                  void persistOfferChanges(offer.id, { adminStatus }, "Status ponude je sacuvan.")
+                  void persistOfferChanges(offer.id, { adminStatus }, "status ponude je sacuvan.")
                 }
               />
             </div>
@@ -1182,14 +1182,14 @@ type AdminToolbarProps = {
   query: string;
   statusFilter: "all" | AdminWorkflowStatus;
   onQueryChange: (query: string) => void;
-  onStatusFilterChange: (status: "all" | AdminWorkflowStatus) => void;
+  onstatusFilterChange: (status: "all" | AdminWorkflowStatus) => void;
 };
 
 const AdminToolbar = ({
   query,
   statusFilter,
   onQueryChange,
-  onStatusFilterChange,
+  onstatusFilterChange,
 }: AdminToolbarProps) => {
   return (
     <div className="admin-toolbar">
@@ -1205,15 +1205,15 @@ const AdminToolbar = ({
 
       <label className="admin-filter">
         <Filter />
-        <span>Status</span>
+        <span>status</span>
         <select
           value={statusFilter}
           onChange={(event) =>
-            onStatusFilterChange(event.target.value as "all" | AdminWorkflowStatus)
+            onstatusFilterChange(event.target.value as "all" | AdminWorkflowStatus)
           }
         >
           <option value="all">Svi statusi</option>
-          {workflowStatuses.map((status) => (
+          {workflowstatuses.map((status) => (
             <option key={status} value={status}>
               {adminStatusLabels[status]}
             </option>
@@ -1232,9 +1232,9 @@ type WorkflowSelectProps = {
 const WorkflowSelect = ({ value, onChange }: WorkflowSelectProps) => {
   return (
     <label className="admin-inline-select">
-      <span>Status</span>
+      <span>status</span>
       <select value={value} onChange={(event) => onChange(event.target.value as AdminWorkflowStatus)}>
-        {workflowStatuses.map((status) => (
+        {workflowstatuses.map((status) => (
           <option key={status} value={status}>
             {adminStatusLabels[status]}
           </option>
@@ -1252,7 +1252,7 @@ type UnitPanelProps = {
 
 const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
   const [unitQuery, setUnitQuery] = useState("");
-  const [unitStatusFilter, setUnitStatusFilter] = useState<"all" | AdminUnitStatus>("all");
+  const [unitstatusFilter, setUnitstatusFilter] = useState<"all" | AdminUnitStatus>("all");
   const [floorFilter, setFloorFilter] = useState("all");
   const [publishFilter, setPublishFilter] = useState<"all" | "published" | "hidden">("all");
   const [descriptionDrafts, setDescriptionDrafts] = useState<Record<string, string>>({});
@@ -1286,15 +1286,15 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
           .join(" ")
           .toLowerCase();
         const matchesQuery = !normalizedQuery || searchable.includes(normalizedQuery);
-        const matchesStatus = unitStatusFilter === "all" || unit.status === unitStatusFilter;
+        const matchesstatus = unitstatusFilter === "all" || unit.status === unitstatusFilter;
         const matchesFloor = floorFilter === "all" || unit.floorLabel === floorFilter;
         const matchesPublish =
           publishFilter === "all" ||
           (publishFilter === "published" ? unit.isPublished : !unit.isPublished);
 
-        return matchesQuery && matchesStatus && matchesFloor && matchesPublish;
+        return matchesQuery && matchesstatus && matchesFloor && matchesPublish;
       }),
-    [floorFilter, publishFilter, unitQuery, unitStatusFilter, units],
+    [floorFilter, publishFilter, unitQuery, unitstatusFilter, units],
   );
 
   const persistUnitChange = async (
@@ -1402,7 +1402,7 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
           <span className="sr-only">Pretraga stanova</span>
           <input
             type="search"
-            placeholder="Pretrazite stan, etazu, strukturu ili opis..."
+            placeholder="Pretražite stan, etazu, strukturu ili opis..."
             value={unitQuery}
             onChange={(event) => setUnitQuery(event.target.value)}
           />
@@ -1410,15 +1410,15 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
 
         <label className="admin-filter">
           <Filter />
-          <span>Status</span>
+          <span>status</span>
           <select
-            value={unitStatusFilter}
-            onChange={(event) => setUnitStatusFilter(event.target.value as "all" | AdminUnitStatus)}
+            value={unitstatusFilter}
+            onChange={(event) => setUnitstatusFilter(event.target.value as "all" | AdminUnitStatus)}
           >
             <option value="all">Svi statusi</option>
-            {unitStatuses.map((status) => (
+            {unitstatuses.map((status) => (
               <option key={status} value={status}>
-                {adminUnitStatusLabels[status]}
+                {adminUnitstatusLabels[status]}
               </option>
             ))}
           </select>
@@ -1427,7 +1427,7 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
         <label className="admin-filter">
           <span>Etaza</span>
           <select value={floorFilter} onChange={(event) => setFloorFilter(event.target.value)}>
-            <option value="all">Sve etaze</option>
+            <option value="all">Sve etaže</option>
             {floorOptions.map((floor) => (
               <option key={floor} value={floor}>
                 {floor}
@@ -1452,7 +1452,7 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
       </div>
 
       <div className="admin-unit-summary" role="status">
-        Prikazano {filteredUnits.length} od {units.length} stanova. Status i objava se cuvaju odmah;
+        Prikazano {filteredUnits.length} od {units.length} stanova. status i objava se cuvaju odmah;
         kratak opis cuvajte dugmetom po stanu.
       </div>
 
@@ -1462,7 +1462,7 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
             <tr>
               <th>Jedinica</th>
               <th>Detalji</th>
-              <th>Status</th>
+              <th>status</th>
               <th>Kratak opis za javnu ponudu</th>
               <th>Tlocrt i javni prikaz</th>
               <th>Objava</th>
@@ -1502,7 +1502,7 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
                       <dd>{unit.floorLabel}</dd>
                     </div>
                     <div>
-                      <dt>Povrsina</dt>
+                      <dt>Površina</dt>
                       <dd>{unit.areaM2}</dd>
                     </div>
                     <div>
@@ -1513,7 +1513,7 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
                 </td>
                 <td>
                   <span className={`admin-unit-status admin-unit-status--${unit.status}`}>
-                    {adminUnitStatusLabels[unit.status]}
+                    {adminUnitstatusLabels[unit.status]}
                   </span>
                   <select
                     className="admin-table-select"
@@ -1523,13 +1523,13 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
                       void persistUnitChange(
                         unit,
                         { status: event.target.value as AdminUnitStatus },
-                        "Status stana je sacuvan.",
+                        "status stana je sacuvan.",
                       )
                     }
                   >
-                    {unitStatuses.map((status) => (
+                    {unitstatuses.map((status) => (
                       <option key={status} value={status}>
-                        {adminUnitStatusLabels[status]}
+                        {adminUnitstatusLabels[status]}
                       </option>
                     ))}
                   </select>
@@ -1576,7 +1576,7 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
                         Nedostaje tlocrt
                       </span>
                     )}
-                    <small>{unit.planVariant ? formatPlanVariant(unit.planVariant) : "Plan nije oznacen"}</small>
+                    <small>{unit.planVariant ? formatPlanVariant(unit.planVariant) : "Plan nije označen"}</small>
                     <button
                       className="admin-table-secondary-action"
                       type="button"
@@ -1596,7 +1596,7 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
                         void persistUnitChange(
                           unit,
                           { isPublished: event.target.checked },
-                          event.target.checked ? "Stan je objavljen." : "Stan je sakriven.",
+                          event.target.checked ? "stan je objavljen." : "stan je sakriven.",
                         )
                       }
                     />
@@ -1613,7 +1613,7 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
                           <strong>Opis detalja i SEO za {unit.unitCode}</strong>
                           <p>
                             Ova polja hrane stranicu detalja stana kada su podaci
-                            ucitani iz Supabase baze.
+                            učitani iz Supabase baze.
                           </p>
                         </div>
                         <a
@@ -1647,7 +1647,7 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
                               className="form-input"
                               maxLength={70}
                               value={contentDraft.seoTitle}
-                              placeholder={`Stan ${unit.unitCode.replace(/\D/g, "")} | Heroja Pinkija 13`}
+                              placeholder={`stan ${unit.unitCode.replace(/\D/g, "")} | Heroja Pinkija 13`}
                               onChange={(event) =>
                                 updateContentDraft(unit, { seoTitle: event.target.value })
                               }
@@ -1721,17 +1721,17 @@ type ProjectPanelProps = {
   ) => Promise<AdminPersistResult>;
 };
 
-type ProjectCoverageStatus = "connected" | "attention" | "static";
+type ProjectCoveragestatus = "connected" | "attention" | "static";
 
 const projectStatusLabels: Record<AdminProjectDraft["projectStatus"], string> = {
   planned: "Planirano",
   active: "Aktivno",
-  completed: "Zavrseno",
+  completed: "Završeno",
   hidden: "Sakriveno",
 };
 
 const timelineStateLabels: Record<AdminConstructionUpdate["timelineState"], string> = {
-  done: "Zavrseno",
+  done: "Završeno",
   active: "Aktuelno",
   upcoming: "Planirano",
 };
@@ -1803,12 +1803,12 @@ const ProjectPanel = ({
     title: string;
     detail: string;
     meta: string;
-    status: ProjectCoverageStatus;
+    status: ProjectCoveragestatus;
   }> = [
     {
       title: "Hero i osnovni opis",
       detail: projectDraft.shortDescription.trim()
-        ? "Javna strana moze da koristi naziv, status i kratak opis projekta."
+        ? "Javna strana može da koristi naziv, status i kratak opis projekta."
         : "Dodajte kratak opis koji odmah objasnjava lokaciju i tip ponude.",
       meta: "projects.name, status_label, short_description",
       status: projectDraft.shortDescription.trim() ? "connected" : "attention",
@@ -1816,24 +1816,24 @@ const ProjectPanel = ({
     {
       title: "Detaljan opis projekta",
       detail: projectDraft.fullDescription.trim()
-        ? "Dugi opis je spreman za SEO, structured data i buduce javne sekcije."
-        : "Unesite opis koji jasno razdvaja stanove, poslovni deo, garaze i ostave.",
+        ? "Dugi opis je spreman za SEO, structured data i buduće javne sekcije."
+        : "Unesite opis koji jasno razdvaja stanove, poslovni deo, garaže i ostave.",
       meta: "projects.full_description",
       status: projectDraft.fullDescription.trim() ? "connected" : "attention",
     },
     {
       title: "Lokacija",
       detail: projectDraft.locationDescription.trim()
-        ? "Lokacijski tekst postoji i moze da hrani javnu sekciju lokacije."
-        : "Dodajte tekst o mikro-lokaciji, saobracaju i sadrzajima u blizini.",
+        ? "Lokacijski tekst postoji i može da hrani javnu sekciju lokacije."
+        : "Dodajte tekst o mikro-lokaciji, saobracaju i sadržajima u blizini.",
       meta: "projects.location_description",
       status: projectDraft.locationDescription.trim() ? "connected" : "attention",
     },
     {
       title: "Rokovi i status radova",
       detail: projectDatesReady
-        ? "Pocetak i planirani zavrsetak su popunjeni za prikaz rokova."
-        : "Unesite pocetak i planirani zavrsetak da kupci dobiju jasan okvir.",
+        ? "Početak i planirani završetak su popunjeni za prikaz rokova."
+        : "Unesite početak i planirani završetak da kupci dobiju jasan okvir.",
       meta: "projects.construction_* + status_label",
       status: projectDatesReady ? "connected" : "attention",
     },
@@ -1861,7 +1861,7 @@ const ProjectPanel = ({
       title: "Parking, ostave i prednosti",
       detail:
         "Ove prodajne sekcije su trenutno kvalitetno postavljene u kodu; za pun CMS treba zaseban model sekcija ili page_sections.",
-      meta: "staticki v1 sadrzaj",
+      meta: "staticki v1 sadržaj",
       status: "static",
     },
   ];
@@ -1895,14 +1895,14 @@ const ProjectPanel = ({
             to="/admin/stanovi"
           >
             <Home />
-            Statusi stanova
+            statusi stanova
           </Link>
         </div>
       </div>
 
       <div className="admin-project-metrics">
         <article>
-          <span>Spremnost sadrzaja</span>
+          <span>Spremnost sadržaja</span>
           <strong>{coveragePercent}%</strong>
           <p>{connectedCoverage}/{actionableCoverage} povezanih oblasti je popunjeno.</p>
         </article>
@@ -1917,7 +1917,7 @@ const ProjectPanel = ({
           <p>Objavljeni hero/status vizuali u media biblioteci.</p>
         </article>
         <article>
-          <span>Status</span>
+          <span>status</span>
           <strong>{projectStatusLabels[projectDraft.projectStatus]}</strong>
           <p>{projectDraft.statusLabel || "Dodajte javnu oznaku statusa."}</p>
         </article>
@@ -1953,7 +1953,7 @@ const ProjectPanel = ({
               <dd>{projectDraft.address}</dd>
             </div>
             <div>
-              <dt>Status</dt>
+              <dt>status</dt>
               <dd>{projectDraft.statusLabel || projectStatusLabels[projectDraft.projectStatus]}</dd>
             </div>
             <div>
@@ -1961,7 +1961,7 @@ const ProjectPanel = ({
               <dd>{projectDraft.floorStructure || "Nije uneto"}</dd>
             </div>
             <div>
-              <dt>Planirani zavrsetak</dt>
+              <dt>Planirani završetak</dt>
               <dd>{projectDraft.constructionEndDate || "Nije uneto"}</dd>
             </div>
           </dl>
@@ -1975,7 +1975,7 @@ const ProjectPanel = ({
       <div className="admin-construction-editor" aria-label="Uredjivanje statusa radova">
         <div className="admin-construction-editor__head">
           <div>
-            <p className="section-eyebrow">Status radova</p>
+            <p className="section-eyebrow">status radova</p>
             <h3>Timeline koji se prikazuje na javnoj strani.</h3>
             <p>
               Koraci su povezani sa `construction_updates` tabelom. Objavljeni
@@ -2055,7 +2055,7 @@ const ProjectPanel = ({
                     />
                   </label>
                   <label className="form-field">
-                    <span className="form-label">Stanje</span>
+                    <span className="form-label">stanje</span>
                     <select
                       className="form-select"
                       value={step.timelineState}
@@ -2143,7 +2143,7 @@ const ProjectPanel = ({
         </label>
 
         <label className="form-field">
-          <span className="form-label">Status projekta</span>
+          <span className="form-label">status projekta</span>
           <select
             className="form-select"
             value={projectDraft.projectStatus}
@@ -2155,7 +2155,7 @@ const ProjectPanel = ({
           >
             <option value="planned">Planirano</option>
             <option value="active">Aktivno</option>
-            <option value="completed">Zavrseno</option>
+            <option value="completed">Završeno</option>
             <option value="hidden">Sakriveno</option>
           </select>
         </label>
@@ -2197,7 +2197,7 @@ const ProjectPanel = ({
         </label>
 
         <label className="form-field">
-          <span className="form-label">Pocetak izgradnje</span>
+          <span className="form-label">Početak izgradnje</span>
           <input
             className="form-input"
             type="date"
@@ -2207,7 +2207,7 @@ const ProjectPanel = ({
         </label>
 
         <label className="form-field">
-          <span className="form-label">Planirani zavrsetak</span>
+          <span className="form-label">Planirani završetak</span>
           <input
             className="form-input"
             type="date"
@@ -2408,11 +2408,11 @@ const MediaPanel = ({
       return;
     }
 
-    if (file.size > maxStandardUploadSizeBytes) {
+    if (file.size > maxstandardUploadSizeBytes) {
       showCardFeedback(item.id, {
         tone: "error",
         message:
-          "Fajl je veci od 6 MB. Za sada uploadujte optimizovan fajl ili uvedite resumable upload za velike fajlove.",
+          "Fajl je veći od 6 MB. Za sada uploadujte optimizovan fajl ili uvedite resumable upload za velike fajlove.",
       });
       return;
     }
@@ -2463,7 +2463,7 @@ const MediaPanel = ({
     }
 
     if (normalizedDraft.ownerType === "project" && !projectDraft) {
-      setCreateFeedback({ tone: "error", message: "Projekat nije ucitan." });
+      setCreateFeedback({ tone: "error", message: "Projekat nije učitan." });
       return;
     }
 
@@ -2493,11 +2493,11 @@ const MediaPanel = ({
       return;
     }
 
-    if (createFile && createFile.size > maxStandardUploadSizeBytes) {
+    if (createFile && createFile.size > maxstandardUploadSizeBytes) {
       setCreateFeedback({
         tone: "error",
         message:
-          "Fajl je veci od 6 MB. Uploadujte optimizovan fajl ili kasnije uvedite resumable upload.",
+          "Fajl je veći od 6 MB. Uploadujte optimizovan fajl ili kasnije uvedite resumable upload.",
       });
       return;
     }
@@ -2530,7 +2530,7 @@ const MediaPanel = ({
       showCardFeedback(item.id, {
         tone: "error",
         message:
-          "Kliknite jos jednom na 'Potvrdite uklanjanje' ako zelite da uklonite karticu. Storage fajl nece biti obrisan.",
+          "Kliknite još jednom na 'Potvrdite uklanjanje' ako želite da uklonite karticu. Storage fajl neće biti obrisan.",
       });
       return;
     }
@@ -2573,7 +2573,7 @@ const MediaPanel = ({
           </div>
           <p>
             Kreirajte zapis za projekat ili konkretan stan. Ako izaberete fajl, upload se radi
-            odmah; ako unesete putanju, kartica koristi vec postojeci asset.
+            odmah; ako unesete putanju, kartica koristi već postojeći asset.
           </p>
         </div>
 
@@ -2626,7 +2626,7 @@ const MediaPanel = ({
 
         {createDraft.ownerType === "unit" ? (
           <label className="form-field">
-            <span className="form-label">Stan</span>
+            <span className="form-label">stan</span>
             <select
               className="form-select"
               value={createDraft.unitId || units[0]?.id || ""}
@@ -2924,11 +2924,11 @@ function filterWorkflowItems<T extends { fullName: string; phone: string; email:
   const normalizedQuery = query.trim().toLowerCase();
 
   return items.filter((item) => {
-    const matchesStatus = statusFilter === "all" || item.adminStatus === statusFilter;
+    const matchesstatus = statusFilter === "all" || item.adminStatus === statusFilter;
     const searchable = Object.values(item).join(" ").toLowerCase();
     const matchesQuery = !normalizedQuery || searchable.includes(normalizedQuery);
 
-    return matchesStatus && matchesQuery;
+    return matchesstatus && matchesQuery;
   });
 }
 
@@ -2968,7 +2968,7 @@ function getSortNumber(value: string) {
 function formatUnitType(unitType: AdminUnit["unitType"]) {
   switch (unitType) {
     case "apartment":
-      return "Stan";
+      return "stan";
     case "business_apartment":
       return "Apartman za poslovanje";
     case "commercial_space":
@@ -3009,7 +3009,7 @@ function hasMissingImageAltText(item: AdminMediaItem) {
   return isImageMedia(item) && !item.altText.trim();
 }
 
-const maxStandardUploadSizeBytes = 6 * 1024 * 1024;
+const maxstandardUploadSizeBytes = 6 * 1024 * 1024;
 
 function getMediaFileAccept(item: Pick<AdminMediaItem, "mediaType">) {
   if (isPdfMediaType(item.mediaType)) {
@@ -3080,13 +3080,13 @@ function getMediaUsageLabel(item: AdminMediaItem) {
     case "building_floor_plan_pdf":
       return "PDF osnova objekta";
     case "garage_plan_pdf":
-      return "PDF garaznih mesta";
+      return "PDF garažnih mesta";
     case "storage_plan_pdf":
       return "PDF ostava";
     case "general_brochure_pdf":
       return "Opsta prodajna brosura";
     case "construction_update_image":
-      return "Status radova";
+      return "status radova";
     default:
       return "Javni media fajl";
   }
@@ -3107,5 +3107,5 @@ function getErrorMessage(error: unknown) {
     return String(error.message);
   }
 
-  return "Doslo je do greske pri komunikaciji sa Supabase bazom.";
+  return "Došlo je do greške pri komunikaciji sa Supabase bazom.";
 }

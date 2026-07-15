@@ -43,17 +43,17 @@ export const defaultModalOptions: Required<
   >
 > &
   Pick<ContactModalOptions, "details" | "messagePlaceholder" | "sourcePage" | "unitCode"> = {
-  eyebrow: "Pisite nam",
+  eyebrow: "Pišite nam",
   title: "Kontaktirajte prodaju",
   description:
-    "Ostavite podatke i napisite sta vas zanima. Prodajni tim ce vam se javiti sa informacijama o dostupnosti, ceni i narednim koracima.",
-  submitLabel: "Posaljite upit",
-  reassuranceText: "Odgovaramo u najkracem roku. Slanje upita vas ne obavezuje na kupovinu.",
-  successMessage: "Hvala. Upit je poslat i prodajni tim ce vas kontaktirati.",
+    "Ostavite podatke i napišite šta vas zanima. Prodajni tim će vam se javiti sa informacijama o dostupnosti, ceni i narednim koracima.",
+  submitLabel: "Pošaljite upit",
+  reassuranceText: "Odgovaramo u najkraćem roku. Slanje upita vas ne obavezuje na kupovinu.",
+  successMessage: "Hvala. Upit je poslat i prodajni tim će vas kontaktirati.",
   inquiryType: "general",
   projectSlug: "heroja-pinkija-13",
   details: [],
-  messagePlaceholder: "Napisite koji stan, kvadratura ili termin obilaska vas zanima.",
+  messagePlaceholder: "Napišite koji stan, kvadratura ili termin obilaska vas zanima.",
   sourcePage: undefined,
   unitCode: undefined,
 };

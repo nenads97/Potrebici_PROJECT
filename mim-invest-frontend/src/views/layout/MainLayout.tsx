@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import {
   ArrowLeft,
@@ -57,12 +57,29 @@ export const MainLayout = () => {
   const shouldShowFooterCta = shouldShowPublicFooterCta(normalizedPathname);
   const currentYear = new Date().getFullYear();
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const [isBackToTopVisible, setIsBackToTopVisible] = useState(false);
+  const [isBackButtonMuted, setIsBackButtonMuted] = useState(false);
   const backFallbackPath = getBackFallbackPath(normalizedPathname);
 
-  const handleBackClick = () => {
-    const historyState = window.history.state as { idx?: number } | null;
+  useEffect(() => {
+    const updateScrollControls = () => {
+      const scrollY = window.scrollY;
+      setIsBackButtonMuted(scrollY > 24);
+      setIsBackToTopVisible(scrollY > 320);
+    };
 
-    if (typeof historyState?.idx === "number" && historyState.idx > 0) {
+    updateScrollControls();
+    window.addEventListener("scroll", updateScrollControls, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", updateScrollControls);
+    };
+  }, []);
+
+  const handleBackClick = () => {
+    const historystate = window.history.state as { idx?: number } | null;
+
+    if (typeof historystate?.idx === "number" && historystate.idx > 0) {
       navigate(-1);
       return;
     }
@@ -86,9 +103,9 @@ export const MainLayout = () => {
   };
 
   return (
-    <div className="site-shell">
+    <div className={`site-shell${isHome ? " site-shell--home" : " site-shell--ambient"}`}>
       <a className="skip-link" href="#main-content">
-        Preskocite na glavni sadrzaj
+        Preskocite na glavni sadržaj
       </a>
 
       <header className="site-header-wrap">
@@ -154,14 +171,14 @@ export const MainLayout = () => {
 
           <ContactModalButton className="site-button site-button--accent site-header__cta">
             <MessageCircle />
-            Pisite nam
+            Pišite nam
           </ContactModalButton>
         </div>
       </header>
 
       {!isHome ? (
         <button
-          className="page-back-button"
+          className={`page-back-button${isBackButtonMuted ? " page-back-button--muted" : ""}`}
           type="button"
           aria-label="Nazad na prethodnu stranicu"
           title="Nazad"
@@ -186,7 +203,7 @@ export const MainLayout = () => {
 
               <ContactModalButton className="site-button site-button--accent">
                 <MessageCircle />
-                Pisite nam
+                Pišite nam
               </ContactModalButton>
             </div>
           </div>
@@ -198,7 +215,7 @@ export const MainLayout = () => {
             <div className="site-footer__brand-copy">
               <strong>M & M Gradnja</strong>
               <p>
-                Gradimo pazljivo osmisljene prostore za savremen i udoban zivot u
+                Gradimo pazljivo osmišljene prostore za savremen i udoban život u
                 Novom Sadu.
               </p>
               <Link className="site-footer__inline-link" to="/o-nama">
@@ -278,10 +295,12 @@ export const MainLayout = () => {
       </footer>
 
       <button
-        className="back-to-top"
+        className={`back-to-top${isBackToTopVisible ? " back-to-top--visible" : ""}`}
         type="button"
         aria-label="Nazad na vrh stranice"
         title="Nazad na vrh"
+        aria-hidden={!isBackToTopVisible}
+        tabIndex={isBackToTopVisible ? 0 : -1}
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       >
         <ArrowUp />

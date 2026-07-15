@@ -54,7 +54,7 @@ export type ProjectInfo = {
   description: string;
   locationDescription?: string;
   floorStructure: string;
-  constructionStart: string;
+  constructionstart: string;
   plannedCompletion: string;
   constructionStartDate?: string;
   constructionEndDate?: string;
@@ -63,7 +63,7 @@ export type ProjectInfo = {
   seoDescription?: string;
 };
 
-export type ProjectStat = {
+export type Projectstat = {
   value: string;
   label: string;
   detail: string;
@@ -92,6 +92,16 @@ export type TimelineItem = {
   body: string;
   statusLabel?: string;
   state: "done" | "active" | "upcoming";
+};
+
+export type ProjectMediaItem = {
+  id: string;
+  title: string;
+  mediaType: "project_image" | "construction_update_image";
+  filePath: string;
+  altText?: string;
+  description?: string;
+  sortOrder: number;
 };
 
 export type BuildingLevel = {

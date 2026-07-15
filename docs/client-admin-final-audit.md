@@ -447,8 +447,8 @@ Do sada prolazi:
 - browser runtime smoke 2026-07-15:
   - smart desktop/mobile prolaz kroz 43 route provere nema failova: nema stvarno broken slika, missing alt-a, horizontal overflow-a, error boundary-ja, blokirajuceg loading-a ili sirovih `tel:` href vrednosti;
   - posle zamene stock hero slika, `/` ucitava lokalni `/images/heroja-pinkija-13/gradilisna-tabla.jpg` hero sa `naturalWidth=818`, produkcionim canonical URL-om i bez horizontalnog overflow-a;
-  - `/kontakt` ucitava lokalni `/images/heroja-pinkija-13/gradilisna-tabla-slika.jpg` hero sa `naturalWidth=560`, produkcionim canonical URL-om i bez horizontalnog overflow-a;
-  - dopunska provera potvrdjuje da Home hero ima `width=818 height=783`, Kontakt hero `width=560 height=676`, da se atributi poklapaju sa natural dimenzijama i da nema console error-a;
+  - `/kontakt` ucitava lokalni `/images/heroja-pinkija-13/gradilisna-tabla-slika.jpg` hero sa `naturalWidth=1672`, produkcionim canonical URL-om i bez horizontalnog overflow-a;
+  - dopunska provera potvrdjuje da Home hero ima `width=818 height=783`, Kontakt hero `width=1672 height=941`, da se atributi poklapaju sa natural dimenzijama i da nema console error-a;
   - runtime meta provera potvrdjuje da `/` ima `og:image` `/images/heroja-pinkija-13/gradilisna-tabla.jpg` sa `og:image:width=818` i `og:image:height=783`, dok detalj `/projekti/heroja-pinkija-13/ponuda-stanova/1` prebacuje `og:image` na `/images/apartment-plans/stan-1-6-11.png` sa `2105x1488`;
   - runtime provera potvrdjuje da `/` ima `og:image:alt` / `twitter:image:alt` = `Gradilisna tabla projekta Heroja Pinkija 13`, a detalj stana 1 = `Projektni tlocrt stanova 1, 6 i 11`;
   - runtime provera potvrdjuje `document.documentElement.lang="sr-Latn"`, `og:locale=sr_RS` i isti home description kroz `meta[name=description]`, `og:description` i `twitter:description`;

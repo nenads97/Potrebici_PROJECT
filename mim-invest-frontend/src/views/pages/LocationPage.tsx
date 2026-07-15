@@ -18,8 +18,8 @@ const location = {
 const locationBenefits = [
   {
     icon: Building2,
-    title: "Pocetak Telepa",
-    text: "Mirna gradska lokacija sa svakodnevnim sadrzajima u blizini.",
+    title: "Početak Telepa",
+    text: "Mirna gradska lokacija sa svakodnevnim sadržajima u blizini.",
   },
   {
     icon: Car,
@@ -28,8 +28,8 @@ const locationBenefits = [
   },
   {
     icon: Trees,
-    title: "Kej, Ribarac i Sodros",
-    text: "U blizini su kej, Ribarac, Sodros, parkovi, Lidl i Gimnazija Laza Kostic.",
+    title: "Kej, Ribarac i Šodroš",
+    text: "U blizini su kej, Ribarac, Šodroš, parkovi, Lidl i Gimnazija Laza Kostić.",
   },
 ];
 
@@ -38,13 +38,13 @@ export const LocationPage = () => {
     <main>
       <PageMeta
         title="Lokacija Heroja Pinkija 13 | M & M Gradnja"
-        description="Pogledajte lokaciju projekta Heroja Pinkija 13 na pocetku Telepa u Novom Sadu, uz vezu sa gradom i sadrzaje u blizini."
+        description="Pogledajte lokaciju projekta Heroja Pinkija 13 na početku Telepa u Novom Sadu, uz vezu sa gradom i sadržaje u blizini."
         structuredData={({ canonicalUrl, imageUrl, origin }) => ({
           "@context": "https://schema.org",
           "@type": "ApartmentComplex",
           name: "Heroja Pinkija 13",
           description:
-            "Lokacija projekta Heroja Pinkija 13 na pocetku Telepa u Novom Sadu, uz vezu sa gradom i sadrzaje u blizini.",
+            "Lokacija projekta Heroja Pinkija 13 na početku Telepa u Novom Sadu, uz vezu sa gradom i sadržaje u blizini.",
           url: canonicalUrl,
           image: imageUrl,
           telephone: contactPhone,
@@ -70,9 +70,9 @@ export const LocationPage = () => {
             <p className="section-eyebrow">Lokacija projekta</p>
             <h1 className="section-title">Heroja Pinkija 13.</h1>
             <p className="section-copy section-copy--large">
-              Objekat se nalazi na pocetku Telepa, na lokaciji koja spaja mirniji
+              Objekat se nalazi na početku Telepa, na lokaciji koja spaja mirniji
               stambeni karakter i direktnu vezu sa centrom grada linijom 12. Buduci
-              most dodatno ce poboljsati vezu sa Fruskom gorom.
+              most dodatno će poboljšati vezu sa Fruškom gorom.
             </p>
 
             <div className="page-actions">
@@ -86,14 +86,14 @@ export const LocationPage = () => {
                   eyebrow: "Lokacija projekta",
                   title: "Pitajte nas za obilazak lokacije",
                   description:
-                    "Ostavite kontakt i napisite kada biste voleli da obidjete lokaciju ili dobijete dodatne informacije o projektu.",
+                    "Ostavite kontakt i napišite kada biste voleli da obidjete lokaciju ili dobijete dodatne informacije o projektu.",
                   inquiryType: "viewing",
                   details: [{ label: "Lokacija", value: location.address }],
-                  messagePlaceholder: "Napisite pitanje o lokaciji ili predlog termina za obilazak.",
+                  messagePlaceholder: "Napišite pitanje o lokaciji ili predlog termina za obilazak.",
                 }}
               >
                 <MessageCircle />
-                Pisite nam
+                Pišite nam
               </ContactModalButton>
             </div>
           </div>

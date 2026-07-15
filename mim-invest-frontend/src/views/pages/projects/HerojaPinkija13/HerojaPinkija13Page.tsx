@@ -47,28 +47,28 @@ const projectBenefits = [
     icon: Ruler,
     title: "Funkcionalni rasporedi",
     text:
-      "Garsonjere, dvosobni i trosobni stanovi organizovani su kroz pet stanova na svakoj stambenoj etazi.",
+      "Garsonjere, dvosobni i trosobni stanovi organizovani su kroz pet stanova na svakoj stambenoj etaži.",
   },
   {
     number: "02",
     icon: Flame,
     title: "Komfor u svakodnevici",
     text:
-      "Podno grejanje i lift od podzemne garaze do svih spratova deo su potvrdene opreme objekta.",
+      "Podno grejanje i lift od podzemne garaže do svih spratova deo su potvrdene opreme objekta.",
   },
   {
     number: "03",
     icon: Building2,
     title: "Pregledan objekat",
     text:
-      "Ukupno 15 stanova omogucava jasnu ponudu i jednostavno poredjenje jedinica kroz vertikalu.",
+      "Ukupno 15 stanova omogućava jasnu ponudu i jednostavno poređenje jedinica kroz vertikalu.",
   },
   {
     number: "04",
     icon: MapPin,
-    title: "Pocetak Telepa",
+    title: "Početak Telepa",
     text:
-      "Lokacija povezuje mirniji stambeni karakter sa linijom 12, gradskim sadrzajima i centrom Novog Sada.",
+      "Lokacija povezuje mirniji stambeni karakter sa linijom 12, gradskim sadržajima i centrom Novog Sada.",
   },
 ];
 
@@ -120,20 +120,20 @@ export const HerojaPinkija13Page = () => {
   const projectHeroImage = project.heroImage || projectImages.hero;
   const projectAddress = `${project.address}, ${project.city}`;
   const heroFacts = [
-    { label: "Stanovi", value: "15" },
+    { label: "stanovi", value: "15" },
     { label: "Struktura", value: project.floorStructure },
     { label: "Grejanje", value: "Podno" },
-    { label: "Planirani zavrsetak", value: completionCompact },
+    { label: "Planirani završetak", value: completionCompact },
   ];
   const overviewFacts = [
-    { icon: Building2, label: "Tip objekta", value: "Stambena zgrada" },
+    { icon: Building2, label: "Tip objekta", value: "stambena zgrada" },
     { icon: MapPin, label: "Lokacija", value: projectAddress },
-    { icon: Home, label: "Stambene jedinice", value: "15 stanova" },
+    { icon: Home, label: "stambene jedinice", value: "15 stanova" },
     { icon: Layers3, label: "Struktura objekta", value: project.floorStructure },
-    { icon: Car, label: "Garazna mesta", value: "13 mesta, odvojena kupovina" },
+    { icon: Car, label: "Garažna mesta", value: "13 mesta, odvojena kupovina" },
     { icon: Package, label: "Ostave", value: "15 ostava, odvojena kupovina" },
-    { icon: Clock3, label: "Trenutna faza", value: "Iskop zavrsen, temelji u toku" },
-    { icon: CalendarDays, label: "Planirani zavrsetak", value: completionCompact },
+    { icon: Clock3, label: "Trenutna faza", value: "Iskop završen, temelji u toku" },
+    { icon: CalendarDays, label: "Planirani završetak", value: completionCompact },
   ];
   const detailGroups = [
     {
@@ -141,18 +141,18 @@ export const HerojaPinkija13Page = () => {
       title: "Osnovni podaci",
       items: [
         { label: "Investitor", value: "M & M Gradnja" },
-        { label: "Tip objekta", value: "Stambena zgrada" },
+        { label: "Tip objekta", value: "stambena zgrada" },
         { label: "Struktura", value: project.floorStructure },
-        { label: "Stambene jedinice", value: "15 stanova" },
+        { label: "stambene jedinice", value: "15 stanova" },
       ],
     },
     {
-      eyebrow: "Stanovanje",
+      eyebrow: "stanovanje",
       title: "Komfor",
       items: [
         { label: "Grejanje", value: "Podno grejanje" },
         { label: "Vertikalna komunikacija", value: "Lift do svih spratova" },
-        { label: "Raspored", value: "5 stanova po stambenoj etazi" },
+        { label: "Raspored", value: "5 stanova po stambenoj etaži" },
         { label: "Strukture stanova", value: "Garsonjere, dvosobni i trosobni" },
       ],
     },
@@ -160,7 +160,7 @@ export const HerojaPinkija13Page = () => {
       eyebrow: "Dodatne jedinice",
       title: "Parking i ostave",
       items: [
-        { label: "Garazna mesta", value: "13 mesta" },
+        { label: "Garažna mesta", value: "13 mesta" },
         { label: "Ostave", value: "15 ostava" },
         { label: "Dvorisni parking", value: "10 mesta" },
         { label: "Nacin kupovine", value: "Odvojeno od stana" },
@@ -170,24 +170,24 @@ export const HerojaPinkija13Page = () => {
       eyebrow: "Realizacija",
       title: "Rokovi i status",
       items: [
-        { label: "Pocetak radova", value: startCompact },
-        { label: "Zavrsena faza", value: "Iskop" },
+        { label: "Početak radova", value: startCompact },
+        { label: "Završena faza", value: "Iskop" },
         { label: "Aktuelna faza", value: project.status },
-        { label: "Planirani zavrsetak", value: completionCompact },
+        { label: "Planirani završetak", value: completionCompact },
       ],
     },
   ];
   const projectContactModal = {
     eyebrow: project.name,
-    title: "Pisite nam za informacije o projektu",
+    title: "Pišite nam za informacije o projektu",
     description:
-      "Posaljite upit za cenu, dostupnost stanova, uslove kupovine ili termin obilaska. Prodajni tim ce vam se javiti sa konkretnim informacijama.",
+      "Pošaljite upit za cenu, dostupnost stanova, uslove kupovine ili termin obilaska. Prodajni tim će vam se javiti sa konkretnim informacijama.",
     inquiryType: "availability" as const,
     details: [
       { label: "Projekat", value: project.name },
       { label: "Lokacija", value: project.district ? `${project.district}, ${project.city}` : project.city },
     ],
-    messagePlaceholder: "Napisite koji stan, kvadratura ili termin obilaska vas zanima.",
+    messagePlaceholder: "Napišite koji stan, kvadratura ili termin obilaska vas zanima.",
   };
 
   useEffect(() => {
@@ -276,7 +276,7 @@ export const HerojaPinkija13Page = () => {
                 modalOptions={projectContactModal}
               >
                 <MessageCircle />
-                Pisite nam
+                Pišite nam
               </ContactModalButton>
             </motion.div>
           </motion.div>
@@ -330,7 +330,7 @@ export const HerojaPinkija13Page = () => {
               </h2>
             </div>
             <p className="section-copy">
-              Pregled cinjenica koje kupcu omogucavaju da brzo razume objekat,
+              Pregled cinjenica koje kupcu omogućavaju da brzo razume objekat,
               dodatne jedinice i trenutnu dinamiku realizacije.
             </p>
           </motion.div>
@@ -362,7 +362,7 @@ export const HerojaPinkija13Page = () => {
             viewport={{ once: true, amount: 0.35 }}
             variants={reveal}
           >
-            <p className="section-eyebrow">Zasto ovaj projekat</p>
+            <p className="section-eyebrow">Zašto ovaj projekat</p>
             <h2 className="section-title section-title--medium">
               Prakticne prednosti koje se osecaju svakog dana.
             </h2>
@@ -400,9 +400,9 @@ export const HerojaPinkija13Page = () => {
           <motion.div className="project-showcase-progress__intro" variants={reveal}>
             <div className="project-showcase-progress__eyebrow">
               <Clock3 />
-              <span>Status radova</span>
+              <span>status radova</span>
             </div>
-            <h2>Jasan pregled zavrsenih i narednih faza.</h2>
+            <h2>Jasan pregled završenih i narednih faza.</h2>
             <p>
               Aktuelni status je prikazan tekstualno i vizuelno, bez potrebe za
               dodatnim otvaranjem ili izborom koraka.
@@ -452,12 +452,12 @@ export const HerojaPinkija13Page = () => {
             <div>
               <p className="section-eyebrow">Ponuda stanova</p>
               <h2 className="section-title section-title--medium">
-                Pet tipova rasporeda kroz tri etaze.
+                Pet tipova rasporeda kroz tri etaže.
               </h2>
             </div>
             <div className="project-showcase-apartments__heading-copy">
               <p className="section-copy">
-                Prikazani su reprezentativni stanovi prve etaze. Isti tipovi
+                Prikazani su reprezentativni stanovi prve etaže. Isti tipovi
                 ponavljaju se kroz vertikalu uz razlike u kvadraturi.
               </p>
               <span>Svi prikazani statusi su dostupni i tekstualno.</span>
@@ -497,7 +497,7 @@ export const HerojaPinkija13Page = () => {
                 </Link>
                 <div className="project-showcase-apartment__body">
                   <div className="project-showcase-apartment__title">
-                    <span>Stan</span>
+                    <span>stan</span>
                     <h3>{apartment.number}</h3>
                   </div>
                   <dl>
@@ -506,7 +506,7 @@ export const HerojaPinkija13Page = () => {
                       <dd>{apartment.floor}</dd>
                     </div>
                     <div>
-                      <dt>Povrsina</dt>
+                      <dt>Površina</dt>
                       <dd>{apartment.size}</dd>
                     </div>
                     <div>
@@ -628,7 +628,7 @@ export const HerojaPinkija13Page = () => {
               className="section-title section-title--medium"
               variants={reveal}
             >
-              Pocetak Telepa, povezan sa gradom.
+              Početak Telepa, povezan sa gradom.
             </motion.h2>
             <motion.p className="section-copy" variants={reveal}>
               {project.locationDescription ?? fallbackProjectInfo.locationDescription}
@@ -636,11 +636,11 @@ export const HerojaPinkija13Page = () => {
             <motion.ul variants={reveal}>
               <li>
                 <CheckCircle2 />
-                Lidl i Gimnazija Laza Kostic u blizini
+                Lidl i Gimnazija Laza Kostić u blizini
               </li>
               <li>
                 <CheckCircle2 />
-                Kej, Ribarac, Sodros i parkovi
+                Kej, Ribarac, Šodroš i parkovi
               </li>
               <li>
                 <CheckCircle2 />
@@ -666,8 +666,8 @@ export const HerojaPinkija13Page = () => {
           variants={revealContainer}
         >
           <motion.div variants={reveal}>
-            <p className="section-eyebrow">Sledeci korak</p>
-            <h2>Izaberite stan ili posaljite upit prodaji.</h2>
+            <p className="section-eyebrow">Sledeći korak</p>
+            <h2>Izaberite stan ili pošaljite upit prodaji.</h2>
             <p>
               Proverite kvadrature i rasporede ili nam se obratite za cenu,
               uslove kupovine i termin obilaska.
@@ -686,7 +686,7 @@ export const HerojaPinkija13Page = () => {
               modalOptions={projectContactModal}
             >
               <MessageCircle />
-              Pisite nam
+              Pišite nam
               <ArrowUpRight />
             </ContactModalButton>
           </motion.div>

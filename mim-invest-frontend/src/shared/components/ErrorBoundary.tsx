@@ -11,16 +11,16 @@ type AppErrorBoundaryProps = {
   variant: ErrorBoundaryVariant;
 };
 
-type AppErrorBoundaryState = {
+type AppErrorBoundarystate = {
   error: Error | null;
 };
 
-class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorBoundaryState> {
-  state: AppErrorBoundaryState = {
+class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorBoundarystate> {
+  state: AppErrorBoundarystate = {
     error: null,
   };
 
-  static getDerivedStateFromError(error: Error) {
+  static getDerivedstateFromError(error: Error) {
     return { error };
   }
 
@@ -66,10 +66,10 @@ const ErrorFallback = ({ onReset, variant }: ErrorFallbackProps) => {
         <p className="section-eyebrow">
           {isAdmin ? "Admin panel" : "Privremena greska"}
         </p>
-        <h1>Stranica se nije ucitala kako treba.</h1>
+        <h1>Stranica se nije učitala kako treba.</h1>
         <p>
           {isAdmin
-            ? "Podaci nisu izgubljeni. Osvezite prikaz ili se vratite na pocetak admin panela."
+            ? "Podaci nisu izgubljeni. Osvežite prikaz ili se vratite na početak admin panela."
             : "Izgleda da je doslo do privremenog problema u prikazu. Mozete pokusati ponovo ili se vratiti na pocetnu stranicu."}
         </p>
         <div className="app-error-fallback__actions">

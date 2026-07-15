@@ -17,7 +17,7 @@ const adminLinks = [
   { to: "/admin", label: "Pregled", icon: LayoutDashboard },
   { to: "/admin/upiti-stanovi", label: "Upiti za stanove", icon: Inbox },
   { to: "/admin/upiti-placevi", label: "Upiti za placeve", icon: MapPinned },
-  { to: "/admin/stanovi", label: "Stanovi i statusi", icon: Home },
+  { to: "/admin/stanovi", label: "stanovi i statusi", icon: Home },
   { to: "/admin/projekat", label: "Projekat", icon: Building2 },
   { to: "/admin/fajlovi", label: "Slike i PDF fajlovi", icon: Images },
 ];
@@ -33,7 +33,7 @@ export const AdminLayout = () => {
   return (
     <div className="admin-shell">
       <a className="skip-link" href="#admin-main-content">
-        Preskocite na admin sadrzaj
+        Preskocite na admin sadržaj
       </a>
 
       <aside className="admin-sidebar" aria-label="Admin navigacija">
@@ -63,7 +63,7 @@ export const AdminLayout = () => {
 
         <div className="admin-sidebar__meta">
           <FileText />
-          <span>v1 panel za prodaju i sadrzaj projekta Heroja Pinkija 13.</span>
+          <span>v1 panel za prodaju i sadržaj projekta Heroja Pinkija 13.</span>
         </div>
       </aside>
 

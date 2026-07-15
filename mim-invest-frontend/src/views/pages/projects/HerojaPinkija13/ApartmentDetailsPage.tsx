@@ -1,5 +1,5 @@
-import type { CSSProperties, PointerEvent } from "react";
-import { useEffect, useId, useMemo, useState } from "react";
+import type { CSSProperties, PointerEvent, WheelEvent } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -10,8 +10,11 @@ import {
   Compass,
   Home,
   Layers3,
+  Minus,
   MessageCircle,
   Phone,
+  Plus,
+  RotateCcw,
   Ruler,
   X,
 } from "lucide-react";
@@ -34,9 +37,16 @@ import type {
   ApartmentStatus,
 } from "../../../../features/projects/types/project.types";
 import { PageMeta } from "../../../../shared/components/PageMeta";
+import { getPublicImageDimensions } from "../../../../shared/config/site";
 
 const projectBasePath = "/projekti/heroja-pinkija-13";
 const apartmentsPath = `${projectBasePath}/ponuda-stanova`;
+const heroPlanZoomMin = 1;
+const heroPlanZoomMax = 3;
+const heroPlanZoomStep = 0.25;
+
+const clampHeroPlanZoom = (value: number) =>
+  Math.min(heroPlanZoomMax, Math.max(heroPlanZoomMin, Number(value.toFixed(2))));
 
 type ApartmentCtaCopy = {
   buttonLabel: string;
@@ -59,50 +69,50 @@ function getApartmentCtaCopy(
       buttonLabel: "Pitajte za status",
       modalTitle: `Proverite status stana ${apartmentNumber}`,
       modalDescription:
-        "Stan je trenutno oznacen kao rezervisan. Ostavite podatke i prodajni tim ce proveriti da li je rezervacija aktivna ili predloziti slicne rasporede.",
-      submitLabel: "Posaljite upit za status",
+        "stan je trenutno označen kao rezervisan. Ostavite podatke i prodajni tim će proveriti da li je rezervacija aktivna ili predložiti slične rasporede.",
+      submitLabel: "Pošaljite upit za status",
       messagePlaceholder:
-        "Napisite da vas zanima status rezervacije ili slican stan po rasporedu, spratu ili kvadraturi.",
+        "Napišite da vas zanima status rezervacije ili sličan stan po rasporedu, spratu ili kvadraturi.",
       purchaseTitle: "Proverite status rezervacije.",
       purchaseLead:
-        "Rezervisani stanovi se mogu promeniti u dogovoru sa kupcem. Posaljite upit i provericemo najaktuelniji status ili slicne opcije.",
+        "Rezervisani stanovi se mogu promeniti u dogovoru sa kupcem. Pošaljite upit i proverićemo najaktuelniji status ili slične opcije.",
       purchaseSteps: [
         "Posaljete upit za proveru statusa.",
         "Proveravamo da li je rezervacija i dalje aktivna.",
-        "Saljemo vam status ili predlog slicnih dostupnih stanova.",
+        "Saljemo vam status ili predlog sličnih dostupnih stanova.",
       ],
     };
   }
 
   if (status === "Sold") {
     return {
-      buttonLabel: "Pitajte za slicne stanove",
-      modalTitle: `Pitajte za slicne stanove kao stan ${apartmentNumber}`,
+      buttonLabel: "Pitajte za slične stanove",
+      modalTitle: `Pitajte za slične stanove kao stan ${apartmentNumber}`,
       modalDescription:
-        "Ovaj stan je oznacen kao prodat. Ostavite podatke i prodajni tim ce vam predloziti dostupne stanove slicne kvadrature, strukture ili rasporeda.",
-      submitLabel: "Posaljite upit za slicne stanove",
+        "Ovaj stan je označen kao prodat. Ostavite podatke i prodajni tim će vam predložiti dostupne stanove slične kvadrature, strukture ili rasporeda.",
+      submitLabel: "Pošaljite upit za slične stanove",
       messagePlaceholder:
-        "Napisite sta vam se dopada kod ovog stana i koju kvadraturu, strukturu ili sprat biste razmatrali.",
+        "Napišite sta vam se dopada kod ovog stana i koju kvadraturu, strukturu ili sprat biste razmatrali.",
       purchaseTitle: "Ovaj stan je prodat, ali upit i dalje ima smisla.",
       purchaseLead:
-        "Ako vam odgovara raspored ili kvadratura ovog stana, prodaja moze da proveri slicne dostupne opcije u projektu.",
+        "Ako vam odgovara raspored ili kvadratura ovog stana, prodaja može da proveri slične dostupne opcije u projektu.",
       purchaseSteps: [
-        "Posaljete upit za slicne stanove.",
+        "Posaljete upit za slične stanove.",
         "Uporedjujemo dostupne jedinice po kvadraturi i rasporedu.",
-        "Saljemo vam najblize opcije i sledeci korak.",
+        "Saljemo vam najblize opcije i sledeći korak.",
       ],
     };
   }
 
   return {
-    buttonLabel: "Pisite nam",
-    modalTitle: `Pisite nam za stan ${apartmentNumber}`,
+    buttonLabel: "Pišite nam",
+    modalTitle: `Pišite nam za stan ${apartmentNumber}`,
     modalDescription:
-      "Ostavite podatke i prodajni tim ce vam poslati informacije o dostupnosti, ceni, uslovima kupovine ili terminu obilaska.",
-    submitLabel: "Posaljite upit",
+      "Ostavite podatke i prodajni tim će vam poslati informacije o dostupnosti, ceni, uslovima kupovine ili terminu obilaska.",
+    submitLabel: "Pošaljite upit",
     messagePlaceholder:
-      "Napisite da li vas zanima cena, dostupnost, obilazak ili dodatne informacije o ovom stanu.",
-    purchaseTitle: "Direktan sledeci korak.",
+      "Napišite da li vas zanima cena, dostupnost, obilazak ili dodatne informacije o ovom stanu.",
+    purchaseTitle: "Direktan sledeći korak.",
     purchaseLead: availabilityNote,
     purchaseSteps: [
       "Posaljete upit za ovaj stan.",
@@ -126,6 +136,115 @@ export const ApartmentDetailsPage = () => {
   );
   const [activeRoomId, setActiveRoomId] = useState<string | null>(null);
   const [isHeroPlanOpen, setIsHeroPlanOpen] = useState(false);
+  const [heroPlanZoom, setHeroPlanZoom] = useState(heroPlanZoomMin);
+  const heroPlanViewportRef = useRef<HTMLDivElement>(null);
+  const heroPlanDragRef = useRef<{
+    pointerId: number;
+    startX: number;
+    startY: number;
+    scrollLeft: number;
+    scrollTop: number;
+  } | null>(null);
+
+  const updateHeroPlanZoom = (
+    getNextZoom: (currentZoom: number) => number,
+    focalPoint?: { clientX: number; clientY: number },
+  ) => {
+    setHeroPlanZoom((currentZoom) => {
+      const nextZoom = clampHeroPlanZoom(getNextZoom(currentZoom));
+      const viewport = heroPlanViewportRef.current;
+
+      if (viewport && focalPoint && nextZoom !== currentZoom) {
+        const bounds = viewport.getBoundingClientRect();
+        const focalX = focalPoint.clientX - bounds.left;
+        const focalY = focalPoint.clientY - bounds.top;
+        const contentX = viewport.scrollLeft + focalX;
+        const contentY = viewport.scrollTop + focalY;
+        const zoomRatio = nextZoom / currentZoom;
+
+        window.requestAnimationFrame(() => {
+          viewport.scrollLeft = contentX * zoomRatio - focalX;
+          viewport.scrollTop = contentY * zoomRatio - focalY;
+        });
+      }
+
+      return nextZoom;
+    });
+  };
+
+  const changeHeroPlanZoom = (
+    change: number,
+    focalPoint?: { clientX: number; clientY: number },
+  ) => {
+    updateHeroPlanZoom((currentZoom) => currentZoom + change, focalPoint);
+  };
+
+  const resetHeroPlanZoom = () => {
+    updateHeroPlanZoom(() => heroPlanZoomMin);
+  };
+
+  const openHeroPlan = () => {
+    setHeroPlanZoom(heroPlanZoomMin);
+    setIsHeroPlanOpen(true);
+  };
+
+  const closeHeroPlan = () => {
+    heroPlanDragRef.current = null;
+    setIsHeroPlanOpen(false);
+  };
+
+  const handleHeroPlanWheel = (event: WheelEvent<HTMLDivElement>) => {
+    event.preventDefault();
+
+    changeHeroPlanZoom(event.deltaY < 0 ? heroPlanZoomStep : -heroPlanZoomStep, {
+      clientX: event.clientX,
+      clientY: event.clientY,
+    });
+  };
+
+  const handleHeroPlanPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0 || heroPlanZoom <= heroPlanZoomMin) {
+      return;
+    }
+
+    event.preventDefault();
+    heroPlanDragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      scrollLeft: event.currentTarget.scrollLeft,
+      scrollTop: event.currentTarget.scrollTop,
+    };
+    event.currentTarget.dataset.dragging = "true";
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handleHeroPlanPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const dragstate = heroPlanDragRef.current;
+
+    if (!dragstate || dragstate.pointerId !== event.pointerId) {
+      return;
+    }
+
+    event.preventDefault();
+    event.currentTarget.scrollLeft = dragstate.scrollLeft - (event.clientX - dragstate.startX);
+    event.currentTarget.scrollTop = dragstate.scrollTop - (event.clientY - dragstate.startY);
+  };
+
+  const endHeroPlanDrag = (event: PointerEvent<HTMLDivElement>) => {
+    const dragstate = heroPlanDragRef.current;
+
+    if (!dragstate || dragstate.pointerId !== event.pointerId) {
+      return;
+    }
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+
+    delete event.currentTarget.dataset.dragging;
+    heroPlanDragRef.current = null;
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -156,10 +275,29 @@ export const ApartmentDetailsPage = () => {
 
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    document.body.classList.add("is-apartment-plan-lightbox-open");
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setIsHeroPlanOpen(false);
+        closeHeroPlan();
+        return;
+      }
+
+      if (event.key === "+" || event.key === "=") {
+        event.preventDefault();
+        changeHeroPlanZoom(heroPlanZoomStep);
+        return;
+      }
+
+      if (event.key === "-" || event.key === "_") {
+        event.preventDefault();
+        changeHeroPlanZoom(-heroPlanZoomStep);
+        return;
+      }
+
+      if (event.key === "0") {
+        event.preventDefault();
+        resetHeroPlanZoom();
       }
     };
 
@@ -167,6 +305,7 @@ export const ApartmentDetailsPage = () => {
 
     return () => {
       document.body.style.overflow = originalOverflow;
+      document.body.classList.remove("is-apartment-plan-lightbox-open");
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isHeroPlanOpen]);
@@ -175,14 +314,14 @@ export const ApartmentDetailsPage = () => {
     return (
       <main className="not-found-page">
         <PageMeta
-          title="Stan nije pronadjen | Heroja Pinkija 13"
+          title="stan nije pronadjen | Heroja Pinkija 13"
           description="Izabrani stan nije pronadjen. Pogledajte aktuelnu ponudu stanova u projektu Heroja Pinkija 13."
           canonicalPath={apartmentsPath}
           robots="noindex,follow"
         />
         <div className="soft-card not-found-page__card">
           <p className="section-eyebrow">Detalji stana</p>
-          <h1>Stan nije pronadjen</h1>
+          <h1>stan nije pronadjen</h1>
           <p>Proverite ponudu stanova i izaberite stan iz aktuelne liste.</p>
           <Link className="site-button site-button--accent" to={apartmentsPath}>
             Nazad na ponudu
@@ -212,30 +351,33 @@ export const ApartmentDetailsPage = () => {
     apartment.availabilityNote,
   );
   const apartmentContactModal = {
-    eyebrow: `Stan ${apartment.number}`,
+    eyebrow: `stan ${apartment.number}`,
     title: apartmentCtaCopy.modalTitle,
     description: apartmentCtaCopy.modalDescription,
     submitLabel: apartmentCtaCopy.submitLabel,
     inquiryType: "unit" as const,
     projectSlug: "heroja-pinkija-13",
-    unitCode: `Stan ${apartment.number}`,
+    unitCode: `stan ${apartment.number}`,
     details: [
-      { label: "Stan", value: apartment.number },
+      { label: "stan", value: apartment.number },
       { label: "Sprat", value: apartment.floor },
-      { label: "Povrsina", value: apartment.size },
+      { label: "Površina", value: apartment.size },
       { label: "Struktura", value: apartment.rooms },
-      { label: "Status", value: statusLabel[apartment.status] },
+      { label: "status", value: statusLabel[apartment.status] },
     ],
     messagePlaceholder: apartmentCtaCopy.messagePlaceholder,
   };
+  const heroPlanDimensions = getPublicImageDimensions(apartment.heroFloorPlan.src);
+  const heroPlanZoomBaseWidth = Math.min(heroPlanDimensions?.width ?? 1400, 1400);
+  const heroPlanZoomPercent = Math.round(heroPlanZoom * 100);
 
   return (
     <main className="apartment-detail apartment-detail--editorial">
       <PageMeta
-        title={apartment.seoTitle ?? `Stan ${apartment.number} | Heroja Pinkija 13`}
+        title={apartment.seoTitle ?? `stan ${apartment.number} | Heroja Pinkija 13`}
         description={
           apartment.seoDescription ??
-          `Detalji stana ${apartment.number}: ${apartment.size}, ${apartment.floor}, ${apartment.rooms}. Pogledajte tlocrt i posaljite upit prodaji.`
+          `Detalji stana ${apartment.number}: ${apartment.size}, ${apartment.floor}, ${apartment.rooms}. Pogledajte tlocrt i pošaljite upit prodaji.`
         }
         image={apartment.heroFloorPlan.src}
         imageAlt={apartment.heroFloorPlan.alt}
@@ -247,7 +389,7 @@ export const ApartmentDetailsPage = () => {
             <span aria-hidden="true">/</span>
             <Link to={apartmentsPath}>Ponuda stanova</Link>
             <span aria-hidden="true">/</span>
-            <span aria-current="page">Stan {apartment.number}</span>
+            <span aria-current="page">stan {apartment.number}</span>
           </nav>
 
           <div className="apartment-detail-hero__grid">
@@ -256,7 +398,7 @@ export const ApartmentDetailsPage = () => {
                 {statusLabel[apartment.status]}
               </span>
               <p className="section-eyebrow">Detalji stana</p>
-              <h1>Stan {apartment.number}</h1>
+              <h1>stan {apartment.number}</h1>
               <p className="section-copy section-copy--large">{apartment.description}</p>
 
               <div className="apartment-detail-hero__quick-facts">
@@ -287,7 +429,7 @@ export const ApartmentDetailsPage = () => {
               type="button"
               className="apartment-detail-hero__visual"
               aria-label={`Otvori projektni tlocrt stana ${apartment.number} u punoj velicini`}
-              onClick={() => setIsHeroPlanOpen(true)}
+              onClick={openHeroPlan}
             >
               <img
                 src={apartment.heroFloorPlan.src}
@@ -297,7 +439,7 @@ export const ApartmentDetailsPage = () => {
               />
               <span className="apartment-detail-hero__plan-label">
                 <span>Projektni tlocrt</span>
-                <strong>Stan {apartment.number}</strong>
+                <strong>stan {apartment.number}</strong>
                 <ArrowUpRight aria-hidden="true" />
               </span>
             </button>
@@ -307,13 +449,13 @@ export const ApartmentDetailsPage = () => {
 
       {isHeroPlanOpen ? (
         <div
-          className="lightbox apartment-plan-lightbox"
+              className="lightbox apartment-plan-lightbox"
           role="dialog"
           aria-modal="true"
           aria-label={`Projektni tlocrt stana ${apartment.number}`}
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) {
-              setIsHeroPlanOpen(false);
+              closeHeroPlan();
             }
           }}
         >
@@ -321,12 +463,65 @@ export const ApartmentDetailsPage = () => {
             className="lightbox__close"
             type="button"
             aria-label="Zatvori projektni tlocrt"
-            onClick={() => setIsHeroPlanOpen(false)}
+            onClick={closeHeroPlan}
             autoFocus
           >
             <X />
           </button>
-          <img src={apartment.heroFloorPlan.src} alt={apartment.heroFloorPlan.alt} />
+          <div
+            className="apartment-plan-lightbox__toolbar"
+            role="group"
+            aria-label="Kontrole za uvećanje tlocrta"
+          >
+            <button
+              type="button"
+              aria-label="Umanji tlocrt"
+              disabled={heroPlanZoom <= heroPlanZoomMin}
+              onClick={() => changeHeroPlanZoom(-heroPlanZoomStep)}
+            >
+              <Minus />
+            </button>
+            <span aria-live="polite">{heroPlanZoomPercent}%</span>
+            <button
+              type="button"
+              aria-label="Vrati osnovnu velicinu"
+              disabled={heroPlanZoom === heroPlanZoomMin}
+              onClick={resetHeroPlanZoom}
+            >
+              <RotateCcw />
+            </button>
+            <button
+              type="button"
+              aria-label="Uvećaj tlocrt"
+              disabled={heroPlanZoom >= heroPlanZoomMax}
+              onClick={() => changeHeroPlanZoom(heroPlanZoomStep)}
+            >
+              <Plus />
+            </button>
+          </div>
+          <div
+            ref={heroPlanViewportRef}
+            className={`apartment-plan-lightbox__viewport${
+              heroPlanZoom > heroPlanZoomMin ? " is-zoomed" : ""
+            }`}
+            onWheel={handleHeroPlanWheel}
+            onPointerDown={handleHeroPlanPointerDown}
+            onPointerMove={handleHeroPlanPointerMove}
+            onPointerUp={endHeroPlanDrag}
+            onPointerCancel={endHeroPlanDrag}
+          >
+            <img
+              className={heroPlanZoom > heroPlanZoomMin ? "is-zoomed" : undefined}
+              src={apartment.heroFloorPlan.src}
+              alt={apartment.heroFloorPlan.alt}
+              draggable={false}
+              style={
+                heroPlanZoom > heroPlanZoomMin
+                  ? ({ width: `${Math.round(heroPlanZoomBaseWidth * heroPlanZoom)}px` } as CSSProperties)
+                  : undefined
+              }
+            />
+          </div>
         </div>
       ) : null}
 
@@ -387,7 +582,7 @@ export const ApartmentDetailsPage = () => {
                 to={`${apartmentsPath}/${item.number}`}
               >
                 <div>
-                  <span>Stan</span>
+                  <span>stan</span>
                   <strong>{item.number.padStart(2, "0")}</strong>
                 </div>
                 <dl>
@@ -396,7 +591,7 @@ export const ApartmentDetailsPage = () => {
                     <dd>{item.floor}</dd>
                   </div>
                   <div>
-                    <dt>Povrsina</dt>
+                    <dt>Površina</dt>
                     <dd>{item.size}</dd>
                   </div>
                   <div>
@@ -419,13 +614,13 @@ export const ApartmentDetailsPage = () => {
 
 const ApartmentFacts = ({ apartment }: { apartment: Apartment }) => {
   const facts = [
-    { icon: Home, label: "Stan", value: apartment.number },
+    { icon: Home, label: "stan", value: apartment.number },
     { icon: Layers3, label: "Sprat", value: apartment.floor },
-    { icon: Ruler, label: "Povrsina", value: apartment.size },
+    { icon: Ruler, label: "Površina", value: apartment.size },
     { icon: BedDouble, label: "Struktura", value: apartment.rooms },
     { icon: Bath, label: "Kupatila", value: apartment.bathrooms },
     { icon: Building2, label: "Terasa", value: apartment.terrace },
-    { icon: Compass, label: "Status", value: statusLabel[apartment.status] },
+    { icon: Compass, label: "status", value: statusLabel[apartment.status] },
   ];
 
   return (
@@ -448,7 +643,7 @@ type ActiveRoomProps = {
   onActiveRoomChange: (roomId: string | null) => void;
 };
 
-const floorPlanZoomScale = 1.85;
+const floorPlanZoomScale = 1.35;
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
@@ -518,7 +713,7 @@ const PlanPanel = ({
       />
     </div>
     <p className="apartment-layout-panel__caption">
-      Izaberite prostoriju za naziv i povrsinu.
+      Izaberite prostoriju za naziv i površinu.
     </p>
   </article>
 );
@@ -530,7 +725,7 @@ const ApartmentPlanDrawing = ({
 }: { apartment: Apartment } & ActiveRoomProps) => {
   if (apartment.planVariant && apartment.planVariant in stackPlanSpacesByVariant) {
     return (
-      <ApartmentStackPlan
+      <ApartmentstackPlan
         ariaLabel={`Raspored prostorija za stan ${apartment.number}`}
         rooms={apartment.roomAreas}
         plan={stackPlanSpacesByVariant[apartment.planVariant]}
@@ -543,7 +738,7 @@ const ApartmentPlanDrawing = ({
   return null;
 };
 
-const ApartmentStackPlan = ({
+const ApartmentstackPlan = ({
   ariaLabel,
   rooms,
   plan,
@@ -552,7 +747,7 @@ const ApartmentStackPlan = ({
 }: {
   ariaLabel: string;
   rooms: ApartmentRoomArea[];
-  plan: StackPlanConfig;
+  plan: stackPlanConfig;
 } & ActiveRoomProps) => {
   const titleId = useId();
   const roomById = new Map(rooms.map((room) => [room.id, room]));
@@ -657,7 +852,7 @@ const ApartmentFloorPlanFigure = ({ apartment }: { apartment: Apartment }) => (
       />
     </div>
     <figcaption className="apartment-layout-panel__caption">
-      <span>Stan {apartment.number} · {apartment.floor}</span>
+      <span>stan {apartment.number} · {apartment.floor}</span>
       <span>Poredjenje sa gridom prostorija</span>
     </figcaption>
   </figure>
@@ -680,7 +875,7 @@ const ApartmentPurchaseGuide = ({
           <h3 id="apartment-purchase-guide-title">Lokacija i komfor na jednom mestu.</h3>
         </div>
         <p>
-          Stan se posmatra kroz svakodnevni ritam: gde se nalazi, koliko je lako
+          stan se posmatra kroz svakodnevni ritam: gde se nalazi, koliko je lako
           uporediti raspored i koje prakticne karakteristike prate kupovinu.
         </p>
       </div>
@@ -689,7 +884,7 @@ const ApartmentPurchaseGuide = ({
         <article className="apartment-advantage-group">
           <div>
             <span>Lokacija</span>
-            <h4>Okruzenje za svakodnevni zivot</h4>
+            <h4>Okruženje za svakodnevni život</h4>
           </div>
           <ul className="apartment-location-list">
             {locationAdvantages.map((advantage) => (
@@ -703,7 +898,7 @@ const ApartmentPurchaseGuide = ({
 
         <article className="apartment-advantage-group">
           <div>
-            <span>Stan</span>
+            <span>stan</span>
             <h4>Karakteristike koje olaksavaju izbor</h4>
           </div>
           <ul className="apartment-feature-list">
@@ -732,7 +927,7 @@ const ApartmentPurchaseGuide = ({
         </div>
         <div>
           <dt>Opcije</dt>
-          <dd>garazna mesta i ostave</dd>
+          <dd>garažna mesta i ostave</dd>
         </div>
       </dl>
     </div>
@@ -758,11 +953,11 @@ const PurchasePanel = ({
     </div>
     <dl>
       <PurchaseRow label="Cena" value={apartment.priceRange} />
-      <PurchaseRow label="Status" value={statusLabel[apartment.status]} />
-      <PurchaseRow label="Garazno mesto" value="Odvojena kupovina" />
+      <PurchaseRow label="status" value={statusLabel[apartment.status]} />
+      <PurchaseRow label="Garažno mesto" value="Odvojena kupovina" />
       <PurchaseRow label="Ostava" value="Odvojena kupovina" />
     </dl>
-    <ol className="apartment-purchase__steps" aria-label="Kako izgleda sledeci korak">
+    <ol className="apartment-purchase__steps" aria-label="Kako izgleda sledeći korak">
       {ctaCopy.purchaseSteps.map((step, index) => (
         <li key={step}>
           <span>{String(index + 1).padStart(2, "0")}</span>
@@ -801,12 +996,12 @@ type PlanSpace = {
   height: number;
 };
 
-type StackPlanConfig = {
+type stackPlanConfig = {
   spaces: PlanSpace[];
   viewBox: string;
 };
 
-const stackPlanSpacesByVariant: Record<string, StackPlanConfig> = {
+const stackPlanSpacesByVariant: Record<string, stackPlanConfig> = {
   "stack-1-6-11": {
     viewBox: "-14 -14 448 588",
     spaces: [

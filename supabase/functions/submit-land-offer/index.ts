@@ -93,8 +93,8 @@ Deno.serve(async (req) => {
       recipientEmail: email.value,
       deliveryKind: "user_confirmation",
       subject: "Primili smo ponudu nekretnine - M & M Gradnja",
-      text: `Postovani/a ${fullName.value},\n\nPrimili smo vasu ponudu i kontaktiracemo vas nakon pocetne provere.\n\nM & M Gradnja`,
-      html: `<p>Postovani/a ${escapeHtml(fullName.value)},</p><p>Primili smo vasu ponudu i kontaktiracemo vas nakon pocetne provere.</p><p>M &amp; M Gradnja</p>`,
+      text: `Poštovani/a ${fullName.value},\n\nPrimili smo vašu ponudu i kontaktiraćemo vas nakon pocetne provere.\n\nM & M Gradnja`,
+      html: `<p>Poštovani/a ${escapeHtml(fullName.value)},</p><p>Primili smo vašu ponudu i kontaktiraćemo vas nakon pocetne provere.</p><p>M &amp; M Gradnja</p>`,
     });
 
     await sendAndLog({
@@ -102,8 +102,8 @@ Deno.serve(async (req) => {
       recipientEmail: await getSalesEmail(),
       deliveryKind: "sales_notification",
       subject: "Nova ponuda placa",
-      text: `Nova ponuda placa\nIme: ${fullName.value}\nTelefon: ${phone.value}\nEmail: ${email.value}\nAdresa: ${propertyAddress.value ?? "-"}\nPovrsina: ${plotAreaM2.value ?? "-"}\nDetalji: ${details.value ?? "-"}`,
-      html: `<h2>Nova ponuda placa</h2><p><strong>Ime:</strong> ${escapeHtml(fullName.value)}</p><p><strong>Telefon:</strong> ${escapeHtml(phone.value)}</p><p><strong>Email:</strong> ${escapeHtml(email.value)}</p><p><strong>Adresa:</strong> ${escapeHtml(propertyAddress.value ?? "-")}</p><p><strong>Povrsina:</strong> ${escapeHtml(String(plotAreaM2.value ?? "-"))}</p><p><strong>Detalji:</strong><br>${escapeHtml(details.value ?? "-")}</p>`,
+      text: `Nova ponuda placa\nIme: ${fullName.value}\nTelefon: ${phone.value}\nEmail: ${email.value}\nAdresa: ${propertyAddress.value ?? "-"}\nPovršina: ${plotAreaM2.value ?? "-"}\nDetalji: ${details.value ?? "-"}`,
+      html: `<h2>Nova ponuda placa</h2><p><strong>Ime:</strong> ${escapeHtml(fullName.value)}</p><p><strong>Telefon:</strong> ${escapeHtml(phone.value)}</p><p><strong>Email:</strong> ${escapeHtml(email.value)}</p><p><strong>Adresa:</strong> ${escapeHtml(propertyAddress.value ?? "-")}</p><p><strong>Površina:</strong> ${escapeHtml(String(plotAreaM2.value ?? "-"))}</p><p><strong>Detalji:</strong><br>${escapeHtml(details.value ?? "-")}</p>`,
     });
 
     return jsonResponse({ ok: true, id: offer.id });
@@ -140,7 +140,7 @@ async function sendAndLog(input: {
 }
 
 function getErrorMessage(error: unknown) {
-  return error instanceof Error ? error.message : "Doslo je do greske pri slanju ponude.";
+  return error instanceof Error ? error.message : "Došlo je do greške pri slanju ponude.";
 }
 
 function validInternalSourcePage(value: unknown) {

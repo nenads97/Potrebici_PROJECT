@@ -212,7 +212,7 @@ const ContactModal = ({ isOpen, options, onClose }: ContactModalProps) => {
     if (hasFieldErrors(errors)) {
       setFieldErrors(errors);
       setFormStatus("error");
-      setFormMessage("Proverite oznacena polja pre slanja upita.");
+      setFormMessage("Proverite označena polja pre slanja upita.");
       focusFirstInvalidField(form, contactModalFieldOrder, errors);
       return;
     }
@@ -247,8 +247,18 @@ const ContactModal = ({ isOpen, options, onClose }: ContactModalProps) => {
 
   const handleFieldBlur = (
     fieldName: ContactModalFieldName,
-    event: { currentTarget: HTMLInputElement | HTMLTextAreaElement },
+    event: {
+      currentTarget: HTMLInputElement | HTMLTextAreaElement;
+      relatedTarget?: EventTarget | null;
+    },
   ) => {
+    if (
+      event.relatedTarget instanceof HTMLElement &&
+      event.relatedTarget.closest("[data-contact-modal-close]")
+    ) {
+      return;
+    }
+
     const form = event.currentTarget.form;
 
     if (!form) {
@@ -306,7 +316,12 @@ const ContactModal = ({ isOpen, options, onClose }: ContactModalProps) => {
         <button
           className="contact-modal__close"
           type="button"
+          data-contact-modal-close
           aria-label="Zatvori kontakt formu"
+          onPointerDown={(event) => {
+            event.preventDefault();
+            onClose();
+          }}
           onClick={onClose}
         >
           <X />
@@ -548,7 +563,7 @@ function validateContactModalForm(
 
 function buildContextualMessage(options: ContactModalOptions, message: string) {
   const contextLines = [
-    options.unitCode ? `Stan: ${options.unitCode}` : null,
+    options.unitCode ? `stan: ${options.unitCode}` : null,
     ...(options.details ?? []).map((detail) => `${detail.label}: ${detail.value}`),
   ].filter(Boolean);
 

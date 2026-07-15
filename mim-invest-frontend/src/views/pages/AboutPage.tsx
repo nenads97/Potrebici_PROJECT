@@ -13,30 +13,65 @@ import { Link } from "react-router-dom";
 import { ContactModalButton } from "../../features/inquiries/components/ContactModal";
 import { PageMeta } from "../../shared/components/PageMeta";
 
-const aboutHeroImage = "/images/heroja-pinkija-13/gradilisna-tabla.jpg";
 const projectImage = "/images/heroja-pinkija-13/radovi-u-toku.jpg";
 
 const heroHighlights = [
-  { value: "Marko i Milan Potrebic", label: "direktno kod investitora" },
+  { value: "Marko i Milan Potrebić", label: "direktno kod investitora" },
   { value: "15 stanova", label: "pregledna ponuda" },
-  { value: "15.11.2027.", label: "planirani zavrsetak" },
+  { value: "15.11.2027.", label: "planirani završetak" },
+];
+
+const trustSignals = [
+  {
+    icon: ShieldCheck,
+    title: "Jasna ponuda",
+    text: "stanovi, kvadrature, tlocrti i statusi dostupni su pre prvog razgovora.",
+  },
+  {
+    icon: BadgeCheck,
+    title: "Realne informacije",
+    text: "Napredak radova i rokove prikazujemo kroz konkretne podatke i fotografije.",
+  },
+  {
+    icon: Handshake,
+    title: "Direktan kontakt",
+    text: "O dostupnosti i kupovini razgovarate direktno sa ljudima iza projekta.",
+  },
+];
+
+const processSteps = [
+  {
+    icon: ShieldCheck,
+    title: "Upoznajte projekat",
+    text: "Pregledajte lokaciju, strukturu objekta i aktuelnu fazu gradnje.",
+  },
+  {
+    icon: BadgeCheck,
+    title: "Uporedite stanove",
+    text: "Izaberite jedinicu kroz kvadraturu, tlocrt, orijentaciju i status ponude.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Dogovorite sledeći korak",
+    text: "Pošaljite upit i zajedno proverite dostupnost, obilazak i uslove kupovine.",
+  },
 ];
 
 const values = [
   {
     icon: BadgeCheck,
     title: "Realne fotografije radova",
-    text: "Projekat prikazujemo kroz stvarne slike sa gradilista, bez zamene za genericke vizuale.",
+    text: "Projekat prikazujemo kroz stvarne slike sa gradilišta, bez zamene za generičke vizuale.",
   },
   {
     icon: ShieldCheck,
-    title: "Stanovi, kvadrature i tlocrti",
-    text: "Kupac moze da uporedi rasporede, povrsine i strukture pre prvog razgovora.",
+    title: "stanovi, kvadrature i tlocrti",
+    text: "Kupac može da uporedi rasporede, površine i strukture pre prvog razgovora.",
   },
   {
     icon: HardHat,
-    title: "Statusi i rokovi",
-    text: "Ponuda stanova i planirani rok zavrsetka prikazani su jasno, uz kontakt za proveru detalja.",
+    title: "statusi i rokovi",
+    text: "Ponuda stanova i planirani rok završetka prikazani su jasno, uz kontakt za proveru detalja.",
   },
   {
     icon: Handshake,
@@ -48,15 +83,15 @@ const values = [
 const projectProof = [
   "Otvoren prikaz projekta od prvog koraka.",
   "Jasna ponuda 15 stanova sa tlocrtima, kvadraturama i statusima.",
-  "Direktan kontakt sa Markom i Milanom Potrebicem tokom kupovine.",
+  "Direktan kontakt sa Markom i Milanom Potrebićem tokom kupovine.",
   "Parking i ostave proveravaju se direktno kroz razgovor o kupovini.",
 ];
 
 const projectFacts = [
-  { label: "Investitori", value: "Marko i Milan Potrebic" },
+  { label: "Investitori", value: "Marko i Milan Potrebić" },
   { label: "Lokacija", value: "Heroja Pinkija 13, Novi Sad" },
   { label: "Struktura", value: "PO + PR + 3" },
-  { label: "Trenutna faza", value: "Iskop zavrsen, temelji u toku" },
+  { label: "Trenutna faza", value: "Iskop završen, temelji u toku" },
 ];
 
 const reveal = {
@@ -84,7 +119,7 @@ export const AboutPage = () => {
         title="O nama | M & M Gradnja"
         description="Upoznajte M & M Gradnja, investitore projekta Heroja Pinkija 13, sa fokusom na transparentnu ponudu stanova i direktnu komunikaciju."
       />
-      <section className="about-hero">
+      <section className="about-hero about-hero--company">
         <div className="page-container about-hero__grid">
           <motion.div
             className="about-hero__copy"
@@ -93,16 +128,16 @@ export const AboutPage = () => {
             variants={revealContainer}
           >
             <motion.p className="section-eyebrow" variants={reveal}>
-              O nama
+              M & M Gradnja / Novi Sad
             </motion.p>
             <motion.h1 className="section-title" variants={reveal}>
-              Prvi projekat, otvoren pristup.
+              Gradimo prvi projekat otvoreno, jasno i direktno.
             </motion.h1>
             <motion.p className="section-copy section-copy--large" variants={reveal}>
               M & M Gradnja je porodicno vodjen investitorski projekat iza kog
-              stoje Marko i Milan Potrebic. Heroja Pinkija 13 razvijamo kao prvi
-              projekat, sa fokusom na jasnu ponudu stanova, direktnu komunikaciju
-              i realno prikazane informacije.
+              stoje Marko i Milan Potrebić. Kao prvi korak biramo otvoren odnos:
+              kupac treba da zna sta se gradi, u kojoj je fazi i kome može da se
+              obrati.
             </motion.p>
             <motion.div className="page-actions" variants={reveal}>
               <Link
@@ -114,39 +149,53 @@ export const AboutPage = () => {
               </Link>
               <ContactModalButton className="site-button site-button--outline">
                 <MessageCircle />
-                Pisite nam
+                Pišite nam
               </ContactModalButton>
+            </motion.div>
+            <motion.div className="about-hero__founders" variants={reveal}>
+              <span>Marko i Milan Potrebić</span>
+              <span>Investitori i direktni sagovornici</span>
             </motion.div>
           </motion.div>
 
           <motion.div
-            className="about-hero__visual"
+            className="about-hero__profile"
             initial={motionState}
             animate="show"
             variants={reveal}
             transition={{ duration: 0.65, delay: reduceMotion ? 0 : 0.16 }}
           >
-            <div className="about-hero__frame">
-              <img
-                src={aboutHeroImage}
-                alt="Projekat Heroja Pinkija 13 sa gradilisnom tablom"
-                width="818"
-                height="783"
-                fetchPriority="high"
-                decoding="async"
-              />
-              <span className="about-hero__caption">Aktuelna realizacija</span>
+            <div className="about-hero__profile-header">
+              <span className="about-hero__profile-label">Naša obećanja</span>
             </div>
-
-            <dl className="about-hero__stats">
-              {heroHighlights.map((item) => (
-                <div key={item.value}>
-                  <dt>{item.label}</dt>
-                  <dd>{item.value}</dd>
-                </div>
+            <h2>Informacija pre odluke.</h2>
+            <p>
+              Dobar početak kupovine nije pritisak, već dovoljno informacija da
+              mirno procenite da li je projekat pravi za vas.
+            </p>
+            <ul className="about-hero__profile-list">
+              {trustSignals.map(({ icon: Icon, title, text }) => (
+                <li key={title}>
+                  <span className="about-hero__profile-icon">
+                    <Icon />
+                  </span>
+                  <span>
+                    <strong>{title}</strong>
+                    <small>{text}</small>
+                  </span>
+                </li>
               ))}
-            </dl>
+            </ul>
           </motion.div>
+
+          <dl className="about-hero__stats">
+            {heroHighlights.map((item) => (
+              <div key={item.value}>
+                <dt>{item.label}</dt>
+                <dd>{item.value}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
 
@@ -158,7 +207,7 @@ export const AboutPage = () => {
           viewport={{ once: true, amount: 0.3 }}
           variants={revealContainer}
         >
-          <motion.div variants={reveal}>
+          <motion.div className="about-philosophy__heading" variants={reveal}>
             <p className="section-eyebrow">Ko stoji iza projekta</p>
             <p className="about-philosophy__statement">
               Direktno sa investitorima.
@@ -190,7 +239,7 @@ export const AboutPage = () => {
             variants={reveal}
           >
             <div>
-              <p className="section-eyebrow">Zasto ovakav pristup</p>
+              <p className="section-eyebrow">Zašto ovakav pristup</p>
               <h2 className="section-title section-title--medium">
                 Poverenje kroz jasne informacije.
               </h2>
@@ -224,6 +273,45 @@ export const AboutPage = () => {
             ))}
           </motion.div>
         </div>
+      </section>
+
+      <section className="about-process">
+        <motion.div
+          className="page-container about-process__panel"
+          initial={motionState}
+          whileInView="show"
+          viewport={{ once: true, amount: 0.24 }}
+          variants={revealContainer}
+        >
+          <motion.div className="about-process__intro" variants={reveal}>
+            <p className="about-process__eyebrow">
+              <Handshake />
+              Kako radimo
+            </p>
+            <h2>Tri jasna koraka do pravog razgovora.</h2>
+            <p>
+              Sajt treba da vam skrati put do odluke. Zato su najvažnije
+              informacije dostupne odmah, a razgovor dolazi kada ste spremni.
+            </p>
+          </motion.div>
+
+          <motion.ol className="about-process__steps" variants={revealContainer}>
+            {processSteps.map(({ icon: Icon, title, text }, index) => (
+              <motion.li key={title} variants={reveal}>
+                <span className="about-process__number">
+                  <Icon />
+                </span>
+                <div>
+                  <span className="about-process__step-index">
+                    0{index + 1}
+                  </span>
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                </div>
+              </motion.li>
+            ))}
+          </motion.ol>
+        </motion.div>
       </section>
 
       <section className="about-project">
@@ -263,7 +351,7 @@ export const AboutPage = () => {
               </h2>
               <p className="section-copy">
                 Ne predstavljamo se kroz dug portfolio koji ne postoji. Heroja
-                Pinkija 13 je osnova naseg buduceg rada: pregledna ponuda,
+                Pinkija 13 je osnova našeg budućeg rada: pregledna ponuda,
                 funkcionalni stanovi i komunikacija koja kupcu pomaze da donese
                 mirnu odluku.
               </p>
@@ -310,7 +398,7 @@ export const AboutPage = () => {
             <h2>Dostupni stanovi i direktan razgovor.</h2>
             <p>
               Ponuda je postavljena tako da lako uporedite stanove, proverite
-              tlocrte i posaljete upit za konkretnu jedinicu. Garazna mesta i
+              tlocrte i posaljete upit za konkretnu jedinicu. Garažna mesta i
               ostave su dodatne opcije i kupuju se odvojeno.
             </p>
           </motion.div>
@@ -325,7 +413,7 @@ export const AboutPage = () => {
             </Link>
             <ContactModalButton className="about-trust__text-link">
               <MessageCircle />
-              Pisite nam
+              Pišite nam
               <ArrowUpRight />
             </ContactModalButton>
           </motion.div>

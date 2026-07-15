@@ -7,7 +7,7 @@ import type {
   ConstructionUpdate,
   GalleryItem,
   ProjectInfo,
-  ProjectStat,
+  Projectstat,
   TimelineItem,
 } from "../types/project.types";
 
@@ -35,13 +35,13 @@ export const projectInfo: ProjectInfo = {
   district: "Telep",
   status: "Izgradnja u toku",
   lead:
-    "Moderan stambeno-poslovni objekat na pocetku Telepa, osmisljen za miran zivot uz brzu vezu sa gradom.",
+    "Moderan stambeno-poslovni objekat na početku Telepa, osmišljen za miran život uz brzu vezu sa gradom.",
   description:
-    "Projekat M & M Gradnja objedinjuje stanove, poslovne apartmane i lokale, uz posebnu ponudu garaznih mesta, dvorisnih parking mesta i ostava za odvojenu kupovinu.",
+    "Projekat M & M Gradnja objedinjuje stanove, poslovne apartmane i lokale, uz posebnu ponudu garažnih mesta, dvorišnih parking mesta i ostava za odvojenu kupovinu.",
   locationDescription:
-    "Objekat se nalazi na adresi Heroja Pinkija 13 u Novom Sadu, u delu Telepa sa linijom 12 ka centru i svakodnevnim sadrzajima u blizini.",
+    "Objekat se nalazi na adresi Heroja Pinkija 13 u Novom Sadu, u delu Telepa sa linijom 12 ka centru i svakodnevnim sadržajima u blizini.",
   floorStructure: "PO + PR + 3",
-  constructionStart: "16. mart 2026.",
+  constructionstart: "16. mart 2026.",
   plannedCompletion: "15. novembar 2027.",
   constructionStartDate: "2026-03-16",
   constructionEndDate: "2027-11-15",
@@ -51,7 +51,7 @@ export const projectInfo: ProjectInfo = {
     "Pregled projekta Heroja Pinkija 13 u Novom Sadu: stanovi, lokacija, rokovi, status radova i direktan upit prodaji.",
 };
 
-export const projectStats: ProjectStat[] = [
+export const projectstats: Projectstat[] = [
   {
     value: "15",
     label: "stanova",
@@ -59,7 +59,7 @@ export const projectStats: ProjectStat[] = [
   },
   {
     value: "5",
-    label: "stanova po etazi",
+    label: "stanova po etaži",
     detail: "ponavljajuci raspored kroz tri stambena nivoa",
   },
   {
@@ -69,7 +69,7 @@ export const projectStats: ProjectStat[] = [
   },
   {
     value: "2027",
-    label: "planirani zavrsetak",
+    label: "planirani završetak",
     detail: "15. novembar 2027.",
   },
 ];
@@ -78,7 +78,7 @@ export const constructionUpdates: ConstructionUpdate[] = [
   {
     id: "status-gradnje",
     date: "Aktuelno",
-    tag: "Gradiliste",
+    tag: "Gradilište",
     title: "Objekat je u fazi izgradnje",
     body:
       "Pregled projekta je pripremljen za redovno objavljivanje novih informacija, fotografija i statusa radova.",
@@ -86,18 +86,18 @@ export const constructionUpdates: ConstructionUpdate[] = [
   {
     id: "prodaja-stanova",
     date: "Prodaja",
-    tag: "Stanovi",
-    title: "Prodaja stanova je pocela",
+    tag: "stanovi",
+    title: "Prodaja stanova je počela",
     body:
-      "U ponudi je 15 stanova sa ponavljajucim rasporedima po etazama i jasnim kontaktom za svaki upit.",
+      "U ponudi je 15 stanova sa ponavljajućim rasporedima po etažama i jasnim kontaktom za svaki upit.",
   },
   {
     id: "rok-zavrsetka",
     date: "Rok",
     tag: "Plan",
-    title: "Planirani zavrsetak je 15. novembar 2027.",
+    title: "Planirani završetak je 15. novembar 2027.",
     body:
-      "Timeline prikazuje najvaznije faze gradnje i daje kupcima jednostavan pregled razvoja projekta.",
+      "Timeline prikazuje najvažnije faze gradnje i daje kupcima jednostavan pregled razvoja projekta.",
   },
 ];
 
@@ -111,7 +111,7 @@ export const galleryItems: GalleryItem[] = [
   },
   {
     id: "gradiliste",
-    title: "Gradiliste",
+    title: "Gradilište",
     tag: "Napredak radova",
     meta: "Mesto za najnovije fotografije sa terena",
     variant: "site",
@@ -134,14 +134,14 @@ export const galleryItems: GalleryItem[] = [
     id: "enterijer",
     title: "Enterijer",
     tag: "Materijali",
-    meta: "Prostor za buduce prikaze opreme",
+    meta: "Prostor za buduće prikaze opreme",
     variant: "interior",
   },
   {
     id: "parking",
     title: "Parking i ostave",
     tag: "Dodatne jedinice",
-    meta: "Garazna mesta, dvorisna mesta i ostave kupuju se odvojeno",
+    meta: "Garažna mesta, dvorišna mesta i ostave kupuju se odvojeno",
     variant: "parking",
   },
 ];
@@ -155,7 +155,7 @@ const apartmentPlanImages = {
   stackFive: "/images/apartment-plans/stan-5-10-15.png",
 };
 
-type ApartmentStack = {
+type Apartmentstack = {
   numbers: string[];
   sizes: string[];
   rooms: string;
@@ -172,21 +172,21 @@ type ApartmentStack = {
 
 const commonFeatures = [
   "Podno grejanje",
-  "Lift od podzemne garaze do svih spratova",
-  "Garazno mesto dostupno za odvojenu kupovinu",
+  "Lift od podzemne garaže do svih spratova",
+  "Garažno mesto dostupno za odvojenu kupovinu",
   "Ostava dostupna za odvojenu kupovinu",
 ];
 
-const apartmentStacks: ApartmentStack[] = [
+const apartmentstacks: Apartmentstack[] = [
   {
     numbers: ["1", "6", "11"],
     sizes: ["62.15 m2", "60.29 m2", "60.29 m2"],
     rooms: "Trosoban",
     bathrooms: "2 kupatila",
     terrace: "Terasa",
-    highlight: "Veci stan sa dva kupatila, pogodan za porodicu.",
+    highlight: "Veći stan sa dva kupatila, pogodan za porodicu.",
     description:
-      "Trosoban stan za kupce kojima je vazan dodatni komfor i funkcionalno odvajanje dnevne i spavace zone. Isti raspored se ponavlja kroz vertikalu, uz razliku u kvadraturi po etazi.",
+      "Trosoban stan za kupce kojima je važan dodatni komfor i funkcionalno odvajanje dnevne i spavace zone. Isti raspored se ponavlja kroz vertikalu, uz razliku u kvadraturi po etaži.",
     features: [
       "Trosobna struktura",
       "Dva kupatila",
@@ -221,7 +221,7 @@ const apartmentStacks: ApartmentStack[] = [
     terrace: "Terasa",
     highlight: "Trosoban stan sa dobrim odnosom komfora i kvadrature.",
     description:
-      "Raspored je namenjen kupcima kojima su potrebne odvojene sobe i dva kupatila, bez nepotrebno velike kvadrature. Pogodan je za porodican zivot ili rad od kuce.",
+      "Raspored je namenjen kupcima kojima su potrebne odvojene sobe i dva kupatila, bez nepotrebno velike kvadrature. Pogodan je za porodičan život ili rad od kuće.",
     features: [
       "Trosobna struktura",
       "Dva kupatila",
@@ -256,7 +256,7 @@ const apartmentStacks: ApartmentStack[] = [
     terrace: "Bez terase",
     highlight: "Kompaktan stan i jedini tip bez terase.",
     description:
-      "Garsonjera je najkompaktniji tip stana u objektu. Namenjena je kupcima koji traze manji stan za zivot, izdavanje ili investicionu kupovinu.",
+      "Garsonjera je najkompaktniji tip stana u objektu. Namenjena je kupcima koji traže manji stan za život, izdavanje ili investicionu kupovinu.",
     features: [
       "Kompaktna kvadratura",
       "Jedini tip bez terase",
@@ -285,7 +285,7 @@ const apartmentStacks: ApartmentStack[] = [
     rooms: "Dvosoban",
     bathrooms: "1 kupatilo",
     terrace: "Terasa",
-    highlight: "Praktican dvosoban stan sa terasom.",
+    highlight: "Praktičan dvosoban stan sa terasom.",
     description:
       "Dvosoban stan je funkcionalan izbor za prvi dom, parove ili kupce koji planiraju izdavanje. Raspored zadrzava jasnu dnevnu zonu i odvojenu spavacu sobu.",
     features: [
@@ -320,7 +320,7 @@ const apartmentStacks: ApartmentStack[] = [
     terrace: "Terasa",
     highlight: "Manji dvosoban stan sa jasnim rasporedom.",
     description:
-      "Ovaj tip stana nudi kompaktnu kvadraturu uz odvojenu spavacu sobu i terasu. Dobar je izbor za kupce koji traze praktican stan na dobro povezanoj lokaciji.",
+      "Ovaj tip stana nudi kompaktnu kvadraturu uz odvojenu spavacu sobu i terasu. Dobar je izbor za kupce koji traže praktičan stan na dobro povezanoj lokaciji.",
     features: [
       "Dvosobna struktura",
       "Terasa",
@@ -351,14 +351,14 @@ function getFloor(number: string) {
   const apartmentNumber = Number(number);
 
   if (apartmentNumber <= 5) {
-    return "1. etaza";
+    return "1. etaža";
   }
 
   if (apartmentNumber <= 10) {
-    return "2. etaza";
+    return "2. etaža";
   }
 
-  return "3. etaza";
+  return "3. etaža";
 }
 
 function getFloorNumber(number: string) {
@@ -375,7 +375,7 @@ function getFloorNumber(number: string) {
   return 3;
 }
 
-export const apartments: Apartment[] = apartmentStacks.flatMap((stack) =>
+export const apartments: Apartment[] = apartmentstacks.flatMap((stack) =>
   stack.numbers.map((number, index) => ({
     number,
     floor: getFloor(number),
@@ -388,16 +388,16 @@ export const apartments: Apartment[] = apartmentStacks.flatMap((stack) =>
     description: stack.description,
     priceRange: "Na upit",
     availabilityNote:
-      "Prodaja stanova je pocela. Za cenu, uslove kupovine i tacan status kontaktirajte prodaju.",
+      "Prodaja stanova je počela. Za cenu, uslove kupovine i tačan status kontaktirajte prodaju.",
     bathrooms: stack.bathrooms,
     terrace: stack.terrace,
-    parking: "Garazno mesto dostupno za odvojenu kupovinu",
+    parking: "Garažno mesto dostupno za odvojenu kupovinu",
     storage: "Ostava dostupna za odvojenu kupovinu",
     ceilingHeight: "Prema prodajnoj dokumentaciji",
     heroFloorPlan: stack.heroFloorPlan,
     projectFloorPlan: stack.projectFloorPlan,
     plan: [
-      { label: "Ukupna povrsina", value: stack.sizes[index] },
+      { label: "Ukupna površina", value: stack.sizes[index] },
       { label: "Struktura", value: stack.rooms },
       { label: "Kupatila", value: stack.bathrooms },
       { label: "Terasa", value: stack.terrace },
@@ -412,7 +412,7 @@ export const buildingLevels: BuildingLevel[] = [
   {
     level: "PO",
     title: "Podrum",
-    items: ["15 ostava - odvojena kupovina", "13 garaznih parking mesta - odvojena kupovina"],
+    items: ["15 ostava - odvojena kupovina", "13 garažnih parking mesta - odvojena kupovina"],
   },
   {
     level: "PR",
@@ -421,7 +421,7 @@ export const buildingLevels: BuildingLevel[] = [
   },
   {
     level: "1-3",
-    title: "Stambeni spratovi",
+    title: "stambeni spratovi",
     items: ["5 stanova po spratu", "garsonjere, dvosobni i trosobni stanovi"],
   },
   {
@@ -432,19 +432,19 @@ export const buildingLevels: BuildingLevel[] = [
 ];
 
 export const locationAdvantages = [
-  "pocetak Telepa",
+  "početak Telepa",
   "linija 12 ka centru",
   "Lidl u blizini",
-  "Gimnazija Laza Kostic u blizini",
-  "Kej, Ribarac, Sodros i parkovi",
-  "planirana veza prema Fruskoj gori",
+  "Gimnazija Laza Kostić u blizini",
+  "Kej, Ribarac, Šodroš i parkovi",
+  "planirana veza prema Fruškoj gori",
 ];
 
 export const projectTimeline: TimelineItem[] = [
   {
     id: "start",
     date: "16.03.2026.",
-    title: "Pocetak izgradnje",
+    title: "Početak izgradnje",
     body: "Radovi su planirani i pokrenuti prema projektnoj dinamici.",
     state: "done",
   },
@@ -459,14 +459,14 @@ export const projectTimeline: TimelineItem[] = [
     id: "interior",
     date: "2027.",
     title: "Unutrasnji radovi",
-    body: "Instalacije, zavrsni radovi i priprema prostora za kupce.",
+    body: "Instalacije, završni radovi i priprema prostora za kupce.",
     state: "upcoming",
   },
   {
     id: "finish",
     date: "15.11.2027.",
-    title: "Planirani zavrsetak",
-    body: "Predvidjen termin zavrsetka izgradnje objekta.",
+    title: "Planirani završetak",
+    body: "Predviđen termin završetka izgradnje objekta.",
     state: "upcoming",
   },
 ];

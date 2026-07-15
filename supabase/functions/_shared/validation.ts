@@ -59,7 +59,7 @@ export function validNumber(value: unknown) {
   const numberValue = Number(value);
 
   if (!Number.isFinite(numberValue) || numberValue <= 0) {
-    return { ok: false, message: "Povrsina parcele mora biti pozitivan broj." } as const;
+    return { ok: false, message: "Površina parcele mora biti pozitivan broj." } as const;
   }
 
   return { ok: true, value: numberValue } as const;

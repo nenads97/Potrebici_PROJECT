@@ -5,13 +5,13 @@ import { ContactModalButton } from "../../features/inquiries/components/ContactM
 import { PageMeta } from "../../shared/components/PageMeta";
 
 const notFoundContactModal = {
-  eyebrow: "Pomoc pri izboru",
+  eyebrow: "Pomoć pri izboru",
   title: "Pomozite nam da vas usmerimo",
   description:
-    "Ako ste trazili konkretan stan, tlocrt ili informaciju o projektu, posaljite nam kratak upit i prodajni tim ce vas usmeriti na pravi link.",
+    "Ako ste tražili konkretan stan, tlocrt ili informaciju o projektu, pošaljite nam kratak upit i prodajni tim će vas usmeriti na pravi link.",
   inquiryType: "general" as const,
   details: [{ label: "Povod", value: "Nepostojeca stranica" }],
-  messagePlaceholder: "Napisite sta ste trazili ili koji stan/projekat vas zanima.",
+  messagePlaceholder: "Napišite sta ste tražili ili koji stan/projekat vas zanima.",
 };
 
 const quickLinks = [
@@ -34,7 +34,7 @@ export const NotFoundPage = () => {
     <main className="not-found-page not-found-page--public">
       <PageMeta
         title="Stranica nije pronadjena | M & M Gradnja"
-        description="Stranica koju trazite nije pronadjena. Pogledajte ponudu stanova Heroja Pinkija 13 ili posaljite upit prodaji."
+        description="Stranica koju tražite nije pronadjena. Pogledajte ponudu stanova Heroja Pinkija 13 ili pošaljite upit prodaji."
         canonicalPath="/"
         robots="noindex,follow"
       />
@@ -42,7 +42,7 @@ export const NotFoundPage = () => {
         <p className="section-eyebrow">404</p>
         <h1>Stranica nije pronadjena.</h1>
         <p>
-          Link je mozda promenjen ili vise nije aktivan. Ako trazite stan u projektu
+          Link je mozda promenjen ili vise nije aktivan. Ako tražite stan u projektu
           Heroja Pinkija 13, najkorisnije je da krenete od aktuelne ponude.
         </p>
 
@@ -56,7 +56,7 @@ export const NotFoundPage = () => {
             modalOptions={notFoundContactModal}
           >
             <MessageCircle />
-            Pisite nam
+            Pišite nam
           </ContactModalButton>
         </div>
 
