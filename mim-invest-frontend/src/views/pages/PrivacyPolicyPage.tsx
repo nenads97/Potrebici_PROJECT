@@ -14,7 +14,10 @@ import {
 } from "lucide-react";
 
 import { ContactModalButton } from "../../features/inquiries/components/ContactModal";
-import { contactPhone } from "../../features/projects/data/herojaPinkija13.data";
+import {
+  contactPhone,
+  contactPhoneHref,
+} from "../../features/projects/data/herojaPinkija13.data";
 import { PageMeta } from "../../shared/components/PageMeta";
 
 const privacyContactModal = {
@@ -157,7 +160,7 @@ export const PrivacyPolicyPage = () => {
                 <Mail />
                 Pisite nam
               </ContactModalButton>
-              <a className="site-button site-button--outline" href={`tel:${contactPhone}`}>
+              <a className="site-button site-button--outline" href={contactPhoneHref}>
                 <Phone />
                 Pozovite prodaju
               </a>
@@ -366,7 +369,7 @@ export const PrivacyPolicyPage = () => {
               <Mail />
               Posaljite zahtev
             </ContactModalButton>
-            <a className="privacy-contact__link" href={`tel:${contactPhone}`}>
+            <a className="privacy-contact__link" href={contactPhoneHref}>
               <Phone />
               {contactPhone}
               <ArrowUpRight />

@@ -163,9 +163,13 @@ function auditSourceHygiene() {
   const hardReloadLinks = [];
   const debugTokens = [];
   const suspiciousEncoding = [];
+  const mixedScriptLines = [];
+  const rawTelHrefLines = [];
   const imgWithoutAlt = [];
   const mojibakePattern =
     /[\uFFFD]|\u00C2(?=[\u00A0-\u00BF])|\u00C3(?=[\u0080-\u00BF])|\u00E2(?=\u20AC|\u0080)/;
+  const latinLetterPattern = /\p{Script=Latin}/u;
+  const cyrillicLetterPattern = /\p{Script=Cyrillic}/u;
 
   for (const file of files) {
     const content = readText(file);
@@ -182,6 +186,14 @@ function auditSourceHygiene() {
 
       if (mojibakePattern.test(line)) {
         suspiciousEncoding.push(`${relative}:${index + 1}`);
+      }
+
+      if (latinLetterPattern.test(line) && cyrillicLetterPattern.test(line)) {
+        mixedScriptLines.push(`${relative}:${index + 1}`);
+      }
+
+      if (/href=\{\s*`tel:/.test(line) || /href=["']tel:/.test(line)) {
+        rawTelHrefLines.push(`${relative}:${index + 1}`);
       }
     }
 
@@ -204,6 +216,14 @@ function auditSourceHygiene() {
     fail(`Suspicious encoding artifacts found:\n${suspiciousEncoding.join("\n")}`);
   }
 
+  if (mixedScriptLines.length > 0) {
+    fail(`Mixed Latin/Cyrillic text found:\n${mixedScriptLines.join("\n")}`);
+  }
+
+  if (rawTelHrefLines.length > 0) {
+    fail(`Raw tel: href values found; use createPhoneHref/contactPhoneHref:\n${rawTelHrefLines.join("\n")}`);
+  }
+
   if (imgWithoutAlt.length > 0) {
     fail(`Images without alt found:\n${[...new Set(imgWithoutAlt)].join("\n")}`);
   }
@@ -213,6 +233,8 @@ function auditSourceHygiene() {
     hardReloadLinks: hardReloadLinks.length,
     debugTokens: debugTokens.length,
     suspiciousEncoding: suspiciousEncoding.length,
+    mixedScriptLines: mixedScriptLines.length,
+    rawTelHrefLines: rawTelHrefLines.length,
     imgWithoutAlt: imgWithoutAlt.length,
   };
 }
@@ -681,19 +703,23 @@ function auditPackageManifest() {
 
 function auditUxGuardrails() {
   const adminLoginPath = path.join(srcRoot, "views", "pages", "admin", "AdminLoginPage.tsx");
+  const adminDashboardPath = path.join(srcRoot, "views", "pages", "admin", "AdminDashboardPage.tsx");
   const mainLayoutPath = path.join(srcRoot, "views", "layout", "MainLayout.tsx");
   const adminLayoutPath = path.join(srcRoot, "views", "layout", "AdminLayout.tsx");
   const homePath = path.join(srcRoot, "views", "pages", "HomePage.tsx");
   const contactModalPath = path.join(srcRoot, "features", "inquiries", "components", "ContactModal.tsx");
+  const formValidationPath = path.join(srcRoot, "features", "inquiries", "utils", "formValidation.ts");
   const landBuyPath = path.join(srcRoot, "views", "pages", "LandBuyPage.tsx");
   const stylesPath = path.join(srcRoot, "shared", "styles", "global.scss");
 
   if (
     !fs.existsSync(adminLoginPath) ||
+    !fs.existsSync(adminDashboardPath) ||
     !fs.existsSync(mainLayoutPath) ||
     !fs.existsSync(adminLayoutPath) ||
     !fs.existsSync(homePath) ||
     !fs.existsSync(contactModalPath) ||
+    !fs.existsSync(formValidationPath) ||
     !fs.existsSync(landBuyPath) ||
     !fs.existsSync(stylesPath)
   ) {
@@ -702,10 +728,12 @@ function auditUxGuardrails() {
   }
 
   const adminLogin = readText(adminLoginPath);
+  const adminDashboard = readText(adminDashboardPath);
   const mainLayout = readText(mainLayoutPath);
   const adminLayout = readText(adminLayoutPath);
   const home = readText(homePath);
   const contactModal = readText(contactModalPath);
+  const formValidation = readText(formValidationPath);
   const landBuy = readText(landBuyPath);
   const styles = readText(stylesPath);
   const formConsentBlock = styles.match(/^\.form-consent\s*\{([\s\S]*?)^\}/m)?.[1] ?? "";
@@ -721,6 +749,12 @@ function auditUxGuardrails() {
       adminLogin.includes('id="admin-login-email"') &&
       adminLogin.includes('htmlFor="admin-login-password"') &&
       adminLogin.includes('id="admin-login-password"'),
+    adminLeadStatusRollbackOnFailedPersist:
+      adminDashboard.includes("previousInquiry") &&
+      adminDashboard.includes("previousOffer") &&
+      adminDashboard.includes('result.status === "failed"') &&
+      adminDashboard.includes('"adminStatus" in changes') &&
+      adminDashboard.includes("withAdminRecoveryHint"),
     publicLayoutSkipTarget:
       mainLayout.includes('href="#main-content"') &&
       mainLayout.includes('id="main-content"') &&
@@ -765,6 +799,19 @@ function auditUxGuardrails() {
       landBuy.includes('autoComplete="email"') &&
       landBuy.includes('autoComplete="street-address"') &&
       landBuy.includes('inputMode="numeric"'),
+    leadFormsExposeInlineValidation:
+      formValidation.includes("validateEmail") &&
+      formValidation.includes("validatePhone") &&
+      formValidation.includes("focusFirstInvalidField") &&
+      contactModal.includes("validateContactModalForm") &&
+      contactModal.includes("noValidate") &&
+      contactModal.includes("aria-invalid={fieldErrors.") &&
+      contactModal.includes("aria-describedby={fieldErrors.") &&
+      landBuy.includes("validateLandOfferForm") &&
+      landBuy.includes("noValidate") &&
+      landBuy.includes("aria-invalid={fieldErrors.") &&
+      landBuy.includes("aria-describedby={fieldErrors.") &&
+      styles.includes(".form-field-error"),
     publicMotionRespectsReducedMotion:
       home.includes("useReducedMotion") &&
       home.includes("staticFadeUp") &&

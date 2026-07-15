@@ -54,6 +54,7 @@ import type {
   AdminUnitStatus,
   AdminWorkflowStatus,
 } from "../../../features/admin/types/admin.types";
+import { createPhoneHref } from "../../../features/projects/data/herojaPinkija13.data";
 import { PageMeta } from "../../../shared/components/PageMeta";
 import { isSupabaseConfigured } from "../../../shared/supabase/client";
 
@@ -892,10 +893,16 @@ const InquiryPanel = ({
     changes: Partial<AdminInquiry>,
     successMessage = "Upit je sacuvan.",
   ) => {
+    const previousInquiry = inquiries.find((item) => item.id === id);
+
     patchInquiry(id, changes);
     showCardFeedback(id, { tone: "pending", message: "Cuvanje izmene..." });
 
     const result = await onPersist(id, changes);
+
+    if (result.status === "failed" && previousInquiry && "adminStatus" in changes) {
+      patchInquiry(id, { adminStatus: previousInquiry.adminStatus });
+    }
 
     showCardFeedback(id, createCardPersistFeedback(result, successMessage));
   };
@@ -947,7 +954,7 @@ const InquiryPanel = ({
 
             <div className="admin-contact-grid">
               {inquiry.phone ? (
-                <a href={`tel:${inquiry.phone}`}>
+                <a href={createPhoneHref(inquiry.phone)}>
                   <Phone />
                   {inquiry.phone}
                 </a>
@@ -1048,10 +1055,16 @@ const LandOfferPanel = ({
     changes: Partial<AdminLandOffer>,
     successMessage = "Ponuda placa je sacuvana.",
   ) => {
+    const previousOffer = offers.find((item) => item.id === id);
+
     patchOffer(id, changes);
     showCardFeedback(id, { tone: "pending", message: "Cuvanje izmene..." });
 
     const result = await onPersist(id, changes);
+
+    if (result.status === "failed" && previousOffer && "adminStatus" in changes) {
+      patchOffer(id, { adminStatus: previousOffer.adminStatus });
+    }
 
     showCardFeedback(id, createCardPersistFeedback(result, successMessage));
   };
@@ -1097,7 +1110,7 @@ const LandOfferPanel = ({
             </div>
 
             <div className="admin-contact-grid">
-              <a href={`tel:${offer.phone}`}>
+              <a href={createPhoneHref(offer.phone)}>
                 <Phone />
                 {offer.phone}
               </a>
@@ -2887,7 +2900,7 @@ function createCardPersistFeedback(
   savedMessage: string,
 ): AdminCardFeedback {
   if (result.status === "failed") {
-    return { tone: "error", message: result.message };
+    return { tone: "error", message: withAdminRecoveryHint(result.message) };
   }
 
   if (result.status === "local") {
@@ -2895,6 +2908,12 @@ function createCardPersistFeedback(
   }
 
   return { tone: "success", message: savedMessage };
+}
+
+function withAdminRecoveryHint(message: string) {
+  const recoveryHint = "Proverite vezu/Supabase pristup i pokusajte ponovo.";
+
+  return message.includes(recoveryHint) ? message : `${message} ${recoveryHint}`;
 }
 
 function filterWorkflowItems<T extends { fullName: string; phone: string; email: string; adminStatus: AdminWorkflowStatus }>(

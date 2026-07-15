@@ -16,7 +16,11 @@ import {
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { ContactModalButton } from "../../features/inquiries/components/ContactModal";
-import { contactEmail, contactPhone } from "../../features/projects/data/herojaPinkija13.data";
+import {
+  contactEmail,
+  contactPhone,
+  contactPhoneHref,
+} from "../../features/projects/data/herojaPinkija13.data";
 import { BrandLogo } from "../../shared/components/BrandLogo";
 
 const companyLinks = [
@@ -237,7 +241,7 @@ export const MainLayout = () => {
           <address className="site-footer__contact" aria-labelledby="footer-contact">
             <h2 id="footer-contact">Kontakt</h2>
             <div className="site-footer__contact-list">
-              <a href={`tel:${contactPhone}`}>
+              <a href={contactPhoneHref}>
                 <Phone />
                 <span>
                   <small>Telefon prodaje</small>

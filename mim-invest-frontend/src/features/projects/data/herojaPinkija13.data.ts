@@ -13,6 +13,8 @@ import type {
 
 export const contactPhone = "064 227 9117";
 export const contactEmail = "prodaja@mimgradnja.rs";
+export const createPhoneHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;
+export const contactPhoneHref = createPhoneHref(contactPhone);
 
 export const statusLabel: Record<ApartmentStatus, string> = {
   Available: "Slobodan",

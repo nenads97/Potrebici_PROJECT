@@ -36,6 +36,8 @@ Sta ova provera pokriva:
 - hard-reload interne linkove;
 - alt tekst;
 - privremene razvojne markere;
+- mixed Latin/Cyrillic text u istoj liniji;
+- sirove `tel:` href vrednosti umesto normalizovanog helper-a;
 - sitemap/robots pravila;
 - tacan kanonski sitemap URL set i `PageMeta` pokrivenost aktivnih stranica;
 - route contract izmedju specifikacije, router-a, kanonskog projekta i legacy `/apartmani` redirect-a;
@@ -125,7 +127,9 @@ Proveriti:
 - kontakt modal otvara fokus u formi;
 - Escape zatvara modal i vraca fokus na CTA;
 - greske i success poruke imaju live-region ponasanje;
+- prazan submit u kontakt modalu i formi za placeve ostaje lokalno, prikazuje inline greske, povezuje ih preko `aria-describedby` i fokusira prvo neispravno polje;
 - consent checkbox moze da se aktivira klikom na tekst;
+- telefonski CTA linkovi imaju normalizovan `tel:` href bez razmaka, dok vidljiv broj ostaje citljiv;
 - admin login ima povezane label-e, skip link i ogranicen timeout za sporu auth proveru; zasticeni admin guard proverava Supabase user-a i `admin_profiles` bez duplog kratkog session precheck-a.
 
 Poslednji automatizovani runtime smoke iz browsera je uradjen 2026-07-14. Desktop prolaz kroz 30 ruta, ukljucujuci svih 15 detalja stanova, legacy `/apartmani/1`, 404, `/admin` i `/admin/prijava`, nije nasao broken slike, missing alt, horizontal overflow, error boundary ili blokirajuci loading tekst. Mobilni 390px prolaz kroz 13 kljucnih ruta, ukljucujuci detalje stanova `/1`, `/8`, `/15` i `/admin/prijava`, takodje nije nasao iste probleme. Ovo ne zamenjuje zavrsni rucni keyboard QA pre objave.
@@ -147,11 +151,21 @@ Keyboard/interakcioni QA 2026-07-14 je dodatno proverio:
 - admin login submit sa test/admin nalogom otvara protected admin shell, a `/admin`
   dashboard prikazuje metrike i Supabase loaded feedback.
 
+Lead form validation QA 2026-07-15 je proverio prazan submit bez slanja podataka:
+
+- `/kupujemo-placeve` forma prikazuje inline greske za ime, telefon, e-mail i
+  saglasnost, fokusira polje `name`, a svako neispravno polje ima
+  `aria-invalid=true` i `aria-describedby`;
+- kontakt modal na detalju stana `/projekti/heroja-pinkija-13/ponuda-stanova/1`
+  prikazuje isti pattern za ime, telefon, e-mail i saglasnost, fokusira polje
+  `name` i ne pokusava network submit dok lokalna validacija ne prodje.
+
 ## 5. Admin content readiness
 
 U admin panelu proveriti:
 
 - upiti za stanove i upiti za placeve imaju citljiv status, izvor i interne beleske;
+- neuspesno cuvanje statusa lead-a vraca status u UI-ju na prethodnu vrednost i prikazuje recovery hint, umesto da ostavi lazno optimistic stanje;
 - promena statusa stana se cuva i vidi u javnoj ponudi nakon osvezavanja Supabase podataka;
 - projekat ima status label, opis, hero image, SEO title i SEO description;
 - media panel ima objavljene slike sa alt tekstom;
@@ -190,7 +204,7 @@ $env:SUPABASE_ADMIN_SMOKE_PROCESS_TEST_LEADS="true"
 npm.cmd run smoke:supabase:admin
 ```
 
-Ako su test leadovi vec poznati po ID-jevima, koristiti lokalne/ignorisanе
+Ako su test leadovi vec poznati po ID-jevima, koristiti lokalne/ignorisane
 vrednosti `SUPABASE_ADMIN_SMOKE_TEST_CONTACT_IDS` i
 `SUPABASE_ADMIN_SMOKE_TEST_LAND_IDS`. Ne commitovati realne lead ID-jeve.
 
@@ -355,8 +369,8 @@ Ako projekat koristi Supabase MCP/advisors, proveriti:
 
 Launch je realno spreman tek kada su sva sledeca polja potvrdjena:
 
-- [x] `npm.cmd run quality` prolazi. Poslednja provera: 2026-07-14.
-- [x] `git diff --check` nema stvarne greske, osim Windows LF -> CRLF upozorenja. Poslednja provera: 2026-07-14.
+- [x] `npm.cmd run quality` prolazi. Poslednja provera: 2026-07-15.
+- [x] `git diff --check` nema stvarne greske, osim Windows LF -> CRLF upozorenja. Poslednja provera: 2026-07-15.
 - [x] `npm.cmd run smoke:supabase:readonly` prolazi. Pokriveno i kroz `smoke:supabase:launch`, poslednja provera: 2026-07-14.
 - [x] `npm.cmd run smoke:supabase:launch` prolazi kada se ocekuju cloud media podaci. Poslednja provera: 2026-07-14.
 - [x] `project_media` je popunjen za Heroja Pinkija 13.

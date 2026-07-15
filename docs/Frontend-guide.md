@@ -76,6 +76,8 @@ Never expose in browser:
 - Use lucide icons when icons are needed.
 - Buttons must have stable dimensions and clear focus states.
 - Forms need visible labels.
+- Lead forms should use local inline validation before network submit: `noValidate`, field-level `aria-invalid`/`aria-describedby`, clear error copy and focus on the first invalid field.
+- Phone links should keep formatted visible text, but use `contactPhoneHref` or `createPhoneHref(phone)` for normalized `tel:` href values.
 - Cards should be simple, scannable, and not nested inside other cards.
 - Mobile must have no horizontal scroll, overlap, or clipped button text.
 - Public images should use dimensions when asset size is known; use `fetchPriority="high"` only for priority hero/LCP candidates, and use `loading="lazy"` plus `decoding="async"` for below-fold imagery where it does not affect first paint.
@@ -164,7 +166,7 @@ For the full launch checklist, use `docs/pre-production-runbook.md`.
 - internal hard-reload `<a href="/...">` links in React source;
 - missing image alt text;
 - temporary debug markers;
-- suspicious encoding/mojibake artifacts;
+- suspicious encoding/mojibake artifacts, mixed Latin/Cyrillic text in the same line, and raw `tel:` href values;
 - exact sitemap canonical URL set, robots canonical rules and PageMeta coverage for active page files;
 - route contract consistency between `Project-spec.md`, `AppRouter.tsx`,
   project canonical metadata and legacy apartment redirects;

@@ -22,6 +22,7 @@ import type { ContactModalOptions } from "../../../../features/inquiries/compone
 import {
   apartments as fallbackApartments,
   contactPhone,
+  contactPhoneHref,
   locationAdvantages,
   statusLabel,
   statusVariant,
@@ -273,7 +274,7 @@ export const ApartmentDetailsPage = () => {
                 </ContactModalButton>
                 <a
                   className="apartment-detail-hero__text-link"
-                  href={`tel:${contactPhone}`}
+                  href={contactPhoneHref}
                 >
                   <Phone />
                   Pozovite prodaju
@@ -776,7 +777,7 @@ const PurchasePanel = ({
         <MessageCircle />
         {ctaCopy.buttonLabel}
       </ContactModalButton>
-      <a className="apartment-purchase__phone" href={`tel:${contactPhone}`}>
+      <a className="apartment-purchase__phone" href={contactPhoneHref}>
         <Phone />
         {contactPhone}
       </a>

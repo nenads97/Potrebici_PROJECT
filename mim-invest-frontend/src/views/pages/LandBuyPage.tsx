@@ -14,8 +14,25 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import { contactEmail, contactPhone } from "../../features/projects/data/herojaPinkija13.data";
+import {
+  contactEmail,
+  contactPhone,
+  contactPhoneHref,
+} from "../../features/projects/data/herojaPinkija13.data";
 import { submitLandOffer } from "../../features/inquiries/api/inquiryFunctions.api";
+import {
+  focusFirstInvalidField,
+  getFormValue,
+  hasFieldErrors,
+  mergeFieldError,
+  validateConsent,
+  validateEmail,
+  validateOptionalText,
+  validatePhone,
+  validatePositiveNumber,
+  validateRequiredText,
+  type FieldErrors,
+} from "../../features/inquiries/utils/formValidation";
 import { PageMeta } from "../../shared/components/PageMeta";
 
 const landHeroImage = "/images/kupovina-placeva-hero.jpg";
@@ -76,6 +93,25 @@ const staticFadeUp = {
 
 const instantTransition = { duration: 0 };
 
+type LandOfferFieldName =
+  | "name"
+  | "phone"
+  | "email"
+  | "address"
+  | "plotArea"
+  | "details"
+  | "consent";
+
+const landOfferFieldOrder: LandOfferFieldName[] = [
+  "name",
+  "phone",
+  "email",
+  "address",
+  "plotArea",
+  "details",
+  "consent",
+];
+
 export const LandBuyPage = () => {
   const reduceMotion = useReducedMotion();
   const reveal = reduceMotion ? staticFadeUp : fadeUp;
@@ -118,7 +154,7 @@ export const LandBuyPage = () => {
               <MessageCircle />
               Posaljite ponudu
             </a>
-            <a className="site-button site-button--light" href={`tel:${contactPhone}`}>
+            <a className="site-button site-button--light" href={contactPhoneHref}>
               <Phone />
               Pozovite {contactPhone}
             </a>
@@ -157,7 +193,7 @@ export const LandBuyPage = () => {
               potencijal lokacije.
             </p>
             <div className="contact-links">
-              <a href={`tel:${contactPhone}`}>
+              <a href={contactPhoneHref}>
                 <Phone className="icon-inline" />
                 {contactPhone}
               </a>
@@ -278,38 +314,63 @@ export const LandBuyPage = () => {
 const PropertyOfferForm = () => {
   const [formStatus, setFormStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [formMessage, setFormMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors<LandOfferFieldName>>({});
   const reduceMotion = useReducedMotion();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const form = event.currentTarget;
+    const formData = new FormData(form);
+    const errors = validateLandOfferForm(formData);
+
+    if (hasFieldErrors(errors)) {
+      setFieldErrors(errors);
+      setFormStatus("error");
+      setFormMessage("Proverite oznacena polja pre slanja ponude.");
+      focusFirstInvalidField(form, landOfferFieldOrder, errors);
+      return;
+    }
+
     setFormStatus("sending");
     setFormMessage("");
-
-    const formData = new FormData(form);
-    const getValue = (name: string) => String(formData.get(name) ?? "").trim();
+    setFieldErrors({});
 
     try {
       await submitLandOffer({
-        fullName: getValue("name"),
-        phone: getValue("phone"),
-        email: getValue("email"),
-        propertyAddress: getValue("address"),
-        plotAreaM2: getValue("plotArea"),
-        details: getValue("details"),
+        fullName: getFormValue(formData, "name"),
+        phone: getFormValue(formData, "phone"),
+        email: getFormValue(formData, "email"),
+        propertyAddress: getFormValue(formData, "address"),
+        plotAreaM2: getFormValue(formData, "plotArea"),
+        details: getFormValue(formData, "details"),
         sourcePage: window.location.pathname,
         consentAccepted: formData.get("consent") === "on",
-        website: getValue("website"),
+        website: getFormValue(formData, "website"),
       });
 
       form.reset();
       setFormStatus("success");
       setFormMessage("Hvala. Ponuda je poslata i javicemo vam se nakon pocetne provere.");
+      setFieldErrors({});
     } catch (error) {
       setFormStatus("error");
       setFormMessage(error instanceof Error ? error.message : "Slanje nije uspelo.");
     }
+  };
+
+  const handleFieldBlur = (
+    fieldName: LandOfferFieldName,
+    event: { currentTarget: HTMLInputElement | HTMLTextAreaElement },
+  ) => {
+    const form = event.currentTarget.form;
+
+    if (!form) {
+      return;
+    }
+
+    const errors = validateLandOfferForm(new FormData(form));
+    setFieldErrors((currentErrors) => mergeFieldError(currentErrors, fieldName, errors[fieldName]));
   };
 
   return (
@@ -317,6 +378,7 @@ const PropertyOfferForm = () => {
       className="soft-card inquiry-form"
       onSubmit={handleSubmit}
       aria-busy={formStatus === "sending"}
+      noValidate
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, amount: 0.2 }}
@@ -333,7 +395,17 @@ const PropertyOfferForm = () => {
 
       <div className="inquiry-form__body">
         <div className="form-grid form-grid--two">
-          <FormField id="land-name" label="Ime" name="name" autoComplete="name" required />
+          <FormField
+            id="land-name"
+            label="Ime"
+            name="name"
+            autoComplete="name"
+            required
+            maxLength={160}
+            error={fieldErrors.name}
+            errorId="land-name-error"
+            onBlur={(event) => handleFieldBlur("name", event)}
+          />
           <FormField
             id="land-phone"
             label="Telefon"
@@ -342,9 +414,33 @@ const PropertyOfferForm = () => {
             autoComplete="tel"
             inputMode="tel"
             required
+            maxLength={80}
+            error={fieldErrors.phone}
+            errorId="land-phone-error"
+            onBlur={(event) => handleFieldBlur("phone", event)}
           />
-          <FormField id="land-email" label="E-mail" name="email" type="email" autoComplete="email" required />
-          <FormField id="land-address" label="Adresa nekretnine" name="address" autoComplete="street-address" />
+          <FormField
+            id="land-email"
+            label="E-mail"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            maxLength={254}
+            error={fieldErrors.email}
+            errorId="land-email-error"
+            onBlur={(event) => handleFieldBlur("email", event)}
+          />
+          <FormField
+            id="land-address"
+            label="Adresa nekretnine"
+            name="address"
+            autoComplete="street-address"
+            maxLength={260}
+            error={fieldErrors.address}
+            errorId="land-address-error"
+            onBlur={(event) => handleFieldBlur("address", event)}
+          />
           <FormField
             id="land-plot-area"
             label="Povrsina parcele (m2)"
@@ -352,6 +448,9 @@ const PropertyOfferForm = () => {
             type="number"
             inputMode="numeric"
             min="0"
+            error={fieldErrors.plotArea}
+            errorId="land-plot-area-error"
+            onBlur={(event) => handleFieldBlur("plotArea", event)}
           />
         </div>
 
@@ -370,13 +469,36 @@ const PropertyOfferForm = () => {
             name="details"
             placeholder="Napisite sta znate o dokumentaciji, pristupu, objektu na placu ili uslovima prodaje."
             rows={6}
+            maxLength={5000}
+            aria-invalid={fieldErrors.details ? "true" : undefined}
+            aria-describedby={fieldErrors.details ? "land-details-error" : undefined}
+            onBlur={(event) => handleFieldBlur("details", event)}
           />
+          {fieldErrors.details ? (
+            <p className="form-field-error" id="land-details-error">
+              {fieldErrors.details}
+            </p>
+          ) : null}
         </div>
 
         <label className="form-consent" htmlFor="land-consent">
-          <input id="land-consent" name="consent" required type="checkbox" />
+          <input
+            id="land-consent"
+            name="consent"
+            required
+            type="checkbox"
+            aria-invalid={fieldErrors.consent ? "true" : undefined}
+            aria-describedby={fieldErrors.consent ? "land-consent-error" : undefined}
+            onBlur={(event) => handleFieldBlur("consent", event)}
+            onChange={(event) => handleFieldBlur("consent", event)}
+          />
           <span>Saglasan/saglasna sam da me kontaktirate povodom poslate ponude.</span>
         </label>
+        {fieldErrors.consent ? (
+          <p className="form-field-error" id="land-consent-error">
+            {fieldErrors.consent}
+          </p>
+        ) : null}
 
         {formMessage ? (
           <p
@@ -410,6 +532,10 @@ type FormFieldProps = {
   autoComplete?: string;
   inputMode?: "none" | "text" | "decimal" | "numeric" | "tel" | "search" | "email" | "url";
   min?: string;
+  maxLength?: number;
+  error?: string;
+  errorId?: string;
+  onBlur?: (event: { currentTarget: HTMLInputElement }) => void;
 };
 
 const FormField = ({
@@ -421,6 +547,10 @@ const FormField = ({
   autoComplete,
   inputMode,
   min,
+  maxLength,
+  error,
+  errorId,
+  onBlur,
 }: FormFieldProps) => {
   return (
     <div className="form-field">
@@ -437,7 +567,28 @@ const FormField = ({
         autoComplete={autoComplete}
         inputMode={inputMode}
         min={min}
+        maxLength={maxLength}
+        aria-invalid={error ? "true" : undefined}
+        aria-describedby={error && errorId ? errorId : undefined}
+        onBlur={onBlur}
       />
+      {error && errorId ? (
+        <p className="form-field-error" id={errorId}>
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 };
+
+function validateLandOfferForm(formData: FormData): FieldErrors<LandOfferFieldName> {
+  return {
+    name: validateRequiredText(getFormValue(formData, "name"), "Ime"),
+    phone: validatePhone(getFormValue(formData, "phone"), true),
+    email: validateEmail(getFormValue(formData, "email")),
+    address: validateOptionalText(getFormValue(formData, "address"), "Adresa nekretnine", 260),
+    plotArea: validatePositiveNumber(getFormValue(formData, "plotArea"), "Povrsina parcele"),
+    details: validateOptionalText(getFormValue(formData, "details"), "Dodatne informacije", 5000),
+    consent: validateConsent(formData.get("consent")),
+  };
+}

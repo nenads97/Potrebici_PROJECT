@@ -25,10 +25,26 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-import { contactEmail, contactPhone } from "../../projects/data/herojaPinkija13.data";
+import {
+  contactEmail,
+  contactPhone,
+  contactPhoneHref,
+} from "../../projects/data/herojaPinkija13.data";
 import {
   submitContactInquiry,
 } from "../api/inquiryFunctions.api";
+import {
+  focusFirstInvalidField,
+  getFormValue,
+  hasFieldErrors,
+  mergeFieldError,
+  validateConsent,
+  validateEmail,
+  validateOptionalText,
+  validatePhone,
+  validateRequiredText,
+  type FieldErrors,
+} from "../utils/formValidation";
 import {
   ContactModalContext,
   defaultModalOptions,
@@ -123,19 +139,35 @@ type ContactModalProps = {
   onClose: () => void;
 };
 
+type ContactModalFieldName = "name" | "phone" | "email" | "message" | "consent";
+
+const contactModalFieldOrder: ContactModalFieldName[] = [
+  "name",
+  "phone",
+  "email",
+  "message",
+  "consent",
+];
+
 const ContactModal = ({ isOpen, options, onClose }: ContactModalProps) => {
   const titleId = useId();
   const descriptionId = useId();
   const nameId = useId();
+  const nameErrorId = useId();
   const phoneId = useId();
+  const phoneErrorId = useId();
   const emailId = useId();
+  const emailErrorId = useId();
   const websiteId = useId();
   const messageId = useId();
+  const messageErrorId = useId();
   const consentId = useId();
+  const consentErrorId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
   const [formStatus, setFormStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [formMessage, setFormMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors<ContactModalFieldName>>({});
 
   const mergedOptions = { ...defaultModalOptions, ...options };
   const isPhoneRequired = isSalesPhoneRequired(mergedOptions.inquiryType);
@@ -175,32 +207,56 @@ const ContactModal = ({ isOpen, options, onClose }: ContactModalProps) => {
 
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const getValue = (name: string) => String(formData.get(name) ?? "").trim();
+    const errors = validateContactModalForm(formData, isPhoneRequired);
+
+    if (hasFieldErrors(errors)) {
+      setFieldErrors(errors);
+      setFormStatus("error");
+      setFormMessage("Proverite oznacena polja pre slanja upita.");
+      focusFirstInvalidField(form, contactModalFieldOrder, errors);
+      return;
+    }
 
     setFormStatus("sending");
     setFormMessage("");
+    setFieldErrors({});
 
     try {
       await submitContactInquiry({
-        fullName: getValue("name"),
-        phone: getValue("phone"),
-        email: getValue("email"),
-        message: buildContextualMessage(mergedOptions, getValue("message")),
+        fullName: getFormValue(formData, "name"),
+        phone: getFormValue(formData, "phone"),
+        email: getFormValue(formData, "email"),
+        message: buildContextualMessage(mergedOptions, getFormValue(formData, "message")),
         projectSlug: mergedOptions.projectSlug,
         unitCode: mergedOptions.unitCode,
         inquiryType: mergedOptions.inquiryType,
         sourcePage: mergedOptions.sourcePage ?? window.location.pathname,
         consentAccepted: formData.get("consent") === "on",
-        website: getValue("website"),
+        website: getFormValue(formData, "website"),
       });
 
       form.reset();
       setFormStatus("success");
       setFormMessage(mergedOptions.successMessage);
+      setFieldErrors({});
     } catch (error) {
       setFormStatus("error");
       setFormMessage(error instanceof Error ? error.message : "Slanje nije uspelo.");
     }
+  };
+
+  const handleFieldBlur = (
+    fieldName: ContactModalFieldName,
+    event: { currentTarget: HTMLInputElement | HTMLTextAreaElement },
+  ) => {
+    const form = event.currentTarget.form;
+
+    if (!form) {
+      return;
+    }
+
+    const errors = validateContactModalForm(new FormData(form), isPhoneRequired);
+    setFieldErrors((currentErrors) => mergeFieldError(currentErrors, fieldName, errors[fieldName]));
   };
 
   const handleDialogKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -273,7 +329,7 @@ const ContactModal = ({ isOpen, options, onClose }: ContactModalProps) => {
           ) : null}
 
           <div className="contact-modal__direct">
-            <a href={`tel:${contactPhone}`}>
+            <a href={contactPhoneHref}>
               <Phone />
               <span>
                 <small>Telefon prodaje</small>
@@ -294,6 +350,7 @@ const ContactModal = ({ isOpen, options, onClose }: ContactModalProps) => {
           className="contact-modal__form"
           onSubmit={handleSubmit}
           aria-busy={formStatus === "sending"}
+          noValidate
         >
           <div className="contact-modal__form-head">
             <FileText />
@@ -320,7 +377,16 @@ const ContactModal = ({ isOpen, options, onClose }: ContactModalProps) => {
                 required
                 type="text"
                 autoComplete="name"
+                maxLength={160}
+                aria-invalid={fieldErrors.name ? "true" : undefined}
+                aria-describedby={fieldErrors.name ? nameErrorId : undefined}
+                onBlur={(event) => handleFieldBlur("name", event)}
               />
+              {fieldErrors.name ? (
+                <p className="form-field-error" id={nameErrorId}>
+                  {fieldErrors.name}
+                </p>
+              ) : null}
             </div>
 
             <div className="form-field">
@@ -335,7 +401,16 @@ const ContactModal = ({ isOpen, options, onClose }: ContactModalProps) => {
                 autoComplete="tel"
                 inputMode="tel"
                 required={isPhoneRequired}
+                maxLength={80}
+                aria-invalid={fieldErrors.phone ? "true" : undefined}
+                aria-describedby={fieldErrors.phone ? phoneErrorId : undefined}
+                onBlur={(event) => handleFieldBlur("phone", event)}
               />
+              {fieldErrors.phone ? (
+                <p className="form-field-error" id={phoneErrorId}>
+                  {fieldErrors.phone}
+                </p>
+              ) : null}
             </div>
 
             <div className="form-field contact-modal__email-field">
@@ -349,7 +424,16 @@ const ContactModal = ({ isOpen, options, onClose }: ContactModalProps) => {
                 required
                 type="email"
                 autoComplete="email"
+                maxLength={254}
+                aria-invalid={fieldErrors.email ? "true" : undefined}
+                aria-describedby={fieldErrors.email ? emailErrorId : undefined}
+                onBlur={(event) => handleFieldBlur("email", event)}
               />
+              {fieldErrors.email ? (
+                <p className="form-field-error" id={emailErrorId}>
+                  {fieldErrors.email}
+                </p>
+              ) : null}
             </div>
           </div>
 
@@ -368,13 +452,36 @@ const ContactModal = ({ isOpen, options, onClose }: ContactModalProps) => {
               name="message"
               placeholder={mergedOptions.messagePlaceholder}
               rows={4}
+              maxLength={4000}
+              aria-invalid={fieldErrors.message ? "true" : undefined}
+              aria-describedby={fieldErrors.message ? messageErrorId : undefined}
+              onBlur={(event) => handleFieldBlur("message", event)}
             />
+            {fieldErrors.message ? (
+              <p className="form-field-error" id={messageErrorId}>
+                {fieldErrors.message}
+              </p>
+            ) : null}
           </div>
 
           <label className="form-consent" htmlFor={consentId}>
-            <input id={consentId} name="consent" required type="checkbox" />
+            <input
+              id={consentId}
+              name="consent"
+              required
+              type="checkbox"
+              aria-invalid={fieldErrors.consent ? "true" : undefined}
+              aria-describedby={fieldErrors.consent ? consentErrorId : undefined}
+              onBlur={(event) => handleFieldBlur("consent", event)}
+              onChange={(event) => handleFieldBlur("consent", event)}
+            />
             <span>Saglasan/saglasna sam da me kontaktirate povodom poslatog upita.</span>
           </label>
+          {fieldErrors.consent ? (
+            <p className="form-field-error" id={consentErrorId}>
+              {fieldErrors.consent}
+            </p>
+          ) : null}
 
           {formMessage ? (
             <p
@@ -424,6 +531,19 @@ const ContactModal = ({ isOpen, options, onClose }: ContactModalProps) => {
 
 function isSalesPhoneRequired(inquiryType: ContactModalOptions["inquiryType"]) {
   return inquiryType === "unit" || inquiryType === "viewing" || inquiryType === "availability";
+}
+
+function validateContactModalForm(
+  formData: FormData,
+  isPhoneRequired: boolean,
+): FieldErrors<ContactModalFieldName> {
+  return {
+    name: validateRequiredText(getFormValue(formData, "name"), "Ime i prezime"),
+    phone: validatePhone(getFormValue(formData, "phone"), isPhoneRequired),
+    email: validateEmail(getFormValue(formData, "email")),
+    message: validateOptionalText(getFormValue(formData, "message"), "Poruka", 4000),
+    consent: validateConsent(formData.get("consent")),
+  };
 }
 
 function buildContextualMessage(options: ContactModalOptions, message: string) {

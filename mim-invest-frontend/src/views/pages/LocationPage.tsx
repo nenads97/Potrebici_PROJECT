@@ -1,7 +1,11 @@
 import { Building2, Car, Mail, MapPin, MessageCircle, Navigation, Phone, Trees } from "lucide-react";
 
 import { ContactModalButton } from "../../features/inquiries/components/ContactModal";
-import { contactEmail, contactPhone } from "../../features/projects/data/herojaPinkija13.data";
+import {
+  contactEmail,
+  contactPhone,
+  contactPhoneHref,
+} from "../../features/projects/data/herojaPinkija13.data";
 import { PageMeta } from "../../shared/components/PageMeta";
 
 const location = {
@@ -111,7 +115,7 @@ export const LocationPage = () => {
             <p className="section-eyebrow">Adresa i koordinate</p>
             <InfoRow icon={MapPin} label="Adresa" value={location.address} />
             <InfoRow icon={Navigation} label="Koordinate" value={location.coordinates} />
-            <InfoRow icon={Phone} label="Telefon prodaje" value={contactPhone} href={`tel:${contactPhone}`} />
+            <InfoRow icon={Phone} label="Telefon prodaje" value={contactPhone} href={contactPhoneHref} />
             <InfoRow icon={Mail} label="Email" value={contactEmail} href={`mailto:${contactEmail}`} />
           </div>
 

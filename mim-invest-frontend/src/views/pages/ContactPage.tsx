@@ -8,7 +8,11 @@ import {
 } from "lucide-react";
 
 import { ContactModalButton } from "../../features/inquiries/components/ContactModal";
-import { contactEmail, contactPhone } from "../../features/projects/data/herojaPinkija13.data";
+import {
+  contactEmail,
+  contactPhone,
+  contactPhoneHref,
+} from "../../features/projects/data/herojaPinkija13.data";
 import { PageMeta } from "../../shared/components/PageMeta";
 
 const contactHeroImage =
@@ -34,7 +38,7 @@ const contactMethods = [
     label: "Brz poziv",
     title: formatPhone(contactPhone),
     text: "Pozovite prodaju za dostupnost stanova, cene, kvadrature i uslove kupovine.",
-    href: `tel:${contactPhone}`,
+    href: contactPhoneHref,
     action: "Pozovite prodaju",
   },
   {
@@ -126,7 +130,7 @@ export const ContactPage = () => {
                 <MessageCircle />
                 Pisite nam
               </ContactModalButton>
-              <a className="site-button site-button--outline" href={`tel:${contactPhone}`}>
+              <a className="site-button site-button--outline" href={contactPhoneHref}>
                 <Phone />
                 Pozovite {contactPhone}
               </a>
@@ -142,7 +146,7 @@ export const ContactPage = () => {
             />
             <div>
               <p className="section-eyebrow">Direktna prodaja</p>
-              <a href={`tel:${contactPhone}`}>
+              <a href={contactPhoneHref}>
                 <Phone className="icon-inline" />
                 {formatPhone(contactPhone)}
               </a>

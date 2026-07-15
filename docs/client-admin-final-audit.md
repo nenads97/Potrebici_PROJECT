@@ -1,6 +1,6 @@
 # Zavrsni audit klijentskog dela i admin smera
 
-Datum: 2026-07-14
+Datum: 2026-07-15
 
 ## Izvori za ovaj audit
 
@@ -17,6 +17,8 @@ Pregledani su:
 Ovaj dokument je ociscena verzija ranijih audit beleznica: uklonjeno je ponavljanje, a stavke su podeljene na trenutno stanje, dokazano uradjeno, rizike i sledeci najkorisniji batch.
 
 Za sam launch koristiti i `docs/pre-production-runbook.md`, jer tamo postoji operativni redosled provera i jasna granica izmedju read-only provera i testova koji prave realne upise/emailove.
+
+Dopuna 2026-07-15: posle zavrsnog polish prolaza dodati su inline validation guardrail za lead forme, rollback za neuspesno cuvanje statusa leadova u adminu, hygiene provere za mixed Latin/Cyrillic tekst i normalizovani `tel:` helper za sve telefonske CTA linkove.
 
 ## Kratak zakljucak
 
@@ -88,6 +90,7 @@ Ovaj pravac je trenutno ispravno zapisan u docs i podrzan u UI-ju.
 - Mobilni hamburger meni se zatvara na Escape i vraca fokus na toggle dugme, tako da `aria-expanded` ne ostaje zaglavljen na `true`.
 - Skip link postoji na javnom i admin layout-u.
 - `favicon.svg` je dodat, tako da osnovna browser favicon referenca vise nije 404.
+- Svi javni i admin telefonski linkovi koriste normalizovan `tel:` href, dok vidljiv tekst zadrzava citljiv format broja.
 
 ## Konverzioni tok i forme
 
@@ -101,6 +104,7 @@ Kontakt modal je sada centralni kupacki tok:
 - success stanje nudi zatvaranje ili povratak na ponudu stanova kroz SPA `Link`;
 - telefon je obavezan za prodajno kriticne upite: konkretan stan, dostupnost i obilazak;
 - telefon ostaje opcion za opste/privacy kontekste;
+- frontend validacija sada pre slanja prikazuje inline greske po polju, povezuje ih preko `aria-invalid`/`aria-describedby` i fokusira prvo neispravno polje;
 - Edge Function validacija prati isto pravilo.
 
 ### Land offer forma
@@ -111,6 +115,7 @@ Tok za prodavce placeva/starih kuca je odvojen:
 - ima honeypot;
 - ima `aria-busy` tokom slanja;
 - success/error poruke imaju live region;
+- obavezna polja, email, telefon, povrsina parcele i saglasnost imaju isti inline validation pattern kao kontakt modal;
 - mikrocopy objasnjava da je prva provera bez obaveze;
 - globalni kupacki footer CTA je sakriven na toj stranici.
 
@@ -173,6 +178,7 @@ Uradjeno:
 - Consent checkbox u kontakt modalu i land formi ima eksplicitan `id/htmlFor`, da tekst bude pouzdano vezan za kontrolu.
 - Consent label ima 44px+ klik/tap povrsinu, sto je vazno za mobilno popunjavanje forme.
 - Kontakt modal i land forma imaju `autocomplete`/`inputMode` hintove za ime, telefon, e-mail, adresu i numericku povrsinu parcele, da mobilno popunjavanje bude brze i sa manje gresaka.
+- Telefonski linkovi koriste `contactPhoneHref` ili `createPhoneHref(phone)`, da mobilni poziv ne zavisi od razmaka u prikaznom broju.
 - Kontakt modal i land forma imaju status feedback.
 - Kontakt modal i land forma imaju `aria-busy` tokom slanja, da glavni lead tok jasno najavi zauzeto stanje i asistivnim tehnologijama.
 - Error feedback koristi `role="alert"`; success koristi `role="status"`.
@@ -227,6 +233,7 @@ Uradjeno:
 - prazan telefon se ne prikazuje kao prazan `tel:` link;
 - interne beleske se eksplicitno cuvaju;
 - kartice imaju per-card feedback za cuvanje/status.
+- ako cuvanje statusa lead-a ne uspe, status se vraca na prethodnu vrednost i feedback daje sledeci korak za oporavak.
 
 ### Stanovi
 
@@ -349,10 +356,11 @@ Do sada prolazi:
 - `npm.cmd run audit:deps`
 - `git diff --check` bez stvarnih whitespace gresaka; postoje samo Windows LF -> CRLF upozorenja
 - `npm.cmd run quality`, `git diff --check`, `npm.cmd run smoke:supabase:readonly` i `npm.cmd run smoke:supabase:launch` su ponovo provereni 2026-07-14;
+- `npm.cmd run quality` i `git diff --check` su ponovo provereni 2026-07-15 posle lead-form, admin rollback, hygiene i phone-link polish izmena;
 - import graf: svi TS/JS fajlovi iz aplikacionog entry-ja su reachable
 - public asset scan: svi public fajlovi imaju referencu u kodu, dokumentaciji, `index.html` ili Supabase seed-u
 - dependency sanity scan: nema ocigledno neiskoriscenih runtime/dev paketa
-- surface audit proverava import graf, public assete, interni hard-reload link regression, alt tekst, debug tokene, encoding/mojibake artefakte, tacan kanonski sitemap URL set, robots pravila, `PageMeta` pokrivenost aktivnih page fajlova i Supabase form rate-limit wiring
+- surface audit proverava import graf, public assete, interni hard-reload link regression, alt tekst, debug tokene, encoding/mojibake artefakte, mixed Latin/Cyrillic tekst, sirove `tel:` href vrednosti, tacan kanonski sitemap URL set, robots pravila, `PageMeta` pokrivenost aktivnih page fajlova i Supabase form rate-limit wiring
 - surface audit proverava i route contract izmedju `Project-spec.md`, `AppRouter.tsx`, kanonskog projekta i legacy `/apartmani/:apartmentNumber` redirect-a
 - surface audit proverava i Supabase schema hardening: RLS mora biti ukljucen na svim `public` tabelama, default privilege revoke mora postojati za buduce public objekte, `project_media` mora imati eksplicitni public read grant, policy-ji ne smeju koristiti `auth.role()`, a `SECURITY DEFINER` funkcije ne smeju ziveti u `public`
 - surface audit proverava i vazne tacke uskladjenosti `docs/Database_model.md` sa `supabase/schema.sql`, ukljucujuci `land_acquisition_page`, `delivery_kind`, `sent_at` i tekstualni kontekst upita
@@ -361,6 +369,8 @@ Do sada prolazi:
 - surface audit proverava package manifest sanity: runtime dependency mora imati source import, build-only `sass` mora biti u `devDependencies`, paket ne sme biti dupliran u obe dependency grupe, a read-only/launch/admin Supabase smoke scriptovi moraju ostati u `package.json`
 - surface audit proverava i UX guardrail-e: skip link/main targete, admin login `noindex,nofollow`, admin login label/id veze, mobilni Escape za hamburger meni i 44px consent touch target
 - surface audit proverava i da lead forme zadrzavaju `autocomplete`/`inputMode` hintove za brze popunjavanje na desktopu i mobilnom
+- surface audit proverava i da lead forme zadrzavaju lokalnu inline validaciju, `aria-invalid`/`aria-describedby` veze i fokus na prvo neispravno polje pre network submit-a
+- surface audit proverava i da admin status leadova ima rollback/recovery guardrail ako Supabase persist ne uspe
 - surface audit proverava i da kontakt modal forma zadrzava `aria-busy` tokom slanja, jer je to glavni konverzioni tok
 - surface audit proverava i da animirane javne stranice zadrze `prefers-reduced-motion` fallback
 - surface audit proverava i javni dropdown Escape guardrail, da se globalna navigacija ne zaglavi u otvorenom `aria-expanded` stanju

@@ -16,7 +16,11 @@ import {
 import { Link } from "react-router-dom";
 
 import { ContactModalButton } from "../../features/inquiries/components/ContactModal";
-import { contactEmail, contactPhone } from "../../features/projects/data/herojaPinkija13.data";
+import {
+  contactEmail,
+  contactPhone,
+  contactPhoneHref,
+} from "../../features/projects/data/herojaPinkija13.data";
 import { PageMeta } from "../../shared/components/PageMeta";
 
 const images = {
@@ -442,7 +446,7 @@ export const HomePage = () => {
               <MessageCircle />
               Pisite nam
             </ContactModalButton>
-            <a className="site-button site-button--outline" href={`tel:${contactPhone}`}>
+            <a className="site-button site-button--outline" href={contactPhoneHref}>
               <Phone />
               Pozovite {contactPhone}
             </a>

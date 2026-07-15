@@ -1197,6 +1197,14 @@ button.site-button,
   box-shadow: 0 0 0 4px rgba(182, 91, 77, 0.13);
 }
 
+.form-field-error {
+  margin: 0;
+  color: #8c3f34;
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
 .form-consent {
   display: flex;
   align-items: flex-start;
