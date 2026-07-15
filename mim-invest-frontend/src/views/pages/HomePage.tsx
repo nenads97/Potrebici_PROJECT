@@ -24,7 +24,7 @@ import {
 import { PageMeta } from "../../shared/components/PageMeta";
 
 const images = {
-  hero: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2200&q=85",
+  hero: "/images/heroja-pinkija-13/gradilisna-tabla.jpg",
   living: "/images/heroja-pinkija-13/gradilisna-tabla-slika.jpg",
   terrace: "/images/heroja-pinkija-13/radovi-u-toku.jpg",
 };
@@ -195,8 +195,10 @@ export const HomePage = () => {
       <section className="home-hero" ref={heroRef}>
         <motion.img
           src={images.hero}
-          alt="Savremena stambena zgrada sa uredjenom fasadom"
+          alt="Gradilisna tabla projekta Heroja Pinkija 13"
           className="home-hero__image"
+          width="818"
+          height="783"
           fetchPriority="high"
           decoding="async"
           style={reduceMotion ? undefined : { y: imageY, scale: imageScale }}

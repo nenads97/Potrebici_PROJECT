@@ -123,6 +123,7 @@ export const LandBuyPage = () => {
         title="Kupujemo placeve | M & M Gradnja"
         description="M & M Gradnja razmatra placeve i kuce za rusenje u Novom Sadu i okolini za buduce stambene projekte."
         image={landHeroImage}
+        imageAlt="Parcela pogodna za stambenu gradnju"
       />
       <section className="land-hero">
         <img

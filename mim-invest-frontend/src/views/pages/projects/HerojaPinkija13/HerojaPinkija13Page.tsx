@@ -222,6 +222,7 @@ export const HerojaPinkija13Page = () => {
         }
         canonicalPath="/projekti/heroja-pinkija-13/o-projektu"
         image={projectHeroImage}
+        imageAlt={`Eksterijer projekta ${project.name}`}
         structuredData={({ canonicalUrl, imageUrl, origin }) => ({
           "@context": "https://schema.org",
           "@type": "ApartmentComplex",

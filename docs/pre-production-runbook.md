@@ -101,12 +101,19 @@ Proveriti:
 - finalni domen za `robots.txt`, `sitemap.xml` i canonical URL-ove;
 - da li `https://mimgradnja.rs` ostaje finalni domen;
 - da li `VITE_PUBLIC_SITE_URL` u produkcionom build okruzenju odgovara istom domenu;
+- da staticki `index.html` fallback i runtime `PageMeta` koriste isti home canonical/share domen;
+- da staticki `index.html` fallback ostaje `sr-Latn`, sa istim home title/description kao runtime `PageMeta`;
+- da `noscript` fallback i dalje ima link ka ponudi stanova, kontaktu i prodajnom emailu;
+- da runtime `PageMeta` na dubokim rutama menja i `og:image` dimenzije, ne samo `og:image` URL;
+- da share slike imaju `og:image:alt` i `twitter:image:alt`, posebno detalji stanova i kupujemo-placeve;
+- da export spiska stanova koristi isti javni domen u linkovima ka detaljima stanova;
 - sitemap sadrzi samo javne kanonske rute, bez `/admin` i bez legacy `/apartmani/`;
 - admin login ima `noindex,nofollow`;
 - 404 i pogresan detalj stana imaju `noindex,follow`;
 - cene ostaju `Na upit`;
 - garazna mesta i ostave su jasno odvojena kupovina;
 - prvi projekat se komunicira transparentno, bez laznih portfolio tvrdnji.
+- kljucne prodajne hero slike su projektne/lokalne, bez generickih stock hero URL-ova u runtime source-u, i imaju poznate dimenzije gde je slika deo layout-a.
 
 ## 4. Manual browser QA
 

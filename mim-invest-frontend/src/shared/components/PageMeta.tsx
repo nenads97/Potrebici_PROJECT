@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 
-import { createPublicUrl, publicSiteUrl, siteName } from "../config/site";
+import { createPublicUrl, getPublicImageDimensions, publicSiteUrl, siteName } from "../config/site";
 
 type PageMetaProps = {
   title: string;
   description: string;
   canonicalPath?: string;
   image?: string;
+  imageAlt?: string;
   robots?: string;
   structuredData?: StructuredDataInput;
   type?: "website" | "article";
@@ -37,6 +38,7 @@ type StructuredDataInput =
   | ((context: StructuredDataContext) => StructuredDataObject | StructuredDataObject[]);
 
 const defaultShareImage = "/images/heroja-pinkija-13/gradilisna-tabla.jpg";
+const defaultShareImageAlt = "Gradilisna tabla projekta Heroja Pinkija 13";
 const structuredDataScriptId = "page-structured-data";
 
 export const PageMeta = ({
@@ -44,6 +46,7 @@ export const PageMeta = ({
   description,
   canonicalPath,
   image = defaultShareImage,
+  imageAlt = defaultShareImageAlt,
   robots = "index,follow",
   structuredData,
   type = "website",
@@ -51,20 +54,31 @@ export const PageMeta = ({
   useEffect(() => {
     const canonicalUrl = createPublicUrl(canonicalPath ?? window.location.pathname);
     const imageUrl = createPublicUrl(image);
+    const imageDimensions = getPublicImageDimensions(image);
 
     document.title = title;
     setMetaTag("name", "description", description);
     setMetaTag("name", "robots", robots);
     setMetaTag("property", "og:site_name", siteName);
+    setMetaTag("property", "og:locale", "sr_RS");
     setMetaTag("property", "og:type", type);
     setMetaTag("property", "og:title", title);
     setMetaTag("property", "og:description", description);
     setMetaTag("property", "og:url", canonicalUrl);
     setMetaTag("property", "og:image", imageUrl);
+    setMetaTag("property", "og:image:alt", imageAlt);
+    if (imageDimensions) {
+      setMetaTag("property", "og:image:width", String(imageDimensions.width));
+      setMetaTag("property", "og:image:height", String(imageDimensions.height));
+    } else {
+      removeMetaTag("property", "og:image:width");
+      removeMetaTag("property", "og:image:height");
+    }
     setMetaTag("name", "twitter:card", "summary_large_image");
     setMetaTag("name", "twitter:title", title);
     setMetaTag("name", "twitter:description", description);
     setMetaTag("name", "twitter:image", imageUrl);
+    setMetaTag("name", "twitter:image:alt", imageAlt);
     setCanonicalLink(canonicalUrl);
     setStructuredData(
       resolveStructuredData(structuredData, {
@@ -74,7 +88,7 @@ export const PageMeta = ({
         siteName,
       }),
     );
-  }, [canonicalPath, description, image, robots, structuredData, title, type]);
+  }, [canonicalPath, description, image, imageAlt, robots, structuredData, title, type]);
 
   return null;
 };
@@ -92,6 +106,10 @@ function setMetaTag(attributeName: "name" | "property", attributeValue: string, 
   metaElement.setAttribute(attributeName, attributeValue);
   metaElement.setAttribute("content", content);
   document.head.append(metaElement);
+}
+
+function removeMetaTag(attributeName: "name" | "property", attributeValue: string) {
+  document.querySelector<HTMLMetaElement>(`meta[${attributeName}="${attributeValue}"]`)?.remove();
 }
 
 function setCanonicalLink(href: string) {

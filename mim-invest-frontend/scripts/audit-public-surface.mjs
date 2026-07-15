@@ -166,6 +166,8 @@ function auditSourceHygiene() {
   const mixedScriptLines = [];
   const rawTelHrefLines = [];
   const imgWithoutAlt = [];
+  const localOriginUsages = [];
+  const stockImageUsages = [];
   const mojibakePattern =
     /[\uFFFD]|\u00C2(?=[\u00A0-\u00BF])|\u00C3(?=[\u0080-\u00BF])|\u00E2(?=\u20AC|\u0080)/;
   const latinLetterPattern = /\p{Script=Latin}/u;
@@ -194,6 +196,14 @@ function auditSourceHygiene() {
 
       if (/href=\{\s*`tel:/.test(line) || /href=["']tel:/.test(line)) {
         rawTelHrefLines.push(`${relative}:${index + 1}`);
+      }
+
+      if (runtimeSourceFiles.includes(file) && /\b(?:window\.)?location\.origin\b/.test(line)) {
+        localOriginUsages.push(`${relative}:${index + 1}`);
+      }
+
+      if (runtimeSourceFiles.includes(file) && /images\.unsplash\.com/.test(line)) {
+        stockImageUsages.push(`${relative}:${index + 1}`);
       }
     }
 
@@ -224,6 +234,14 @@ function auditSourceHygiene() {
     fail(`Raw tel: href values found; use createPhoneHref/contactPhoneHref:\n${rawTelHrefLines.join("\n")}`);
   }
 
+  if (localOriginUsages.length > 0) {
+    fail(`Local origin usage found; use createPublicUrl/publicSiteUrl for public URLs:\n${localOriginUsages.join("\n")}`);
+  }
+
+  if (stockImageUsages.length > 0) {
+    fail(`Stock image URLs found; use local project/client assets for production trust:\n${stockImageUsages.join("\n")}`);
+  }
+
   if (imgWithoutAlt.length > 0) {
     fail(`Images without alt found:\n${[...new Set(imgWithoutAlt)].join("\n")}`);
   }
@@ -235,6 +253,8 @@ function auditSourceHygiene() {
     suspiciousEncoding: suspiciousEncoding.length,
     mixedScriptLines: mixedScriptLines.length,
     rawTelHrefLines: rawTelHrefLines.length,
+    localOriginUsages: localOriginUsages.length,
+    stockImageUsages: stockImageUsages.length,
     imgWithoutAlt: imgWithoutAlt.length,
   };
 }
@@ -242,6 +262,7 @@ function auditSourceHygiene() {
 function auditSitemapAndRobots() {
   const sitemapPath = path.join(publicRoot, "sitemap.xml");
   const robotsPath = path.join(publicRoot, "robots.txt");
+  const indexHtmlPath = path.join(frontendRoot, "index.html");
   const pagesRoot = path.join(srcRoot, "views", "pages");
   const canonicalOrigin = "https://mimgradnja.rs";
   const expectedSitemapUrls = [
@@ -269,6 +290,7 @@ function auditSitemapAndRobots() {
 
   const sitemap = readText(sitemapPath);
   const robots = readText(robotsPath);
+  const indexHtml = readText(indexHtmlPath);
   const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
   const lastmods = [...sitemap.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map((match) => match[1]);
   const duplicateLocs = locs.filter((loc, index) => locs.indexOf(loc) !== index);
@@ -319,6 +341,44 @@ function auditSitemapAndRobots() {
     fail("robots.txt should reference the canonical sitemap.");
   }
 
+  const indexHtmlHasStaticShareFallback =
+    indexHtml.includes('<html lang="sr-Latn">') &&
+    indexHtml.includes('<title>M & M Gradnja | Stanovi Heroja Pinkija 13 Novi Sad</title>') &&
+    indexHtml.includes(
+      'content="Premium prezentacija projekta Heroja Pinkija 13 u Novom Sadu, sa ponudom stanova, tlocrtima, lokacijom i direktnim upitom prodaji."',
+    ) &&
+    indexHtml.includes('<meta name="robots" content="index,follow" />') &&
+    indexHtml.includes('<meta name="theme-color" content="#363d46" />') &&
+    indexHtml.includes('<link rel="canonical" href="https://mimgradnja.rs/" />') &&
+    indexHtml.includes('<meta property="og:site_name" content="M & M Gradnja" />') &&
+    indexHtml.includes('<meta property="og:locale" content="sr_RS" />') &&
+    indexHtml.includes('<meta property="og:type" content="website" />') &&
+    indexHtml.includes('<meta property="og:url" content="https://mimgradnja.rs/" />') &&
+    indexHtml.includes('property="og:image"') &&
+    indexHtml.includes("https://mimgradnja.rs/images/heroja-pinkija-13/gradilisna-tabla.jpg") &&
+    indexHtml.includes('<meta property="og:image:width" content="818" />') &&
+    indexHtml.includes('<meta property="og:image:height" content="783" />') &&
+    indexHtml.includes('<meta property="og:image:alt" content="Gradilisna tabla projekta Heroja Pinkija 13" />') &&
+    indexHtml.includes('<meta name="twitter:card" content="summary_large_image" />') &&
+    indexHtml.includes('name="twitter:image"') &&
+    indexHtml.includes('<meta name="twitter:image:alt" content="Gradilisna tabla projekta Heroja Pinkija 13" />');
+
+  if (!indexHtmlHasStaticShareFallback) {
+    fail("index.html should keep a static canonical/OG/Twitter fallback before React PageMeta runs.");
+  }
+
+  const indexHtmlHasNoScriptFallback =
+    indexHtml.includes("<noscript>") &&
+    indexHtml.includes("<h1>M & M Gradnja | Heroja Pinkija 13</h1>") &&
+    indexHtml.includes("omogućite JavaScript") &&
+    indexHtml.includes("https://mimgradnja.rs/projekti/heroja-pinkija-13/ponuda-stanova") &&
+    indexHtml.includes("https://mimgradnja.rs/kontakt") &&
+    indexHtml.includes("mailto:prodaja@mimgradnja.rs");
+
+  if (!indexHtmlHasNoScriptFallback) {
+    fail("index.html should keep a minimal noscript fallback with apartment offer, contact and email links.");
+  }
+
   const pageFiles = walk(pagesRoot).filter((filePath) => path.extname(filePath) === ".tsx");
   const pageFilesWithoutMeta = pageFiles.filter((filePath) => !readText(filePath).includes("PageMeta"));
 
@@ -330,6 +390,8 @@ function auditSitemapAndRobots() {
     sitemapUrls: locs.length,
     sitemapLastmods: lastmods.length,
     expectedSitemapUrls: expectedSitemapUrls.length - missingExpectedLocs.length,
+    indexHtmlHasStaticShareFallback,
+    indexHtmlHasNoScriptFallback,
     pageMetaFiles: pageFiles.length - pageFilesWithoutMeta.length,
   };
 }
@@ -743,9 +805,34 @@ function auditUxGuardrails() {
   const siteConfigPath = path.join(srcRoot, "shared", "config", "site.ts");
   const pageMetaPath = path.join(srcRoot, "shared", "components", "PageMeta.tsx");
   const homePath = path.join(srcRoot, "views", "pages", "HomePage.tsx");
+  const contactPagePath = path.join(srcRoot, "views", "pages", "ContactPage.tsx");
+  const apartmentsListingPath = path.join(
+    srcRoot,
+    "views",
+    "pages",
+    "projects",
+    "HerojaPinkija13",
+    "ApartmentsPage.tsx",
+  );
   const contactModalPath = path.join(srcRoot, "features", "inquiries", "components", "ContactModal.tsx");
   const formValidationPath = path.join(srcRoot, "features", "inquiries", "utils", "formValidation.ts");
   const landBuyPath = path.join(srcRoot, "views", "pages", "LandBuyPage.tsx");
+  const projectPagePath = path.join(
+    srcRoot,
+    "views",
+    "pages",
+    "projects",
+    "HerojaPinkija13",
+    "HerojaPinkija13Page.tsx",
+  );
+  const apartmentDetailsPath = path.join(
+    srcRoot,
+    "views",
+    "pages",
+    "projects",
+    "HerojaPinkija13",
+    "ApartmentDetailsPage.tsx",
+  );
   const stylesPath = path.join(srcRoot, "shared", "styles", "global.scss");
 
   if (
@@ -756,9 +843,13 @@ function auditUxGuardrails() {
     !fs.existsSync(siteConfigPath) ||
     !fs.existsSync(pageMetaPath) ||
     !fs.existsSync(homePath) ||
+    !fs.existsSync(contactPagePath) ||
+    !fs.existsSync(apartmentsListingPath) ||
     !fs.existsSync(contactModalPath) ||
     !fs.existsSync(formValidationPath) ||
     !fs.existsSync(landBuyPath) ||
+    !fs.existsSync(projectPagePath) ||
+    !fs.existsSync(apartmentDetailsPath) ||
     !fs.existsSync(stylesPath)
   ) {
     fail("Missing one or more UX guardrail source files.");
@@ -772,9 +863,13 @@ function auditUxGuardrails() {
   const siteConfig = readText(siteConfigPath);
   const pageMeta = readText(pageMetaPath);
   const home = readText(homePath);
+  const contactPage = readText(contactPagePath);
+  const apartmentsListing = readText(apartmentsListingPath);
   const contactModal = readText(contactModalPath);
   const formValidation = readText(formValidationPath);
   const landBuy = readText(landBuyPath);
+  const projectPage = readText(projectPagePath);
+  const apartmentDetails = readText(apartmentDetailsPath);
   const styles = readText(stylesPath);
   const formConsentBlock = styles.match(/^\.form-consent\s*\{([\s\S]*?)^\}/m)?.[1] ?? "";
   const checks = {
@@ -817,7 +912,35 @@ function auditUxGuardrails() {
       siteConfig.includes('const fallbackSiteUrl = "https://mimgradnja.rs"') &&
       siteConfig.includes("export function createPublicUrl") &&
       pageMeta.includes("createPublicUrl(canonicalPath ?? window.location.pathname)") &&
+      pageMeta.includes('setMetaTag("property", "og:locale", "sr_RS")') &&
       pageMeta.includes("origin: publicSiteUrl"),
+    pageMetaMaintainsShareImageDimensions:
+      siteConfig.includes("const publicImageDimensions") &&
+      siteConfig.includes('"/images/apartment-plans/stan-1-6-11.png": { width: 2105, height: 1488 }') &&
+      siteConfig.includes("export function getPublicImageDimensions") &&
+      pageMeta.includes("getPublicImageDimensions(image)") &&
+      pageMeta.includes("imageAlt = defaultShareImageAlt") &&
+      pageMeta.includes('setMetaTag("property", "og:image:alt", imageAlt)') &&
+      pageMeta.includes('setMetaTag("name", "twitter:image:alt", imageAlt)') &&
+      pageMeta.includes('setMetaTag("property", "og:image:width"') &&
+      pageMeta.includes('setMetaTag("property", "og:image:height"') &&
+      pageMeta.includes('removeMetaTag("property", "og:image:width")') &&
+      pageMeta.includes('removeMetaTag("property", "og:image:height")'),
+    pageMetaRoutesExposeShareImageAlt:
+      landBuy.includes('imageAlt="Parcela pogodna za stambenu gradnju"') &&
+      projectPage.includes("imageAlt={`Eksterijer projekta ${project.name}`}") &&
+      apartmentDetails.includes("imageAlt={apartment.heroFloorPlan.alt}"),
+    apartmentCsvExportUsesPublicOrigin:
+      apartmentsListing.includes('import { createPublicUrl } from "../../../../shared/config/site"') &&
+      apartmentsListing.includes("function downloadApartmentsCsv") &&
+      apartmentsListing.includes("createPublicUrl(`/projekti/heroja-pinkija-13/ponuda-stanova/${apartment.number}`)"),
+    localHeroImagesExposeDimensions:
+      home.includes('src={images.hero}') &&
+      home.includes('width="818"') &&
+      home.includes('height="783"') &&
+      contactPage.includes("contactHeroImage") &&
+      contactPage.includes('width="560"') &&
+      contactPage.includes('height="676"'),
     consentHasTouchTarget:
       /min-height:\s*44px/.test(formConsentBlock) &&
       /cursor:\s*pointer/.test(formConsentBlock),

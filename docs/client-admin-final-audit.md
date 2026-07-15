@@ -137,9 +137,16 @@ Uradjeno:
 
 - `PageMeta` postavlja title, description, robots, canonical, Open Graph, Twitter card i JSON-LD.
 - `PageMeta` koristi `VITE_PUBLIC_SITE_URL` / `shared/config/site.ts` za javni canonical/share origin, uz fallback `https://mimgradnja.rs`, tako da staging/localhost origin ne mora da procuri u canonical/OG URL-ove.
+- `PageMeta` odrzava `og:image:width` i `og:image:height` za poznate lokalne share slike po ruti, a uklanja ih ako slika nije u poznatoj mapi, da se ne zadrze zastarele dimenzije iz statickog fallback-a.
+- `PageMeta` postavlja `og:image:alt` i `twitter:image:alt`; rute sa posebnim share slikama prosledjuju precizan alt, a ostale koriste default alt za Heroja Pinkija 13.
+- `index.html` ima osnovni staticki canonical/robots/OG/Twitter fallback za home/projekat pre nego sto React `PageMeta` preuzme rutu.
+- `index.html` koristi `lang="sr-Latn"` i isti home description kao runtime `PageMeta`, uz `og:locale=sr_RS`, da no-JS fallback ostane uskladjen sa latinicnim sadrzajem.
+- `index.html` ima minimalan `noscript` fallback sa linkom ka ponudi stanova, kontakt stranici i prodajnom emailu, da stranica ne bude potpuno prazna ako JavaScript nije dostupan.
+- CSV export spiska stanova koristi isti javni URL helper, tako da preuzeti spisak nosi produkcione linkove ka detaljima stanova umesto `localhost` origin-a.
 - Javne rute imaju ciljane meta vrednosti.
 - Detalj stana koristi tlocrt kao share image.
 - `kupujemo-placeve` koristi svoju optimizovanu hero sliku.
+- Home i Kontakt vise ne koriste eksterni Unsplash stock hero; koriste lokalne slike projekta sa eksplicitnim dimenzijama da se izbegne treci domen, poboljsa poverenje i smanji rizik od eksternog asset fail-a/CLS-a.
 - `robots.txt` i XML-validan `sitemap.xml` su dodati u `public`; robots izuzima `/admin` i legacy `/apartmani/` putanju iz crawl-a.
 - Sitemap ukljucuje 24 javna URL-a: home, projekat, ponuda/spisak, 15 detalja stanova, kontakt, lokacija, O nama, kupujemo placeve, politika privatnosti.
 - Admin i legacy redirect rute nisu u sitemap-u.
@@ -150,7 +157,7 @@ Uradjeno:
 
 Rizik:
 
-- Meta/JSON-LD su client-side. Za pouzdanije social share preview-e i crawler pokrivanje, sledeci arhitektonski korak je prerender/SSR.
+- Ruta-specific meta/JSON-LD su client-side. `index.html` sada ima staticki fallback za home share preview, ali za pouzdanije social share preview-e svih dubokih ruta sledeci arhitektonski korak je prerender/SSR.
 - `robots.txt`, `sitemap.xml` i `VITE_PUBLIC_SITE_URL` koriste/treba da koriste isti finalni domen; pre produkcije potvrditi da `https://mimgradnja.rs` ostaje finalni domen.
 
 ## Performanse
@@ -163,6 +170,7 @@ Uradjeno:
 - Admin login submit ima timeout i jasnu poruku ako Supabase Auth ne odgovori.
 - `kupovina-placeva-hero` je prebacen iz velikog PNG-a u optimizovan JPG.
 - Hero/logo slike van detalja stanova imaju preciznije image hint-ove: poznate lokalne slike imaju dimenzije, prioritetne hero slike `fetchPriority="high"`, a dekorativnije/below-fold slike `loading="lazy"` i `decoding="async"` gde je bezbedno.
+- Javne hero slike na Home/Kontakt stranama vise ne zavise od eksternog Unsplash hosta; koriste postojece lokalne projektne fotografije sa poznatim `width`/`height` atributima.
 - Public asset scan posle dodavanja favicon-a ne nalazi nereferencirane public fajlove.
 - Najveci trenutni public asseti su ispod ~465KB; tlocrt PNG fajlovi su svesno zadrzani u citljivom formatu jer nose tehnicku dokumentaciju.
 
@@ -366,10 +374,20 @@ Do sada prolazi:
 - `npm.cmd run quality`, `git diff --check`, `npm.cmd run smoke:supabase:readonly` i `npm.cmd run smoke:supabase:launch` su ponovo provereni 2026-07-14;
 - `npm.cmd run quality` i `git diff --check` su ponovo provereni 2026-07-15 posle lead-form, admin rollback, hygiene i phone-link polish izmena;
 - `npm.cmd run quality`, `git diff --check`, `npm.cmd run smoke:supabase:readonly`, `npm.cmd run smoke:supabase:launch` i `npm.cmd run smoke:supabase:admin` su ponovo provereni 2026-07-15 posle Supabase advisor remediation plana;
+- `npm.cmd run quality` je ponovo proverio 2026-07-15 staticki `index.html` canonical/OG/Twitter fallback, CSV public URL export guardrail i lokalne Home/Kontakt hero slike;
+- `npm.cmd run quality` je ponovo proverio 2026-07-15 i minimalni `noscript` fallback u `index.html`; build output ostaje mali (`dist/index.html` oko 2.88KB, gzip oko 0.94KB);
 - import graf: svi TS/JS fajlovi iz aplikacionog entry-ja su reachable
 - public asset scan: svi public fajlovi imaju referencu u kodu, dokumentaciji, `index.html` ili Supabase seed-u
 - dependency sanity scan: nema ocigledno neiskoriscenih runtime/dev paketa
 - surface audit proverava import graf, public assete, interni hard-reload link regression, alt tekst, debug tokene, encoding/mojibake artefakte, mixed Latin/Cyrillic tekst, sirove `tel:` href vrednosti, tacan kanonski sitemap URL set, robots pravila, `PageMeta` pokrivenost aktivnih page fajlova i Supabase form rate-limit wiring
+- surface audit proverava i da `index.html` zadrzi staticki canonical/OG/Twitter fallback za home/projekat pre React `PageMeta` izvrsavanja
+- surface audit proverava i da staticki fallback zadrzi `lang="sr-Latn"`, uskladjen home description/title i `og:locale=sr_RS`
+- surface audit proverava i da `index.html` zadrzi minimalan `noscript` fallback sa ponudom stanova, kontaktom i email linkom
+- surface audit proverava i da javni kod ne koristi `window.location.origin` / `location.origin` za URL-ove koji mogu zavrsiti u exportu, share preview-u ili canonical toku; za javne URL-ove koristi se `createPublicUrl` / `publicSiteUrl`
+- surface audit proverava i da `PageMeta` odrzava ili uklanja `og:image` dimenzije po konkretnoj share slici, da staticki home fallback ne ostane pogresan na detaljima stanova ili drugim rutama
+- surface audit proverava i da `PageMeta` i rute sa posebnim share slikama zadrze `og:image:alt` / `twitter:image:alt` metadata
+- surface audit proverava i da se u runtime source-u ne vracaju genericki Unsplash stock hero URL-ovi; produkcijske prodajne slike treba da budu lokalne/projektne ili svesno dodate kroz admin media tok
+- surface audit proverava i da lokalni Home/Kontakt hero asseti imaju eksplicitne `width`/`height` atribute
 - surface audit proverava i route contract izmedju `Project-spec.md`, `AppRouter.tsx`, kanonskog projekta i legacy `/apartmani/:apartmentNumber` redirect-a
 - surface audit proverava i Supabase schema hardening: RLS mora biti ukljucen na svim `public` tabelama, default privilege revoke mora postojati za buduce public objekte, `project_media` mora imati eksplicitni public read grant, policy-ji ne smeju koristiti `auth.role()`, a `SECURITY DEFINER` funkcije ne smeju ziveti u `public`
 - surface audit proverava i vazne tacke uskladjenosti `docs/Database_model.md` sa `supabase/schema.sql`, ukljucujuci `land_acquisition_page`, `delivery_kind`, `sent_at` i tekstualni kontekst upita
@@ -428,6 +446,13 @@ Do sada prolazi:
   - posle mobilnog smoke-a viewport override je resetovan na normalno browser stanje.
 - browser runtime smoke 2026-07-15:
   - smart desktop/mobile prolaz kroz 43 route provere nema failova: nema stvarno broken slika, missing alt-a, horizontal overflow-a, error boundary-ja, blokirajuceg loading-a ili sirovih `tel:` href vrednosti;
+  - posle zamene stock hero slika, `/` ucitava lokalni `/images/heroja-pinkija-13/gradilisna-tabla.jpg` hero sa `naturalWidth=818`, produkcionim canonical URL-om i bez horizontalnog overflow-a;
+  - `/kontakt` ucitava lokalni `/images/heroja-pinkija-13/gradilisna-tabla-slika.jpg` hero sa `naturalWidth=560`, produkcionim canonical URL-om i bez horizontalnog overflow-a;
+  - dopunska provera potvrdjuje da Home hero ima `width=818 height=783`, Kontakt hero `width=560 height=676`, da se atributi poklapaju sa natural dimenzijama i da nema console error-a;
+  - runtime meta provera potvrdjuje da `/` ima `og:image` `/images/heroja-pinkija-13/gradilisna-tabla.jpg` sa `og:image:width=818` i `og:image:height=783`, dok detalj `/projekti/heroja-pinkija-13/ponuda-stanova/1` prebacuje `og:image` na `/images/apartment-plans/stan-1-6-11.png` sa `2105x1488`;
+  - runtime provera potvrdjuje da `/` ima `og:image:alt` / `twitter:image:alt` = `Gradilisna tabla projekta Heroja Pinkija 13`, a detalj stana 1 = `Projektni tlocrt stanova 1, 6 i 11`;
+  - runtime provera potvrdjuje `document.documentElement.lang="sr-Latn"`, `og:locale=sr_RS` i isti home description kroz `meta[name=description]`, `og:description` i `twitter:description`;
+  - browser console error log je prazan posle Home/Kontakt provere;
   - lazy slike daleko ispod viewport-a su potvrdene kao false-positive za osnovni naturalWidth smoke, ne kao broken asseti;
   - `/projekti`, `/apartmani/1` i `/admin` redirecti ostaju ispravni.
 - keyboard/interakcioni QA 2026-07-10:

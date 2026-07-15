@@ -21,6 +21,7 @@ import {
 import { fetchApartments } from "../../../../features/projects/data/projectSupabase.api";
 import type { Apartment } from "../../../../features/projects/types/project.types";
 import { PageMeta } from "../../../../shared/components/PageMeta";
+import { createPublicUrl } from "../../../../shared/config/site";
 
 const availabilityContactModal = {
   eyebrow: "Ponuda stanova",
@@ -396,7 +397,7 @@ function downloadApartmentsCsv(items: Apartment[]) {
     apartment.size,
     apartment.rooms,
     statusLabel[apartment.status],
-    `${window.location.origin}/projekti/heroja-pinkija-13/ponuda-stanova/${apartment.number}`,
+    createPublicUrl(`/projekti/heroja-pinkija-13/ponuda-stanova/${apartment.number}`),
   ]);
   const csv = [headers, ...rows]
     .map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(","))

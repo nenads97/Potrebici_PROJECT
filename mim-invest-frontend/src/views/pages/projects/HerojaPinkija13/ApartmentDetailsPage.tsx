@@ -238,6 +238,7 @@ export const ApartmentDetailsPage = () => {
           `Detalji stana ${apartment.number}: ${apartment.size}, ${apartment.floor}, ${apartment.rooms}. Pogledajte tlocrt i posaljite upit prodaji.`
         }
         image={apartment.heroFloorPlan.src}
+        imageAlt={apartment.heroFloorPlan.alt}
       />
       <section className="apartment-detail-hero">
         <div className="page-container">

@@ -15,8 +15,7 @@ import {
 } from "../../features/projects/data/herojaPinkija13.data";
 import { PageMeta } from "../../shared/components/PageMeta";
 
-const contactHeroImage =
-  "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2200&q=85";
+const contactHeroImage = "/images/heroja-pinkija-13/gradilisna-tabla-slika.jpg";
 
 const location = {
   address: "Heroja Pinkija 13",
@@ -140,7 +139,9 @@ export const ContactPage = () => {
           <div className="image-card contact-hero-card">
             <img
               src={contactHeroImage}
-              alt="M & M Gradnja objekat"
+              alt="Gradilisna tabla projekta Heroja Pinkija 13"
+              width="560"
+              height="676"
               fetchPriority="high"
               decoding="async"
             />
