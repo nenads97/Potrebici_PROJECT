@@ -24,18 +24,18 @@ const privacyContactModal = {
   eyebrow: "Politika privatnosti",
   title: "Pitanje u vezi sa obradom podataka",
   description:
-    "Napisite na koji upit ili komunikaciju se pitanje odnosi. Javicemo vam se sa odgovorom ili narednim koracima.",
-  submitLabel: "Posaljite zahtev",
-  successMessage: "Hvala. Zahtev je poslat i kontaktiracemo vas povodom obrade podataka.",
+    "Napišite na koji upit ili komunikaciju se pitanje odnosi. Javićemo vam se sa odgovorom ili narednim koracima.",
+  submitLabel: "Pošaljite zahtev",
+  successMessage: "Hvala. Zahtev je poslat i kontaktiraćemo vas povodom obrade podataka.",
   inquiryType: "general" as const,
   details: [{ label: "Tema", value: "Politika privatnosti" }],
-  messagePlaceholder: "Napisite zahtev za pristup, ispravku, brisanje ili pitanje o obradi podataka.",
+  messagePlaceholder: "Napišite zahtev za pristup, ispravku, brisanje ili pitanje o obradi podataka.",
 };
 
 const heroHighlights = [
   { value: "Transparentno", label: "objasnjena svrha obrade" },
   { value: "Namenski", label: "podaci se koriste za konkretan upit" },
-  { value: "Kontrolisano", label: "zahtev mozete poslati direktno" },
+  { value: "Kontrolisano", label: "zahtev možete poslati direktno" },
 ];
 
 const privacySections = [
@@ -44,14 +44,14 @@ const privacySections = [
     icon: FileText,
     title: "Rukovalac podacima",
     text:
-      "Rukovalac podacima je M & M Gradnja. Za pitanja u vezi sa obradom podataka mozete nas kontaktirati putem prodajnog e-maila ili telefona navedenih na sajtu.",
+      "Rukovalac podacima je M & M Gradnja. Za pitanja u vezi sa obradom podataka možete nas kontaktirati putem prodajnog e-maila ili telefona navedenih na sajtu.",
   },
   {
     id: "podaci",
     icon: Database,
     title: "Podaci koje prikupljamo",
     text:
-      "Podatke prikupljamo kada posaljete upit, zakazete obilazak, pozovete prodaju ili zatrazite informacije o odredjenom stanu.",
+      "Podatke prikupljamo kada posaljete upit, zakazete obilazak, pozovete prodaju ili zatražite informacije o odredjenom stanu.",
   },
   {
     id: "svrha",
@@ -72,14 +72,14 @@ const privacySections = [
     icon: Scale,
     title: "Vasa prava",
     text:
-      "Mozete zatraziti pristup, ispravku, brisanje ili ogranicenje obrade podataka, kao i povlacenje saglasnosti kada je obrada zasnovana na saglasnosti.",
+      "Mozete zatražiti pristup, ispravku, brisanje ili ogranicenje obrade podataka, kao i povlacenje saglasnosti kada je obrada zasnovana na saglasnosti.",
   },
   {
     id: "izmene",
     icon: RefreshCw,
     title: "Izmene politike",
     text:
-      "Politika privatnosti moze biti azurirana kada se promene procesi, pravni zahtevi ili nacin komunikacije sa kupcima.",
+      "Politika privatnosti može biti ažurirana kada se promene procesi, pravni zahtevi ili našin komunikacije sa kupcima.",
   },
 ];
 
@@ -158,7 +158,7 @@ export const PrivacyPolicyPage = () => {
                 modalOptions={privacyContactModal}
               >
                 <Mail />
-                Pisite nam
+                Pišite nam
               </ContactModalButton>
               <a className="site-button site-button--outline" href={contactPhoneHref}>
                 <Phone />
@@ -210,7 +210,7 @@ export const PrivacyPolicyPage = () => {
         >
           <motion.div className="privacy-intro__statement" variants={reveal}>
             <p className="section-eyebrow">Osnovni princip</p>
-            <h2>Podatke trazimo samo kada su potrebni za konkretan odgovor.</h2>
+            <h2>Podatke tražimo samo kada su potrebni za konkretan odgovor.</h2>
             <blockquote>
               Ne koristimo podatke za nepotrebnu komunikaciju. Fokus je na
               prodajnim informacijama, organizaciji obilaska i odgovoru na vas
@@ -220,10 +220,10 @@ export const PrivacyPolicyPage = () => {
 
           <motion.nav
             className="privacy-toc"
-            aria-label="Sadrzaj politike privatnosti"
+            aria-label="Sadržaj politike privatnosti"
             variants={reveal}
           >
-            <p>Sadrzaj stranice</p>
+            <p>Sadržaj stranice</p>
             <ol>
               {privacySections.map((section, index) => (
                 <li key={section.id}>
@@ -252,7 +252,7 @@ export const PrivacyPolicyPage = () => {
             <h2 id="privacy-document-title">Kako postupamo sa podacima.</h2>
             <p>
               Svaki odeljak opisuje jednu oblast obrade, od trenutka kada nam se
-              obratite do nacina na koji mozete ostvariti svoja prava.
+              obratite do našina na koji možete ostvariti svoja prava.
             </p>
           </motion.aside>
 
@@ -292,7 +292,7 @@ export const PrivacyPolicyPage = () => {
               <ShieldCheck />
               <span>Tok obrade</span>
             </div>
-            <h2>Od vaseg upita do bezbedne komunikacije.</h2>
+            <h2>Od vašeg upita do bezbedne komunikacije.</h2>
             <p>
               Obrada je vezana za razgovor koji ste zapoceli i informacije koje
               su potrebne da taj razgovor bude koristan.
@@ -367,7 +367,7 @@ export const PrivacyPolicyPage = () => {
               modalOptions={privacyContactModal}
             >
               <Mail />
-              Posaljite zahtev
+              Pošaljite zahtev
             </ContactModalButton>
             <a className="privacy-contact__link" href={contactPhoneHref}>
               <Phone />

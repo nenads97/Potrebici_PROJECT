@@ -84,7 +84,7 @@ const AppRouter = () => {
         <ScrollToTop />
         <RouteTransitionLoader />
         <RouteErrorBoundary>
-          <Suspense fallback={<PageLoader label="Ucitavanje stranice" />}>
+          <Suspense fallback={<PageLoader label="Učitavanje stranice" />}>
             <Routes>
               <Route path="/admin/prijava" element={<AdminLoginPage />} />
               <Route element={<RequireAdminAuth />}>

@@ -1,4 +1,4 @@
--- Potrebici Project - Supabase advisor remediation plan
+-- Potrebići Project - Supabase advisor remediation plan
 -- Date: 2026-07-15
 --
 -- Purpose:

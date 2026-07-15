@@ -43,38 +43,38 @@ const contactMethods = [
   {
     icon: Mail,
     label: "Pisani upit",
-    title: "Pisite nam",
-    text: "Posaljite upit sa stanom koji vas zanima ili pitanjem o projektu.",
+    title: "Pišite nam",
+    text: "Pošaljite upit sa stanom koji vas zanima ili pitanjem o projektu.",
     href: `mailto:${contactEmail}`,
-    action: "Pisite nam",
+    action: "Pišite nam",
   },
   {
     icon: MapPin,
     label: "Obilazak lokacije",
     title: location.address,
-    text: `${location.city}, ${location.country}. Lokacija je na pocetku Telepa, uz dobru vezu sa gradom.`,
+    text: `${location.city}, ${location.country}. Lokacija je na početku Telepa, uz dobru vezu sa gradom.`,
     href: "#kontakt-mapa",
     action: "Pogledajte mapu",
   },
 ];
 
 const visitSteps = [
-  "Posaljite upit ili pozovite prodaju.",
+  "Pošaljite upit ili pozovite prodaju.",
   "Proveravamo dostupne stanove i termin koji vam odgovara.",
   "Dogovaramo obilazak i saljemo dodatne informacije o izabranom stanu.",
 ];
 
 const contactPageModal = {
   eyebrow: "Kontakt",
-  title: "Pisite nam za stanove i obilazak",
+  title: "Pišite nam za stanove i obilazak",
   description:
-    "Posaljite upit za konkretan stan, kvadraturu, cenu, uslove kupovine ili termin obilaska projekta Heroja Pinkija 13.",
+    "Pošaljite upit za konkretan stan, kvadraturu, cenu, uslove kupovine ili termin obilaska projekta Heroja Pinkija 13.",
   inquiryType: "general" as const,
   details: [
     { label: "Projekat", value: "Heroja Pinkija 13" },
     { label: "Kontakt", value: "Direktna prodaja" },
   ],
-  messagePlaceholder: "Napisite koji stan, kvadratura ili termin obilaska vas zanima.",
+  messagePlaceholder: "Napišite koji stan, kvadratura ili termin obilaska vas zanima.",
 };
 
 export const ContactPage = () => {
@@ -118,7 +118,7 @@ export const ContactPage = () => {
             <p className="section-eyebrow">Kontakt</p>
             <h1 className="section-title">Brz kontakt za kupovinu i obilazak.</h1>
             <p className="section-copy section-copy--large">
-              Pozovite prodaju ili posaljite upit za dostupne stanove, kvadrature,
+              Pozovite prodaju ili pošaljite upit za dostupne stanove, kvadrature,
               cenu, tlocrt i obilazak objekta Heroja Pinkija 13.
             </p>
             <div className="page-actions">
@@ -127,7 +127,7 @@ export const ContactPage = () => {
                 modalOptions={contactPageModal}
               >
                 <MessageCircle />
-                Pisite nam
+                Pišite nam
               </ContactModalButton>
               <a className="site-button site-button--outline" href={contactPhoneHref}>
                 <Phone />
@@ -139,9 +139,9 @@ export const ContactPage = () => {
           <div className="image-card contact-hero-card">
             <img
               src={contactHeroImage}
-              alt="Gradilisna tabla projekta Heroja Pinkija 13"
-              width="560"
-              height="676"
+              alt="Render fasade projekta Heroja Pinkija 13"
+              width="1672"
+              height="941"
               fetchPriority="high"
               decoding="async"
             />
@@ -180,8 +180,8 @@ export const ContactPage = () => {
               zeljenu kvadraturu ili termin kada biste mogli da obidjete lokaciju.
             </p>
             <blockquote>
-              Ako niste sigurni koji stan odgovara vasim potrebama, posaljite osnovne
-              zahteve i predlozicemo dostupne opcije.
+              Ako niste sigurni koji stan odgovara vašim potrebama, pošaljite osnovne
+              zahteve i predlozićemo dostupne opcije.
             </blockquote>
           </div>
 
@@ -223,8 +223,8 @@ export const ContactPage = () => {
             </div>
             <h2>Heroja Pinkija 13, Novi Sad.</h2>
             <p>
-              Projekat se nalazi na pocetku Telepa, u gradskom okruzenju sa dobrom
-              povezanoscu i svakodnevnim sadrzajima u blizini.
+              Projekat se nalazi na početku Telepa, u gradskom okruženju sa dobrom
+              povezanošću i svakodnevnim sadržajima u blizini.
             </p>
             {visitSteps.map((step, index) => (
               <div className="process-step" key={step}>

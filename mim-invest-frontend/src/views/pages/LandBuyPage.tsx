@@ -39,46 +39,46 @@ const landHeroImage = "/images/kupovina-placeva-hero.jpg";
 
 const heroHighlights = [
   { value: "Novi Sad", label: "fokus lokacije" },
-  { value: "Stambena namena", label: "potencijal za razvoj" },
+  { value: "stambena namena", label: "potencijal za razvoj" },
   { value: "Jasan dogovor", label: "brza pocetna procena" },
 ];
 
 const criteria = [
   {
     icon: Home,
-    title: "Plac ili kuca za rusenje",
+    title: "Plac ili kuća za rusenje",
     text: "Razmatramo parcele i postojece objekte pogodne za novu stambenu izgradnju.",
   },
   {
     icon: MapPin,
-    title: "Novi Sad i bliza okolina",
+    title: "Novi Sad i bliža okolina",
     text:
-      "Prednost imaju gradske lokacije sa dobrom povezanoscu, infrastrukturom i jasnim urbanistickim potencijalom.",
+      "Prednost imaju gradske lokacije sa dobrom povezanošću, infrastrukturom i jasnim urbanistickim potencijalom.",
   },
   {
     icon: Ruler,
-    title: "Stambena namena",
-    text: "Trazimo zemljiste koje moze da podrzi kvalitetan viseporodicni stambeni objekat.",
+    title: "stambena namena",
+    text: "Tražimo zemljište koje može da podrži kvalitetan višeporodični stambeni objekat.",
   },
   {
     icon: ShieldCheck,
-    title: "Pravno cista situacija",
+    title: "Pravno čista situacija",
     text:
-      "Najbrze mozemo da reagujemo kada su vlasnistvo, dokumentacija i osnovni uslovi za prodaju jasni.",
+      "Najbrže možemo da reagujemo kada su vlasništvo, dokumentacija i osnovni uslovi za prodaju jasni.",
   },
 ];
 
 const processSteps = [
-  "Posaljite osnovne podatke o parceli, kuci ili lokaciji.",
+  "Pošaljite osnovne podatke o parceli, kući ili lokaciji.",
   "Nas tim proverava potencijal lokacije i kontaktira vas za dodatne informacije.",
-  "Dogovaramo sledeci korak, procenu i uslove saradnje.",
+  "Dogovaramo sledeći korak, procenu i uslove saradnje.",
 ];
 
 const preparationItems = [
   "Adresa ili okvirna lokacija nekretnine",
-  "Povrsina parcele i pristup ulici",
+  "Površina parcele i pristup ulici",
   "Kratak opis postojeceg objekta, ako postoji",
-  "Status dokumentacije koji vam je poznat",
+  "status dokumentacije koji vam je poznat",
 ];
 
 const fadeUp = {
@@ -121,7 +121,7 @@ export const LandBuyPage = () => {
     <main className="land-page">
       <PageMeta
         title="Kupujemo placeve | M & M Gradnja"
-        description="M & M Gradnja razmatra placeve i kuce za rusenje u Novom Sadu i okolini za buduce stambene projekte."
+        description="M & M Gradnja razmatra placeve i kuće za rusenje u Novom Sadu i okolini za buduće stambene projekte."
         image={landHeroImage}
         imageAlt="Parcela pogodna za stambenu gradnju"
       />
@@ -144,16 +144,16 @@ export const LandBuyPage = () => {
           transition={reduceMotion ? instantTransition : { duration: 0.6 }}
         >
           <p className="section-eyebrow">Kupujemo placeve</p>
-          <h1>Imate plac ili kucu za stambenu gradnju?</h1>
+          <h1>Imate plac ili kuću za stambenu gradnju?</h1>
           <p>
-            M & M Gradnja razmatra atraktivne lokacije za buduce stambene projekte.
-            Posaljite nam osnovne informacije, a mi cemo vam se brzo javiti sa
+            M & M Gradnja razmatra atraktivne lokacije za buduće stambene projekte.
+            Pošaljite nam osnovne informacije, a mi ćemo vam se brzo javiti sa
             narednim koracima.
           </p>
           <div>
             <a className="site-button site-button--accent" href="#kupujemo-placeve-forma">
               <MessageCircle />
-              Posaljite ponudu
+              Pošaljite ponudu
             </a>
             <a className="site-button site-button--light" href={contactPhoneHref}>
               <Phone />
@@ -180,6 +180,7 @@ export const LandBuyPage = () => {
       <section id="kupujemo-placeve-forma" className="page-section page-section--surface">
         <div className="page-container split-grid">
           <motion.div
+            className="land-scroll-heading"
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.3 }}
@@ -190,7 +191,7 @@ export const LandBuyPage = () => {
             <h2 className="section-title section-title--medium">Prvi korak je kratak upit.</h2>
             <p className="section-copy">
               Unesite osnovne podatke o sebi i nekretnini. Ime, telefon i e-mail su
-              obavezni, a adresa i povrsina parcele nam pomazu da brze procenimo
+              obavezni, a adresa i površina parcele nam pomažu da brže procenimo
               potencijal lokacije.
             </p>
             <div className="contact-links">
@@ -212,21 +213,21 @@ export const LandBuyPage = () => {
       <section className="page-section page-section--surface">
         <div className="page-container split-grid">
           <motion.div
-            className="sticky-copy"
+            className="land-scroll-heading"
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.3 }}
             variants={reveal}
             transition={revealTransition}
           >
-            <p className="section-eyebrow">Sta trazimo</p>
+            <p className="section-eyebrow">sta tražimo</p>
             <h2 className="section-title section-title--medium">
               Pretvorite svoj plac u vrednu investiciju.
             </h2>
             <p className="section-copy">
               Najvaznije su nam uredna dokumentacija, dobra pozicija i realna
-              mogucnost razvoja stambenog projekta. Ako niste sigurni da li se vasa
-              nekretnina uklapa, posaljite podatke i provericemo.
+              mogućnost razvoja stambenog projekta. Ako niste sigurni da li se vasa
+              nekretnina uklapa, pošaljite podatke i proverićemo.
             </p>
             <blockquote>
               Dovoljno je da posaljete osnovne podatke. Prvu procenu radimo
@@ -279,6 +280,7 @@ export const LandBuyPage = () => {
           </motion.div>
 
           <motion.div
+            className="land-scroll-heading land-scroll-heading--process"
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.25 }}
@@ -290,8 +292,8 @@ export const LandBuyPage = () => {
               Brz odgovor, jasna komunikacija i korektan dogovor.
             </h2>
             <p className="section-copy">
-              Fokus je na jednostavnom prvom kontaktu: lokacija, povrsina,
-              dokumentacija i kratak opis. Nakon toga mozemo brzo da procenimo da li
+              Fokus je na jednostavnom prvom kontaktu: lokacija, površina,
+              dokumentacija i kratak opis. Nakon toga možemo brzo da procenimo da li
               postoji osnova za razgovor.
             </p>
 
@@ -328,7 +330,7 @@ const PropertyOfferForm = () => {
     if (hasFieldErrors(errors)) {
       setFieldErrors(errors);
       setFormStatus("error");
-      setFormMessage("Proverite oznacena polja pre slanja ponude.");
+      setFormMessage("Proverite označena polja pre slanja ponude.");
       focusFirstInvalidField(form, landOfferFieldOrder, errors);
       return;
     }
@@ -352,7 +354,7 @@ const PropertyOfferForm = () => {
 
       form.reset();
       setFormStatus("success");
-      setFormMessage("Hvala. Ponuda je poslata i javicemo vam se nakon pocetne provere.");
+      setFormMessage("Hvala. Ponuda je poslata i javićemo vam se nakon pocetne provere.");
       setFieldErrors({});
     } catch (error) {
       setFormStatus("error");
@@ -390,7 +392,7 @@ const PropertyOfferForm = () => {
         <FileText className="icon-inline" />
         <div>
           <strong>Podaci za pocetnu procenu</strong>
-          <p>Polja oznacena zvezdicom su obavezna.</p>
+          <p>Polja označena zvezdicom su obavezna.</p>
         </div>
       </div>
 
@@ -444,7 +446,7 @@ const PropertyOfferForm = () => {
           />
           <FormField
             id="land-plot-area"
-            label="Povrsina parcele (m2)"
+            label="Površina parcele (m2)"
             name="plotArea"
             type="number"
             inputMode="numeric"
@@ -468,7 +470,7 @@ const PropertyOfferForm = () => {
             className="form-textarea"
             id="land-details"
             name="details"
-            placeholder="Napisite sta znate o dokumentaciji, pristupu, objektu na placu ili uslovima prodaje."
+            placeholder="Napišite sta znate o dokumentaciji, pristupu, objektu na placu ili uslovima prodaje."
             rows={6}
             maxLength={5000}
             aria-invalid={fieldErrors.details ? "true" : undefined}
@@ -514,7 +516,7 @@ const PropertyOfferForm = () => {
         <div className="inquiry-form__submit-group">
           <button className="site-button site-button--dark" type="submit" disabled={formStatus === "sending"}>
             <MessageCircle />
-            {formStatus === "sending" ? "Slanje..." : "Posaljite podatke"}
+            {formStatus === "sending" ? "Slanje..." : "Pošaljite podatke"}
             <ArrowUpRight />
           </button>
           <p>Prva provera je bez obaveze. Javljamo se nakon sto pogledamo osnovne podatke o lokaciji.</p>
@@ -588,7 +590,7 @@ function validateLandOfferForm(formData: FormData): FieldErrors<LandOfferFieldNa
     phone: validatePhone(getFormValue(formData, "phone"), true),
     email: validateEmail(getFormValue(formData, "email")),
     address: validateOptionalText(getFormValue(formData, "address"), "Adresa nekretnine", 260),
-    plotArea: validatePositiveNumber(getFormValue(formData, "plotArea"), "Povrsina parcele"),
+    plotArea: validatePositiveNumber(getFormValue(formData, "plotArea"), "Površina parcele"),
     details: validateOptionalText(getFormValue(formData, "details"), "Dodatne informacije", 5000),
     consent: validateConsent(formData.get("consent")),
   };

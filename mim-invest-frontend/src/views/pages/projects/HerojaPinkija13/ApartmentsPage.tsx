@@ -27,13 +27,13 @@ const availabilityContactModal = {
   eyebrow: "Ponuda stanova",
   title: "Pitajte nas za dostupne stanove",
   description:
-    "Ako niste sigurni koji stan vam odgovara, posaljite nam osnovne zahteve. Pomoci cemo vam da uporedite dostupne opcije.",
+    "Ako niste sigurni koji stan vam odgovara, pošaljite nam osnovne zahteve. Pomoći ćemo vam da uporedite dostupne opcije.",
   inquiryType: "availability" as const,
   details: [
     { label: "Projekat", value: "Heroja Pinkija 13" },
     { label: "Ponuda", value: "15 stanova" },
   ],
-  messagePlaceholder: "Napisite zeljenu kvadraturu, strukturu, sprat ili termin za obilazak.",
+  messagePlaceholder: "Napišite zeljenu kvadraturu, strukturu, sprat ili termin za obilazak.",
 };
 
 export const ApartmentsPage = () => {
@@ -110,8 +110,8 @@ const ApartmentsListingContent = ({ viewMode }: ApartmentsListingContentProps) =
             </h1>
             <p className="section-copy section-copy--large">
               {isTableView
-                ? "Pregledajte sve stanove u jednom kompaktnom spisku za najbrze poredjenje sprata, kvadrature i statusa."
-                : "Uporedite sprat, kvadraturu, strukturu i trenutni status svih 15 stanova u objektu na pocetku Telepa."}
+                ? "Pregledajte sve stanove u jednom kompaktnom spisku za najbrže poređenje sprata, kvadrature i statusa."
+                : "Uporedite sprat, kvadraturu, strukturu i trenutni status svih 15 stanova u objektu na početku Telepa."}
             </p>
             <div className="page-actions">
               <ContactModalButton
@@ -119,7 +119,7 @@ const ApartmentsListingContent = ({ viewMode }: ApartmentsListingContentProps) =
                 modalOptions={listingContactModal}
               >
                 <MessageCircle />
-                Pisite nam
+                Pišite nam
               </ContactModalButton>
               <Link
                 className="site-button site-button--outline"
@@ -143,18 +143,18 @@ const ApartmentsListingContent = ({ viewMode }: ApartmentsListingContentProps) =
             </div>
             <div>
               <Layers3 />
-              <dt>Stambene etaze</dt>
-              <dd>3 etaze</dd>
+              <dt>stambene etaže</dt>
+              <dd>3 etaže</dd>
             </div>
             <div>
               <Building2 />
               <dt>Raspored</dt>
-              <dd>5 stanova po etazi</dd>
+              <dd>5 stanova po etaži</dd>
             </div>
             <div>
               <MapPin />
               <dt>Lokacija</dt>
-              <dd>Pocetak Telepa</dd>
+              <dd>Početak Telepa</dd>
             </div>
           </dl>
         </div>
@@ -169,10 +169,10 @@ const ApartmentsListingContent = ({ viewMode }: ApartmentsListingContentProps) =
       <section className="apartments-listing-cta">
         <div className="page-container apartments-listing-cta__inner">
           <div>
-            <p className="section-eyebrow">Pomoc pri izboru</p>
-            <h2>Niste sigurni koji stan najbolje odgovara vasim potrebama?</h2>
+            <p className="section-eyebrow">Pomoć pri izboru</p>
+            <h2>Niste sigurni koji stan najbolje odgovara vašim potrebama?</h2>
             <p>
-              Prodajni tim moze vam pomoci da uporedite rasporede, kvadrature i
+              Prodajni tim može vam pomoći da uporedite rasporede, kvadrature i
               aktuelnu dostupnost.
             </p>
           </div>
@@ -182,7 +182,7 @@ const ApartmentsListingContent = ({ viewMode }: ApartmentsListingContentProps) =
               modalOptions={listingContactModal}
             >
               <MessageCircle />
-              Pisite nam
+              Pišite nam
             </ContactModalButton>
             <Link
               className="apartments-listing-cta__link"
@@ -205,7 +205,7 @@ const ApartmentsListingContent = ({ viewMode }: ApartmentsListingContentProps) =
 const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
   const [floorFilter, setFloorFilter] = useState("all");
   const [roomFilter, setRoomFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState<"all" | Apartment["status"]>("all");
+  const [statusFilter, setstatusFilter] = useState<"all" | Apartment["status"]>("all");
 
   const floorOptions = useMemo(
     () =>
@@ -240,7 +240,7 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
   const clearFilters = () => {
     setFloorFilter("all");
     setRoomFilter("all");
-    setStatusFilter("all");
+    setstatusFilter("all");
   };
 
   const printFilteredList = () => {
@@ -262,7 +262,7 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
             </h2>
           </div>
           <p className="section-copy">
-            Tabela je namenjena brzom poredjenju. Za tlocrt, opis i slanje upita
+            Tabela je namenjena brzom poređenju. Za tlocrt, opis i slanje upita
             otvorite detalje konkretnog stana.
           </p>
         </div>
@@ -293,11 +293,11 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
           </label>
 
           <label>
-            <span>Status</span>
+            <span>status</span>
             <select
               value={statusFilter}
               onChange={(event) =>
-                setStatusFilter(event.target.value as "all" | Apartment["status"])
+                setstatusFilter(event.target.value as "all" | Apartment["status"])
               }
             >
               <option value="all">Svi statusi</option>
@@ -314,7 +314,7 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
               {filteredApartments.length} od {apartments.length} stanova
             </span>
             <button type="button" onClick={clearFilters} disabled={!hasActiveFilters}>
-              Ponisti filtere
+              Poništi filtere
             </button>
           </div>
         </div>
@@ -324,7 +324,7 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
           <div>
             <button type="button" onClick={printFilteredList} disabled={filteredApartments.length === 0}>
               <Printer />
-              Stampaj spisak
+              stampaj spisak
             </button>
             <button type="button" onClick={downloadFilteredList} disabled={filteredApartments.length === 0}>
               <Download />
@@ -338,24 +338,24 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
             <table className="apartments-table">
               <thead>
                 <tr>
-                  <th>Stan</th>
+                  <th>stan</th>
                   <th>Sprat</th>
-                  <th>Povrsina</th>
+                  <th>Površina</th>
                   <th>Struktura</th>
-                  <th>Status</th>
+                  <th>status</th>
                   <th>Detalji</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredApartments.map((apartment) => (
                   <tr key={apartment.number}>
-                    <td data-label="Stan">
-                      <strong>Stan {apartment.number}</strong>
+                    <td data-label="stan">
+                      <strong>stan {apartment.number}</strong>
                     </td>
                     <td data-label="Sprat">{apartment.floor}</td>
-                    <td data-label="Povrsina">{apartment.size}</td>
+                    <td data-label="Površina">{apartment.size}</td>
                     <td data-label="Struktura">{apartment.rooms}</td>
-                    <td data-label="Status">
+                    <td data-label="status">
                       <span className={`status-badge status-badge--${statusVariant[apartment.status]}`}>
                         {statusLabel[apartment.status]}
                       </span>
@@ -390,9 +390,9 @@ function getSortNumber(value: string) {
 }
 
 function downloadApartmentsCsv(items: Apartment[]) {
-  const headers = ["Stan", "Sprat", "Povrsina", "Struktura", "Status", "Detalji"];
+  const headers = ["stan", "Sprat", "Površina", "Struktura", "status", "Detalji"];
   const rows = items.map((apartment) => [
-    `Stan ${apartment.number}`,
+    `stan ${apartment.number}`,
     apartment.floor,
     apartment.size,
     apartment.rooms,

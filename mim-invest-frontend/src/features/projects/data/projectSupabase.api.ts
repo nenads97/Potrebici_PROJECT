@@ -1,5 +1,11 @@
 import { isSupabaseConfigured, supabase } from "../../../shared/supabase/client";
-import type { Apartment, ApartmentStatus, ProjectInfo, TimelineItem } from "../types/project.types";
+import type {
+  Apartment,
+  ApartmentStatus,
+  ProjectInfo,
+  ProjectMediaItem,
+  TimelineItem,
+} from "../types/project.types";
 import {
   apartments as fallbackApartments,
   projectInfo as fallbackProjectInfo,
@@ -8,6 +14,7 @@ import {
 
 const projectSlug = "heroja-pinkija-13";
 const publicFetchTimeoutMs = 800;
+const projectMediaTypes = ["project_image", "construction_update_image"] as const;
 
 const statusMap: Record<string, ApartmentStatus> = {
   available: "Available",
@@ -18,7 +25,7 @@ const statusMap: Record<string, ApartmentStatus> = {
 const projectStatusMap: Record<string, string> = {
   planned: "Planirano",
   active: "Izgradnja u toku",
-  completed: "Zavrseno",
+  completed: "Završeno",
   hidden: "Sakriveno",
 };
 
@@ -118,7 +125,7 @@ export async function fetchApartments() {
 
     return {
       ...fallback,
-      number: unit.code.replace(/^Stan\s*/i, "") || unit.code,
+      number: unit.code.replace(/^stan\s*/i, "") || unit.code,
       floor: unit.floor_label ?? fallback.floor,
       floorNumber: unit.floor_number ?? fallback.floorNumber,
       size: area,
@@ -134,7 +141,7 @@ export async function fetchApartments() {
       heroFloorPlan: fallback.heroFloorPlan,
       projectFloorPlan: fallback.projectFloorPlan,
       plan: [
-        { label: "Ukupna povrsina", value: area },
+        { label: "Ukupna površina", value: area },
         { label: "Struktura", value: rooms },
         { label: "Kupatila", value: unit.bathrooms ?? fallback.bathrooms },
         { label: "Terasa", value: unit.terrace ?? fallback.terrace },
@@ -180,8 +187,8 @@ export async function fetchProjectInfo(): Promise<ProjectInfo> {
     description: data.full_description ?? data.description ?? fallbackProjectInfo.description,
     locationDescription: data.location_description ?? fallbackProjectInfo.locationDescription,
     floorStructure: data.floor_structure ?? fallbackProjectInfo.floorStructure,
-    constructionStart:
-      formatProjectDateLong(data.construction_start_date) || fallbackProjectInfo.constructionStart,
+    constructionstart:
+      formatProjectDateLong(data.construction_start_date) || fallbackProjectInfo.constructionstart,
     plannedCompletion:
       formatProjectDateLong(data.construction_end_date) || fallbackProjectInfo.plannedCompletion,
     constructionStartDate: data.construction_start_date ?? fallbackProjectInfo.constructionStartDate,
@@ -245,8 +252,65 @@ export async function fetchProjectTimeline(): Promise<TimelineItem[]> {
   }));
 }
 
+export async function fetchProjectMedia(): Promise<ProjectMediaItem[]> {
+  if (!isSupabaseConfigured || !supabase) {
+    return [];
+  }
+
+  const { data: project, error: projectError } = await withSupabaseTimeout(
+    supabase
+      .from("projects")
+      .select("id")
+      .eq("slug", projectSlug)
+      .eq("is_published", true)
+      .maybeSingle(),
+  );
+
+  if (projectError) {
+    throw projectError;
+  }
+
+  if (!project) {
+    return [];
+  }
+
+  const { data, error } = await withSupabaseTimeout(
+    supabase
+      .from("project_media")
+      .select("id,title,media_type,file_path,alt_text,description,sort_order")
+      .eq("project_id", project.id)
+      .is("unit_id", null)
+      .in("media_type", [...projectMediaTypes])
+      .eq("is_published", true)
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true }),
+  );
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? [])
+    .filter((item): item is typeof item & { media_type: ProjectMediaItem["mediaType"] } =>
+      isProjectMediaType(item.media_type),
+    )
+    .map<ProjectMediaItem>((item) => ({
+      id: item.id,
+      title: item.title,
+      mediaType: item.media_type,
+      filePath: item.file_path,
+      altText: item.alt_text ?? undefined,
+      description: item.description ?? undefined,
+      sortOrder: item.sort_order,
+    }));
+}
+
+function isProjectMediaType(value: string): value is ProjectMediaItem["mediaType"] {
+  return projectMediaTypes.some((mediaType) => mediaType === value);
+}
+
 const timelineStateLabels: Record<TimelineItem["state"], string> = {
-  done: "Zavrseno",
+  done: "Završeno",
   active: "Aktuelno",
   upcoming: "Planirano",
 };

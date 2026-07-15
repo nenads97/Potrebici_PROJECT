@@ -9,7 +9,7 @@ import type {
   AdminUnitStatus,
 } from "../types/admin.types";
 
-const unitStatusMap = {
+const unitstatusMap = {
   Available: "available",
   Reserved: "reserved",
   Sold: "sold",
@@ -21,7 +21,7 @@ export const adminStatusLabels = {
   closed: "Zatvoreno",
 } as const;
 
-export const adminUnitStatusLabels = {
+export const adminUnitstatusLabels = {
   available: "Slobodan",
   reserved: "Rezervisan",
   sold: "Prodat",
@@ -35,12 +35,12 @@ export const adminInquiries: AdminInquiry[] = [
     email: "jelena.savic@example.com",
     inquiryType: "unit",
     projectSlug: "heroja-pinkija-13",
-    unitCode: "Stan 4",
+    unitCode: "stan 4",
     sourcePage: "/projekti/heroja-pinkija-13/ponuda-stanova",
     message:
-      "Interesuje me dvosoban stan sa terasom. Molim vas za informaciju o uslovima placanja i dostupnosti.",
+      "Interesuje me dvosoban stan sa terasom. Molim vas za informaciju o uslovima plaćanja i dostupnosti.",
     adminStatus: "new",
-    adminNote: "Pozvati posle 16h, pita za stan na nizoj etazi.",
+    adminNote: "Pozvati posle 16h, pita za stan na nizoj etaži.",
     createdAt: "2026-05-22T08:40:00.000Z",
   },
   {
@@ -50,9 +50,9 @@ export const adminInquiries: AdminInquiry[] = [
     email: "milan.k@example.com",
     inquiryType: "availability",
     projectSlug: "heroja-pinkija-13",
-    unitCode: "Stan 1",
+    unitCode: "stan 1",
     sourcePage: "/projekti/heroja-pinkija-13/ponuda-stanova/1",
-    message: "Da li je veci trosoban stan jos slobodan i kada moze obilazak lokacije?",
+    message: "Da li je veći trosoban stan još slobodan i kada može obilazak lokacije?",
     adminStatus: "contacted",
     adminNote: "Poslat mejl sa osnovnim informacijama.",
     createdAt: "2026-05-21T14:10:00.000Z",
@@ -65,9 +65,9 @@ export const adminInquiries: AdminInquiry[] = [
     inquiryType: "general",
     projectSlug: "heroja-pinkija-13",
     sourcePage: "/kontakt",
-    message: "Zanima me rok zavrsetka radova i mogucnost kupovine garaznog mesta uz stan.",
+    message: "Zanima me rok završetka radova i mogućnost kupovine garažnog mesta uz stan.",
     adminStatus: "closed",
-    adminNote: "Razgovor zavrsen, ceka novu ponudu.",
+    adminNote: "Razgovor završen, ceka novu ponudu.",
     createdAt: "2026-05-20T10:25:00.000Z",
   },
 ];
@@ -80,10 +80,10 @@ export const adminLandOffers: AdminLandOffer[] = [
     email: "dragan.n@example.com",
     propertyAddress: "Telep, Novi Sad",
     plotAreaM2: 640,
-    details: "Plac sa starijom kucom, izlaz na mirnu ulicu, vlasnistvo 1/1.",
+    details: "Plac sa starijom kućom, izlaz na mirnu ulicu, vlasništvo 1/1.",
     sourcePage: "/kupujemo-placeve",
     adminStatus: "new",
-    adminNote: "Zatraziti tacnu parcelu i urbanisticke uslove.",
+    adminNote: "Zatražiti tacnu parcelu i urbanisticke uslove.",
     createdAt: "2026-05-22T07:15:00.000Z",
   },
   {
@@ -103,15 +103,15 @@ export const adminLandOffers: AdminLandOffer[] = [
 
 export const adminUnits: AdminUnit[] = apartments.map((apartment) => ({
   id: `unit-${apartment.number}`,
-  unitCode: `Stan ${apartment.number}`,
+  unitCode: `stan ${apartment.number}`,
   unitType: "apartment",
   floorLabel: apartment.floor,
   areaM2: apartment.size,
   roomStructure: apartment.rooms,
-  status: unitStatusMap[apartment.status],
+  status: unitstatusMap[apartment.status],
   shortDescription: apartment.highlight,
   fullDescription: apartment.description,
-  seoTitle: `Stan ${apartment.number} | Heroja Pinkija 13`,
+  seoTitle: `stan ${apartment.number} | Heroja Pinkija 13`,
   seoDescription: `Detalji stana ${apartment.number}: ${apartment.size}, ${apartment.floor}, ${apartment.rooms}.`,
   publicPath: `/projekti/heroja-pinkija-13/ponuda-stanova/${apartment.number}`,
   planVariant: apartment.planVariant,
@@ -128,7 +128,7 @@ export const adminProjectDraft: AdminProjectDraft = {
   fullDescription: projectInfo.description,
   locationDescription:
     projectInfo.locationDescription ??
-    "Pocetak Telepa, dobra veza sa Limanom, centrom, Kejom i glavnim gradskim sadrzajima.",
+    "Početak Telepa, dobra veza sa Limanom, centrom, Kejom i glavnim gradskim sadržajima.",
   floorStructure: projectInfo.floorStructure,
   constructionStartDate: projectInfo.constructionStartDate ?? "2026-03-16",
   constructionEndDate: projectInfo.constructionEndDate ?? "2027-11-15",
@@ -144,10 +144,10 @@ export const adminConstructionUpdates: AdminConstructionUpdate[] = projectTimeli
   (step, index) => ({
     id: `construction-${step.id}`,
     title: step.title,
-    tag: index === 0 ? "Pocetak" : index === projectTimeline.length - 1 ? "Plan" : "Radovi",
+    tag: index === 0 ? "Početak" : index === projectTimeline.length - 1 ? "Plan" : "Radovi",
     statusLabel:
       step.statusLabel ??
-      (step.state === "done" ? "Zavrseno" : step.state === "active" ? "Aktuelno" : "Planirano"),
+      (step.state === "done" ? "Završeno" : step.state === "active" ? "Aktuelno" : "Planirano"),
     shortDescription: step.body,
     updateDate:
       step.id === "start"
@@ -165,19 +165,19 @@ export const adminMediaItems: AdminMediaItem[] = [
   {
     id: "media-001",
     projectId: adminProjectDraft.id,
-    title: "Gradilisna tabla",
+    title: "Gradilišna tabla",
     mediaType: "project_image",
     filePath: "/images/heroja-pinkija-13/gradilisna-tabla.jpg",
-    altText: "Gradilisna tabla projekta Heroja Pinkija 13",
+    altText: "Gradilišna tabla projekta Heroja Pinkija 13",
     isPublished: true,
   },
   {
     id: "media-002",
     projectId: adminProjectDraft.id,
-    title: "Detalj gradilisne table",
+    title: "Render fasade",
     mediaType: "project_image",
     filePath: "/images/heroja-pinkija-13/gradilisna-tabla-slika.jpg",
-    altText: "Detalj gradilisne table projekta Heroja Pinkija 13",
+    altText: "Render fasade projekta Heroja Pinkija 13",
     isPublished: false,
   },
   {
@@ -231,10 +231,10 @@ export const adminMediaItems: AdminMediaItem[] = [
   },
   {
     id: "media-009",
-    title: "Projektni tlocrt stanova 1, 6 i 11 za poredjenje",
+    title: "Projektni tlocrt stanova 1, 6 i 11 za poređenje",
     mediaType: "unit_image",
     filePath: "/images/apartment-plans/stan-1-6-11-comparison.png",
-    altText: "Projektni tlocrt stanova 1, 6 i 11 za poredjenje sa gridom prostorija",
+    altText: "Projektni tlocrt stanova 1, 6 i 11 za poređenje sa gridom prostorija",
     isPublished: true,
   },
   {

@@ -1,4 +1,4 @@
--- Potrebici Project - Supabase schema
+-- Potrebići Project - Supabase schema
 -- Run this SQL in the Supabase SQL editor or apply it as the initial database migration.
 
 create extension if not exists "pgcrypto";

@@ -100,13 +100,13 @@ Deno.serve(async (req) => {
 
     const salesContextText = [
       `Tip upita: ${inquiryTypeLabels[inquiryType.value]}`,
-      `Stan: ${unitCode.value ?? "-"}`,
+      `stan: ${unitCode.value ?? "-"}`,
       `Izvor: ${sourcePage.value ?? "-"}`,
       `Projekat: ${projectSlug.value ?? "heroja-pinkija-13"}`,
     ].join("\n");
     const salesContextHtml = [
       ["Tip upita", inquiryTypeLabels[inquiryType.value]],
-      ["Stan", unitCode.value ?? "-"],
+      ["stan", unitCode.value ?? "-"],
       ["Izvor", sourcePage.value ?? "-"],
       ["Projekat", projectSlug.value ?? "heroja-pinkija-13"],
     ]
@@ -117,9 +117,9 @@ Deno.serve(async (req) => {
       relatedEntityId: inquiry.id,
       recipientEmail: email.value,
       deliveryKind: "user_confirmation",
-      subject: "Primili smo vas upit - M & M Gradnja",
-      text: `Postovani/a ${fullName.value},\n\nPrimili smo vas upit i prodajni tim ce vas kontaktirati.\n\nM & M Gradnja`,
-      html: `<p>Postovani/a ${escapeHtml(fullName.value)},</p><p>Primili smo vas upit i prodajni tim ce vas kontaktirati.</p><p>M &amp; M Gradnja</p>`,
+      subject: "Primili smo vaš upit - M & M Gradnja",
+      text: `Poštovani/a ${fullName.value},\n\nPrimili smo vaš upit i prodajni tim će vas kontaktirati.\n\nM & M Gradnja`,
+      html: `<p>Poštovani/a ${escapeHtml(fullName.value)},</p><p>Primili smo vaš upit i prodajni tim će vas kontaktirati.</p><p>M &amp; M Gradnja</p>`,
     });
 
     await sendAndLog({
@@ -167,7 +167,7 @@ async function sendAndLog(input: {
 }
 
 function getErrorMessage(error: unknown) {
-  return error instanceof Error ? error.message : "Doslo je do greske pri slanju upita.";
+  return error instanceof Error ? error.message : "Došlo je do greške pri slanju upita.";
 }
 
 function validInquiryType(value: unknown) {

@@ -36,13 +36,13 @@ import {
   adminMediaItems,
   adminProjectDraft,
   adminStatusLabels,
-  adminUnitStatusLabels,
+  adminUnitstatusLabels,
   adminUnits,
 } from "../../../features/admin/data/adminMock.data";
 import {
   createMediaItem as persistNewMediaItem,
   deleteMediaItem as persistDeleteMediaItem,
-  fetchAdminState,
+  fetchAdminstate,
   updateConstructionUpdate as persistConstructionUpdate,
   updateInquiry as persistInquiry,
   updateLandOffer as persistLandOffer,
@@ -90,7 +90,13 @@ import { createPhoneHref } from "../../../features/projects/data/herojaPinkija13
 import { PageMeta } from "../../../shared/components/PageMeta";
 import { isSupabaseConfigured } from "../../../shared/supabase/client";
 
-type AdminSection = "overview" | "inquiries" | "land" | "units" | "project" | "media";
+type AdminSection =
+  | "overview"
+  | "inquiries"
+  | "land"
+  | "units"
+  | "project"
+  | "media";
 
 type AdminDashboardPageProps = {
   section: AdminSection;
@@ -138,17 +144,20 @@ const mediaTypeLabels: Record<AdminMediaItem["mediaType"], string> = {
   unit_image: "Slika/tlocrt stana",
   apartment_floor_plan_pdf: "PDF tlocrt stana",
   building_floor_plan_pdf: "PDF osnova objekta",
-  garage_plan_pdf: "PDF garaza",
+  garage_plan_pdf: "PDF garaža",
   storage_plan_pdf: "PDF ostave",
   general_brochure_pdf: "Opsta brosura",
   construction_update_image: "Slika radova",
 };
 
-const sectionCopy: Record<AdminSection, { eyebrow: string; title: string; body: string }> = {
+const sectionCopy: Record<
+  AdminSection,
+  { eyebrow: string; title: string; body: string }
+> = {
   overview: {
     eyebrow: "Admin",
-    title: "Pregled prodaje i sadrzaja",
-    body: "Jedno mesto za nove upite, status stanova, upozorenja za sadrzaj i najbrze akcije prodajnog tima.",
+    title: "Pregled prodaje i sadržaja",
+    body: "Jedno mesto za nove upite, status stanova, upozorenja za sadržaj i najbrže akcije prodajnog tima.",
   },
   inquiries: {
     eyebrow: "Prodaja",
@@ -158,15 +167,15 @@ const sectionCopy: Record<AdminSection, { eyebrow: string; title: string; body: 
   land: {
     eyebrow: "Akvizicija",
     title: "Upiti za placeve",
-    body: "Ponude vlasnika zemljista i starih kuca za buduce projekte.",
+    body: "Ponude vlasnika zemljišta i starih kuća za buduće projekte.",
   },
   units: {
     eyebrow: "Ponuda",
-    title: "Stanovi i statusi",
+    title: "stanovi i statusi",
     body: "Brza promena dostupnosti stanova koja se direktno odrazava na javnu ponudu.",
   },
   project: {
-    eyebrow: "Sadrzaj",
+    eyebrow: "Sadržaj",
     title: "Projekat",
     body: "Osnovni tekstovi, lokacija i rokovi koji hrane javnu prezentaciju projekta.",
   },
@@ -191,10 +200,14 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
   const [landOffers, setLandOffers] = useState(adminLandOffers);
   const [units, setUnits] = useState(adminUnits);
   const [projectDraft, setProjectDraft] = useState(adminProjectDraft);
-  const [constructionUpdates, setConstructionUpdates] = useState(adminConstructionUpdates);
+  const [constructionUpdates, setConstructionUpdates] = useState(
+    adminConstructionUpdates,
+  );
   const [mediaItems, setMediaItems] = useState(adminMediaItems);
   const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | AdminWorkflowStatus>("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | AdminWorkflowStatus>(
+    "all",
+  );
   const [isLoading, setIsLoading] = useState(isSupabaseConfigured);
   const [feedback, setFeedback] = useState(
     isSupabaseConfigured
@@ -208,7 +221,7 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
 
     async function loadAdminData() {
       try {
-        const data = await fetchAdminState();
+        const data = await fetchAdminstate();
 
         if (!isMounted || !data) {
           return;
@@ -222,7 +235,7 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
         }
         setConstructionUpdates(data.constructionUpdates);
         setMediaItems(data.mediaItems);
-        setFeedback("Podaci su ucitani iz Supabase baze.");
+        setFeedback("Podaci su učitani iz Supabase baze.");
       } catch (error) {
         setFeedback(getErrorMessage(error));
       } finally {
@@ -244,7 +257,8 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
     successMessage = "Izmena je sacuvana.",
   ): Promise<AdminPersistResult> => {
     if (!isSupabaseConfigured) {
-      const message = "Izmena je sacuvana samo u lokalnom fallback prikazu jer Supabase env nije podesen.";
+      const message =
+        "Izmena je sacuvana samo u lokalnom fallback prikazu jer Supabase env nije podesen.";
       setFeedback(message);
       return { status: "local", message };
     }
@@ -273,13 +287,17 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
         },
         {
           label: "Slobodnih stanova",
-          value: units.filter((unit) => unit.status === "available" && unit.isPublished).length,
+          value: units.filter(
+            (unit) => unit.status === "available" && unit.isPublished,
+          ).length,
         },
         {
-          label: "Stavki za proveru",
+          label: "stavki za proveru",
           value:
             units.filter((unit) => !unit.isPublished).length +
-            mediaItems.filter((item) => item.isPublished && hasMissingImageAltText(item)).length,
+            mediaItems.filter(
+              (item) => item.isPublished && hasMissingImageAltText(item),
+            ).length,
         },
       ];
     }
@@ -296,11 +314,13 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
         },
         {
           label: "Kontaktirano",
-          value: landOffers.filter((item) => item.adminStatus === "contacted").length,
+          value: landOffers.filter((item) => item.adminStatus === "contacted")
+            .length,
         },
         {
           label: "Zatvoreno",
-          value: landOffers.filter((item) => item.adminStatus === "closed").length,
+          value: landOffers.filter((item) => item.adminStatus === "closed")
+            .length,
         },
       ];
     }
@@ -317,11 +337,13 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
         },
         {
           label: "Kontaktirano",
-          value: inquiries.filter((item) => item.adminStatus === "contacted").length,
+          value: inquiries.filter((item) => item.adminStatus === "contacted")
+            .length,
         },
         {
           label: "Zatvoreno",
-          value: inquiries.filter((item) => item.adminStatus === "closed").length,
+          value: inquiries.filter((item) => item.adminStatus === "closed")
+            .length,
         },
       ];
     }
@@ -342,7 +364,8 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
         },
         {
           label: "PDF fajlovi",
-          value: mediaItems.filter((item) => isPdfMediaType(item.mediaType)).length,
+          value: mediaItems.filter((item) => isPdfMediaType(item.mediaType))
+            .length,
         },
       ];
     }
@@ -398,223 +421,245 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
       />
 
       <main className="admin-page">
-      <section className="admin-page__hero">
-        <div>
-          <p className="section-eyebrow">{currentCopy.eyebrow}</p>
-          <h1>{currentCopy.title}</h1>
-          <p>{currentCopy.body}</p>
+        <section className="admin-page__hero">
+          <div>
+            <p className="section-eyebrow">{currentCopy.eyebrow}</p>
+            <h1>{currentCopy.title}</h1>
+            <p>{currentCopy.body}</p>
+          </div>
+
+          <div className="admin-metrics" aria-label="Admin metrike">
+            {metrics.map((metric) => (
+              <div key={metric.label}>
+                <strong>{metric.value}</strong>
+                <span>{metric.label}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <div className="admin-sync-status" role="status">
+          {isLoading ? "Ucitavanje..." : feedback}
         </div>
 
-        <div className="admin-metrics" aria-label="Admin metrike">
-          {metrics.map((metric) => (
-            <div key={metric.label}>
-              <strong>{metric.value}</strong>
-              <span>{metric.label}</span>
-            </div>
-          ))}
-        </div>
-      </section>
+        {section === "overview" ? (
+          <OverviewPanel
+            inquiries={inquiries}
+            landOffers={landOffers}
+            units={units}
+            mediaItems={mediaItems}
+          />
+        ) : null}
 
-      <div className="admin-sync-status" role="status">
-        {isLoading ? "Ucitavanje..." : feedback}
-      </div>
-
-      {section === "overview" ? (
-        <OverviewPanel
-          inquiries={inquiries}
-          landOffers={landOffers}
-          units={units}
-          mediaItems={mediaItems}
-        />
-      ) : null}
-
-      {section === "inquiries" ? (
-        <InquiryPanel
-          inquiries={inquiries}
-          query={query}
-          statusFilter={statusFilter}
-          onQueryChange={setQuery}
-          onStatusFilterChange={setStatusFilter}
-          onUpdate={setInquiries}
-          onPersist={(id, changes) =>
-            persist(
-              () =>
-                persistInquiry(id, {
-                  admin_status: changes.adminStatus,
-                  admin_note: changes.adminNote,
-                }),
-              "Upit je sacuvan.",
-            )
-          }
-        />
-      ) : null}
-
-      {section === "land" ? (
-        <LandOfferPanel
-          offers={landOffers}
-          query={query}
-          statusFilter={statusFilter}
-          onQueryChange={setQuery}
-          onStatusFilterChange={setStatusFilter}
-          onUpdate={setLandOffers}
-          onPersist={(id, changes) =>
-            persist(
-              () =>
-                persistLandOffer(id, {
-                  admin_status: changes.adminStatus,
-                  admin_note: changes.adminNote,
-                }),
-              "Ponuda placa je sacuvana.",
-            )
-          }
-        />
-      ) : null}
-
-      {section === "units" ? (
-        <UnitPanel
-          units={units}
-          onUpdate={setUnits}
-          onPersist={(id, changes) => persist(() => persistUnit(id, changes), "Status stana je sacuvan.")}
-        />
-      ) : null}
-
-      {section === "project" ? (
-        <ProjectPanel
-          projectDraft={projectDraft}
-          constructionUpdates={constructionUpdates}
-          units={units}
-          mediaItems={mediaItems}
-          onUpdate={setProjectDraft}
-          onConstructionUpdatesUpdate={setConstructionUpdates}
-          onPersist={(project) => persist(() => persistProject(project), "Projekat je sacuvan.")}
-          onConstructionUpdatePersist={(id, changes) =>
-            persist(
-              () => persistConstructionUpdate(id, changes),
-              "Status radova je sacuvan.",
-            )
-          }
-        />
-      ) : null}
-
-      {section === "media" ? (
-        <MediaPanel
-          mediaItems={mediaItems}
-          projectDraft={projectDraft}
-          units={units}
-          onUpdate={setMediaItems}
-          onPersist={(id, changes) =>
-            persist(() => persistMediaItem(id, changes), "Metadata fajla je sacuvan.")
-          }
-          onUpload={async (item, file) => {
-            if (!isSupabaseConfigured) {
-              const message = "Upload nije moguc u lokalnom fallback rezimu jer Supabase env nije podesen.";
-              setFeedback(message);
-              return { status: "failed", message };
+        {section === "inquiries" ? (
+          <InquiryPanel
+            inquiries={inquiries}
+            query={query}
+            statusFilter={statusFilter}
+            onQueryChange={setQuery}
+            onStatusFilterChange={setStatusFilter}
+            onUpdate={setInquiries}
+            onPersist={(id, changes) =>
+              persist(
+                () =>
+                  persistInquiry(id, {
+                    admin_status: changes.adminStatus,
+                    admin_note: changes.adminNote,
+                  }),
+                "Upit je sacuvan.",
+              )
             }
+          />
+        ) : null}
 
-            try {
-              const uploadedFile = await persistMediaFile(item, file);
-              const title = item.title.trim() || getUploadTitle(uploadedFile.fileName);
-
-              await persistMediaItem(item.id, {
-                filePath: uploadedFile.publicUrl,
-                title,
-              });
-
-              const message = "Fajl je uploadovan i povezan sa media karticom.";
-              setFeedback(message);
-
-              return {
-                status: "saved",
-                message,
-                filePath: uploadedFile.publicUrl,
-                title,
-              };
-            } catch (error) {
-              const message = getErrorMessage(error);
-              setFeedback(message);
-              return { status: "failed", message };
+        {section === "land" ? (
+          <LandOfferPanel
+            offers={landOffers}
+            query={query}
+            statusFilter={statusFilter}
+            onQueryChange={setQuery}
+            onStatusFilterChange={setStatusFilter}
+            onUpdate={setLandOffers}
+            onPersist={(id, changes) =>
+              persist(
+                () =>
+                  persistLandOffer(id, {
+                    admin_status: changes.adminStatus,
+                    admin_note: changes.adminNote,
+                  }),
+                "Ponuda placa je sacuvana.",
+              )
             }
-          }}
-          onCreate={async (draft, file) => {
-            if (!isSupabaseConfigured) {
-              if (file) {
-                const message = "Upload nove kartice nije moguc u lokalnom fallback rezimu jer Supabase env nije podesen.";
+          />
+        ) : null}
+
+        {section === "units" ? (
+          <UnitPanel
+            units={units}
+            onUpdate={setUnits}
+            onPersist={(id, changes) =>
+              persist(
+                () => persistUnit(id, changes),
+                "Status stana je sacuvan.",
+              )
+            }
+          />
+        ) : null}
+
+        {section === "project" ? (
+          <ProjectPanel
+            projectDraft={projectDraft}
+            constructionUpdates={constructionUpdates}
+            units={units}
+            mediaItems={mediaItems}
+            onUpdate={setProjectDraft}
+            onConstructionUpdatesUpdate={setConstructionUpdates}
+            onPersist={(project) =>
+              persist(() => persistProject(project), "Projekat je sacuvan.")
+            }
+            onConstructionUpdatePersist={(id, changes) =>
+              persist(
+                () => persistConstructionUpdate(id, changes),
+                "Status radova je sacuvan.",
+              )
+            }
+          />
+        ) : null}
+
+        {section === "media" ? (
+          <MediaPanel
+            mediaItems={mediaItems}
+            projectDraft={projectDraft}
+            units={units}
+            onUpdate={setMediaItems}
+            onPersist={(id, changes) =>
+              persist(
+                () => persistMediaItem(id, changes),
+                "Metadata fajla je sacuvan.",
+              )
+            }
+            onUpload={async (item, file) => {
+              if (!isSupabaseConfigured) {
+                const message =
+                  "Upload nije moguc u lokalnom fallback rezimu jer Supabase env nije podesen.";
                 setFeedback(message);
                 return { status: "failed", message };
               }
 
-              const item: AdminMediaItem = {
-                id: `local-media-${Date.now()}`,
-                title: draft.title.trim(),
-                mediaType: draft.mediaType,
-                filePath: draft.filePath.trim(),
-                altText: draft.altText.trim(),
-                isPublished: draft.isPublished,
-              };
-              const message = "Nova media kartica je dodata samo u lokalni fallback prikaz jer Supabase env nije podesen.";
-              setFeedback(message);
+              try {
+                const uploadedFile = await persistMediaFile(item, file);
+                const title =
+                  item.title.trim() || getUploadTitle(uploadedFile.fileName);
 
-              return { status: "local", message, item };
-            }
+                await persistMediaItem(item.id, {
+                  filePath: uploadedFile.publicUrl,
+                  title,
+                });
 
-            if (!projectDraft) {
-              const message = "Projekat nije ucitan, pa nova media kartica ne moze biti povezana.";
-              setFeedback(message);
-              return { status: "failed", message };
-            }
+                const message =
+                  "Fajl je uploadovan i povezan sa media karticom.";
+                setFeedback(message);
 
-            try {
-              let filePath = draft.filePath.trim();
+                return {
+                  status: "saved",
+                  message,
+                  filePath: uploadedFile.publicUrl,
+                  title,
+                };
+              } catch (error) {
+                const message = getErrorMessage(error);
+                setFeedback(message);
+                return { status: "failed", message };
+              }
+            }}
+            onCreate={async (draft, file) => {
+              if (!isSupabaseConfigured) {
+                if (file) {
+                  const message =
+                    "Upload nove kartice nije moguc u lokalnom fallback rezimu jer Supabase env nije podesen.";
+                  setFeedback(message);
+                  return { status: "failed", message };
+                }
 
-              if (file) {
-                const uploadedFile = await persistMediaFile(
-                  { id: `new-media-${Date.now()}`, mediaType: draft.mediaType },
-                  file,
-                );
-                filePath = uploadedFile.publicUrl;
+                const item: AdminMediaItem = {
+                  id: `local-media-${Date.now()}`,
+                  title: draft.title.trim(),
+                  mediaType: draft.mediaType,
+                  filePath: draft.filePath.trim(),
+                  altText: draft.altText.trim(),
+                  isPublished: draft.isPublished,
+                };
+                const message =
+                  "Nova media kartica je dodata samo u lokalni fallback prikaz jer Supabase env nije podesen.";
+                setFeedback(message);
+
+                return { status: "local", message, item };
               }
 
-              const createdItem = await persistNewMediaItem({
-                projectId: draft.ownerType === "project" ? projectDraft.id : null,
-                unitId: draft.ownerType === "unit" ? draft.unitId : null,
-                title: draft.title.trim(),
-                mediaType: draft.mediaType,
-                filePath,
-                altText: draft.altText.trim(),
-                isPublished: draft.isPublished,
-                sortOrder: mediaItems.length + 1,
-              });
-              const message = "Nova media kartica je dodata.";
-              setFeedback(message);
+              if (!projectDraft) {
+                const message =
+                  "Projekat nije ucitan, pa nova media kartica ne moze biti povezana.";
+                setFeedback(message);
+                return { status: "failed", message };
+              }
 
-              return { status: "saved", message, item: createdItem };
-            } catch (error) {
-              const message = getErrorMessage(error);
-              setFeedback(message);
-              return { status: "failed", message };
-            }
-          }}
-          onDelete={async (item) => {
-            if (!isSupabaseConfigured) {
-              const message = "Media kartica je uklonjena samo iz lokalnog fallback prikaza jer Supabase env nije podesen.";
-              setFeedback(message);
-              return { status: "local", message, deletedId: item.id };
-            }
+              try {
+                let filePath = draft.filePath.trim();
 
-            try {
-              await persistDeleteMediaItem(item.id);
-              const message = "Media kartica je uklonjena. Fajl u Storage-u nije obrisan.";
-              setFeedback(message);
-              return { status: "saved", message, deletedId: item.id };
-            } catch (error) {
-              const message = getErrorMessage(error);
-              setFeedback(message);
-              return { status: "failed", message };
-            }
-          }}
-        />
-      ) : null}
+                if (file) {
+                  const uploadedFile = await persistMediaFile(
+                    {
+                      id: `new-media-${Date.now()}`,
+                      mediaType: draft.mediaType,
+                    },
+                    file,
+                  );
+                  filePath = uploadedFile.publicUrl;
+                }
+
+                const createdItem = await persistNewMediaItem({
+                  projectId:
+                    draft.ownerType === "project" ? projectDraft.id : null,
+                  unitId: draft.ownerType === "unit" ? draft.unitId : null,
+                  title: draft.title.trim(),
+                  mediaType: draft.mediaType,
+                  filePath,
+                  altText: draft.altText.trim(),
+                  isPublished: draft.isPublished,
+                  sortOrder: mediaItems.length + 1,
+                });
+                const message = "Nova media kartica je dodata.";
+                setFeedback(message);
+
+                return { status: "saved", message, item: createdItem };
+              } catch (error) {
+                const message = getErrorMessage(error);
+                setFeedback(message);
+                return { status: "failed", message };
+              }
+            }}
+            onDelete={async (item) => {
+              if (!isSupabaseConfigured) {
+                const message =
+                  "Media kartica je uklonjena samo iz lokalnog fallback prikaza jer Supabase env nije podesen.";
+                setFeedback(message);
+                return { status: "local", message, deletedId: item.id };
+              }
+
+              try {
+                await persistDeleteMediaItem(item.id);
+                const message =
+                  "Media kartica je uklonjena. Fajl u Storage-u nije obrisan.";
+                setFeedback(message);
+                return { status: "saved", message, deletedId: item.id };
+              } catch (error) {
+                const message = getErrorMessage(error);
+                setFeedback(message);
+                return { status: "failed", message };
+              }
+            }}
+          />
+        ) : null}
       </main>
     </>
   );
@@ -627,10 +672,17 @@ type OverviewPanelProps = {
   mediaItems: AdminMediaItem[];
 };
 
-const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPanelProps) => {
+const OverviewPanel = ({
+  inquiries,
+  landOffers,
+  units,
+  mediaItems,
+}: OverviewPanelProps) => {
   const newInquiries = inquiries.filter((item) => item.adminStatus === "new");
   const newLandOffers = landOffers.filter((item) => item.adminStatus === "new");
-  const availableUnits = units.filter((unit) => unit.status === "available" && unit.isPublished);
+  const availableUnits = units.filter(
+    (unit) => unit.status === "available" && unit.isPublished,
+  );
   const reservedUnits = units.filter((unit) => unit.status === "reserved");
   const soldUnits = units.filter((unit) => unit.status === "sold");
   const hiddenUnits = units.filter((unit) => !unit.isPublished);
@@ -642,7 +694,7 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
   const recentLeads = [
     ...inquiries.map((item) => ({
       id: `inquiry-${item.id}`,
-      kind: "Stan",
+      kind: "stan",
       fullName: item.fullName,
       context: item.unitCode ?? "Opsti upit za stan",
       status: item.adminStatus,
@@ -659,7 +711,10 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
       href: "/admin/upiti-placevi",
     })),
   ]
-    .sort((first, second) => Date.parse(second.createdAt) - Date.parse(first.createdAt))
+    .sort(
+      (first, second) =>
+        Date.parse(second.createdAt) - Date.parse(first.createdAt),
+    )
     .slice(0, 5);
 
   const priorityItems = [
@@ -673,7 +728,7 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
     {
       label: "Nove ponude placeva",
       value: newLandOffers.length,
-      text: "Leadovi za buduce lokacije i akviziciju.",
+      text: "Leadovi za buduće lokacije i akviziciju.",
       href: "/admin/upiti-placevi",
       icon: MapPinned,
     },
@@ -693,7 +748,10 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
           : "Nema kriticnih upozorenja za objavu.",
       href: hiddenUnits.length > 0 ? "/admin/stanovi" : "/admin/fajlovi",
       icon: AlertTriangle,
-      tone: hiddenUnits.length > 0 || mediaAltWarnings.length > 0 ? "warning" : "calm",
+      tone:
+        hiddenUnits.length > 0 || mediaAltWarnings.length > 0
+          ? "warning"
+          : "calm",
     },
   ];
 
@@ -718,20 +776,23 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
     },
     {
       label: "Uredi projekat",
-      text: "Osvezite opis, lokaciju, rokove i status radova.",
+      text: "Osvežite opis, lokaciju, rokove i status radova.",
       href: "/admin/projekat",
       icon: Building2,
     },
   ];
 
   return (
-    <section className="admin-section admin-overview" aria-labelledby="admin-overview-title">
+    <section
+      className="admin-section admin-overview"
+      aria-labelledby="admin-overview-title"
+    >
       <div className="admin-overview-grid">
         <article className="admin-overview-card admin-overview-card--wide">
           <div className="admin-overview-card__head">
             <div>
               <p className="section-eyebrow">Prioriteti danas</p>
-              <h2 id="admin-overview-title">Sta prvo trazi reakciju</h2>
+              <h2 id="admin-overview-title">sta prvo traži reakciju</h2>
             </div>
             <Inbox aria-hidden="true" />
           </div>
@@ -743,7 +804,9 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
               return (
                 <Link
                   className={`admin-overview-priority${
-                    item.tone === "warning" ? " admin-overview-priority--warning" : ""
+                    item.tone === "warning"
+                      ? " admin-overview-priority--warning"
+                      : ""
                   }`}
                   to={item.href}
                   key={item.label}
@@ -764,12 +827,15 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
           <div className="admin-overview-card__head">
             <div>
               <p className="section-eyebrow">Inventar</p>
-              <h2>Stanovi u prodaji</h2>
+              <h2>stanovi u prodaji</h2>
             </div>
             <Home aria-hidden="true" />
           </div>
 
-          <div className="admin-overview-inventory" aria-label="Statusi stanova">
+          <div
+            className="admin-overview-inventory"
+            aria-label="Statusi stanova"
+          >
             <div>
               <strong>{availableUnits.length}</strong>
               <span>Slobodno</span>
@@ -787,7 +853,7 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
           <p className="admin-overview-note">
             {hiddenUnits.length > 0
               ? `${hiddenUnits.length} stanova je sakriveno sa javne ponude.`
-              : "Svi ucitani stanovi su objavljeni u admin inventaru."}
+              : "Svi učitani stanovi su objavljeni u admin inventaru."}
           </p>
         </article>
       </div>
@@ -797,7 +863,7 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
           <div className="admin-overview-card__head">
             <div>
               <p className="section-eyebrow">Brze akcije</p>
-              <h2>Najcesci sledeci koraci</h2>
+              <h2>Najčešći sledeći koraci</h2>
             </div>
             <ArrowUpRight aria-hidden="true" />
           </div>
@@ -807,7 +873,11 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
               const Icon = action.icon;
 
               return (
-                <Link className="admin-overview-action" to={action.href} key={action.label}>
+                <Link
+                  className="admin-overview-action"
+                  to={action.href}
+                  key={action.label}
+                >
                   <Icon aria-hidden="true" />
                   <strong>{action.label}</strong>
                   <span>{action.text}</span>
@@ -833,7 +903,9 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
                   <div>
                     <div className="admin-card__badges">
                       <span className="admin-type">{lead.kind}</span>
-                      <span className={`admin-status admin-status--${lead.status}`}>
+                      <span
+                        className={`admin-status admin-status--${lead.status}`}
+                      >
                         {adminStatusLabels[lead.status]}
                       </span>
                     </div>
@@ -842,7 +914,10 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
                       {lead.context} · {formatDate(lead.createdAt)}
                     </p>
                   </div>
-                  <Link to={lead.href} aria-label={`Otvori sekciju za ${lead.fullName}`}>
+                  <Link
+                    to={lead.href}
+                    aria-label={`Otvori sekciju za ${lead.fullName}`}
+                  >
                     Otvori
                     <ArrowUpRight aria-hidden="true" />
                   </Link>
@@ -860,12 +935,12 @@ const OverviewPanel = ({ inquiries, landOffers, units, mediaItems }: OverviewPan
 
       <article className="admin-overview-card admin-overview-health">
         <div>
-          <p className="section-eyebrow">Sadrzaj i fajlovi</p>
-          <h2>Stanje objavljenih asseta</h2>
+          <p className="section-eyebrow">Sadržaj i fajlovi</p>
+          <h2>stanje objavljenih asseta</h2>
           <p>
             Objavljeno je {publishedMedia.length} fajlova.{" "}
             {mediaAltWarnings.length > 0
-              ? `${mediaAltWarnings.length} objavljenih slika nema alt tekst i treba ih srediti pre sledeceg SEO kruga.`
+              ? `${mediaAltWarnings.length} objavljenih slika nema alt tekst i treba ih srediti pre sledećeg SEO kruga.`
               : "Objavljene slike nemaju kriticno alt upozorenje."}
           </p>
         </div>
@@ -883,9 +958,12 @@ type InquiryPanelProps = {
   query: string;
   statusFilter: "all" | AdminWorkflowStatus;
   onQueryChange: (query: string) => void;
-  onStatusFilterChange: (status: "all" | AdminWorkflowStatus) => void;
+  onstatusFilterChange: (status: "all" | AdminWorkflowStatus) => void;
   onUpdate: (items: AdminInquiry[]) => void;
-  onPersist: (id: string, changes: Partial<AdminInquiry>) => Promise<AdminPersistResult>;
+  onPersist: (
+    id: string,
+    changes: Partial<AdminInquiry>,
+  ) => Promise<AdminPersistResult>;
 };
 
 const InquiryPanel = ({
@@ -893,15 +971,21 @@ const InquiryPanel = ({
   query,
   statusFilter,
   onQueryChange,
-  onStatusFilterChange,
+  onstatusFilterChange,
   onUpdate,
   onPersist,
 }: InquiryPanelProps) => {
-  const [cardFeedback, setCardFeedback] = useState<Record<string, AdminCardFeedback>>({});
+  const [cardFeedback, setCardFeedback] = useState<
+    Record<string, AdminCardFeedback>
+  >({});
   const filtered = filterWorkflowItems(inquiries, query, statusFilter);
 
   const patchInquiry = (id: string, changes: Partial<AdminInquiry>) => {
-    onUpdate(inquiries.map((item) => (item.id === id ? { ...item, ...changes } : item)));
+    onUpdate(
+      inquiries.map((item) =>
+        item.id === id ? { ...item, ...changes } : item,
+      ),
+    );
   };
 
   const showCardFeedback = (id: string, feedback: AdminCardFeedback) => {
@@ -920,7 +1004,11 @@ const InquiryPanel = ({
 
     const result = await onPersist(id, changes);
 
-    if (result.status === "failed" && previousInquiry && "adminStatus" in changes) {
+    if (
+      result.status === "failed" &&
+      previousInquiry &&
+      "adminStatus" in changes
+    ) {
       patchInquiry(id, { adminStatus: previousInquiry.adminStatus });
     }
 
@@ -933,7 +1021,7 @@ const InquiryPanel = ({
         query={query}
         statusFilter={statusFilter}
         onQueryChange={onQueryChange}
-        onStatusFilterChange={onStatusFilterChange}
+        onstatusFilterChange={onstatusFilterChange}
       />
 
       <div className="admin-list">
@@ -949,89 +1037,108 @@ const InquiryPanel = ({
 
           return (
             <article className="admin-card" key={inquiry.id}>
-            <div className="admin-card__head">
-              <div>
-                <div className="admin-card__badges">
-                  <span className={`admin-status admin-status--${inquiry.adminStatus}`}>
-                    {adminStatusLabels[inquiry.adminStatus]}
-                  </span>
-                  <span className={`admin-type admin-type--${inquiry.inquiryType}`}>
-                    {inquiryTypeLabels[inquiry.inquiryType]}
-                  </span>
+              <div className="admin-card__head">
+                <div>
+                  <div className="admin-card__badges">
+                    <span
+                      className={`admin-status admin-status--${inquiry.adminStatus}`}
+                    >
+                      {adminStatusLabels[inquiry.adminStatus]}
+                    </span>
+                    <span
+                      className={`admin-type admin-type--${inquiry.inquiryType}`}
+                    >
+                      {inquiryTypeLabels[inquiry.inquiryType]}
+                    </span>
+                  </div>
+                  <h2>{inquiry.fullName}</h2>
+                  <p>
+                    {inquiry.unitCode ?? "Opsti upit"} ·{" "}
+                    {formatDate(inquiry.createdAt)}
+                  </p>
                 </div>
-                <h2>{inquiry.fullName}</h2>
-                <p>
-                  {inquiry.unitCode ?? "Opsti upit"} · {formatDate(inquiry.createdAt)}
-                </p>
+                <WorkflowSelect
+                  value={inquiry.adminStatus}
+                  onChange={(adminStatus) =>
+                    void persistInquiryChanges(
+                      inquiry.id,
+                      { adminStatus },
+                      "Status upita je sacuvan.",
+                    )
+                  }
+                />
               </div>
-              <WorkflowSelect
-                value={inquiry.adminStatus}
-                onChange={(adminStatus) =>
-                  void persistInquiryChanges(inquiry.id, { adminStatus }, "Status upita je sacuvan.")
-                }
-              />
-            </div>
 
-            <div className="admin-contact-grid">
-              {inquiry.phone ? (
-                <a href={createPhoneHref(inquiry.phone)}>
-                  <Phone />
-                  {inquiry.phone}
+              <div className="admin-contact-grid">
+                {inquiry.phone ? (
+                  <a href={createPhoneHref(inquiry.phone)}>
+                    <Phone />
+                    {inquiry.phone}
+                  </a>
+                ) : (
+                  <span className="admin-contact-grid__empty">
+                    <Phone />
+                    Telefon nije ostavljen
+                  </span>
+                )}
+                <a href={`mailto:${inquiry.email}`}>
+                  <Mail />
+                  {inquiry.email}
                 </a>
-              ) : (
-                <span className="admin-contact-grid__empty">
-                  <Phone />
-                  Telefon nije ostavljen
-                </span>
-              )}
-              <a href={`mailto:${inquiry.email}`}>
-                <Mail />
-                {inquiry.email}
-              </a>
-            </div>
+              </div>
 
-            <div className="admin-card__links" aria-label="Kontekst upita">
-              {inquiry.unitCode ? (
-                <a href={getApartmentPublicPath(inquiry.unitCode)} target="_blank" rel="noopener noreferrer">
-                  Otvori stan
-                  <ArrowUpRight />
-                </a>
-              ) : null}
-              {sourceHref ? (
-                <a href={sourceHref} target="_blank" rel="noopener noreferrer">
-                  Izvor upita
-                  <ArrowUpRight />
-                </a>
-              ) : null}
-            </div>
+              <div className="admin-card__links" aria-label="Kontekst upita">
+                {inquiry.unitCode ? (
+                  <a
+                    href={getApartmentPublicPath(inquiry.unitCode)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Otvori stan
+                    <ArrowUpRight />
+                  </a>
+                ) : null}
+                {sourceHref ? (
+                  <a
+                    href={sourceHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Izvor upita
+                    <ArrowUpRight />
+                  </a>
+                ) : null}
+              </div>
 
-            <p className="admin-card__message">{inquiry.message}</p>
+              <p className="admin-card__message">{inquiry.message}</p>
 
-            <label className="form-field">
-              <span className="form-label">Interna beleska</span>
-              <textarea
-                className="form-textarea admin-note"
-                value={inquiry.adminNote}
-                onChange={(event) => patchInquiry(inquiry.id, { adminNote: event.target.value })}
-              />
-            </label>
-            <div className="admin-note-actions">
-              <button
-                className="site-button site-button--outline admin-note-save"
-                type="button"
-                onClick={() =>
-                  void persistInquiryChanges(
-                    inquiry.id,
-                    { adminNote: inquiry.adminNote },
-                    "Beleska je sacuvana.",
-                  )
-                }
-              >
-                <Save />
-                Sacuvaj belesku
-              </button>
-            </div>
-            <AdminCardFeedbackMessage feedback={cardFeedback[inquiry.id]} />
+              <label className="form-field">
+                <span className="form-label">Interna beleska</span>
+                <textarea
+                  className="form-textarea admin-note"
+                  value={inquiry.adminNote}
+                  onChange={(event) =>
+                    patchInquiry(inquiry.id, { adminNote: event.target.value })
+                  }
+                />
+              </label>
+              <div className="admin-note-actions">
+                <button
+                  className="site-button site-button--outline admin-note-save"
+                  type="button"
+                  onClick={() =>
+                    void persistInquiryChanges(
+                      inquiry.id,
+                      { adminNote: inquiry.adminNote },
+                      "Beleska je sacuvana.",
+                    )
+                  }
+                >
+                  <Save />
+                  Sacuvaj belesku
+                </button>
+              </div>
+              <AdminCardFeedbackMessage feedback={cardFeedback[inquiry.id]} />
             </article>
           );
         })}
@@ -1045,9 +1152,12 @@ type LandOfferPanelProps = {
   query: string;
   statusFilter: "all" | AdminWorkflowStatus;
   onQueryChange: (query: string) => void;
-  onStatusFilterChange: (status: "all" | AdminWorkflowStatus) => void;
+  onstatusFilterChange: (status: "all" | AdminWorkflowStatus) => void;
   onUpdate: (items: AdminLandOffer[]) => void;
-  onPersist: (id: string, changes: Partial<AdminLandOffer>) => Promise<AdminPersistResult>;
+  onPersist: (
+    id: string,
+    changes: Partial<AdminLandOffer>,
+  ) => Promise<AdminPersistResult>;
 };
 
 const LandOfferPanel = ({
@@ -1055,15 +1165,19 @@ const LandOfferPanel = ({
   query,
   statusFilter,
   onQueryChange,
-  onStatusFilterChange,
+  onstatusFilterChange,
   onUpdate,
   onPersist,
 }: LandOfferPanelProps) => {
-  const [cardFeedback, setCardFeedback] = useState<Record<string, AdminCardFeedback>>({});
+  const [cardFeedback, setCardFeedback] = useState<
+    Record<string, AdminCardFeedback>
+  >({});
   const filtered = filterWorkflowItems(offers, query, statusFilter);
 
   const patchOffer = (id: string, changes: Partial<AdminLandOffer>) => {
-    onUpdate(offers.map((item) => (item.id === id ? { ...item, ...changes } : item)));
+    onUpdate(
+      offers.map((item) => (item.id === id ? { ...item, ...changes } : item)),
+    );
   };
 
   const showCardFeedback = (id: string, feedback: AdminCardFeedback) => {
@@ -1082,7 +1196,11 @@ const LandOfferPanel = ({
 
     const result = await onPersist(id, changes);
 
-    if (result.status === "failed" && previousOffer && "adminStatus" in changes) {
+    if (
+      result.status === "failed" &&
+      previousOffer &&
+      "adminStatus" in changes
+    ) {
       patchOffer(id, { adminStatus: previousOffer.adminStatus });
     }
 
@@ -1095,7 +1213,7 @@ const LandOfferPanel = ({
         query={query}
         statusFilter={statusFilter}
         onQueryChange={onQueryChange}
-        onStatusFilterChange={onStatusFilterChange}
+        onstatusFilterChange={onstatusFilterChange}
       />
 
       <div className="admin-list">
@@ -1111,71 +1229,84 @@ const LandOfferPanel = ({
 
           return (
             <article className="admin-card" key={offer.id}>
-            <div className="admin-card__head">
-              <div>
-                <span className={`admin-status admin-status--${offer.adminStatus}`}>
-                  {adminStatusLabels[offer.adminStatus]}
-                </span>
-                <h2>{offer.fullName}</h2>
-                <p>
-                  {offer.propertyAddress} · {offer.plotAreaM2} m2 · {formatDate(offer.createdAt)}
-                </p>
+              <div className="admin-card__head">
+                <div>
+                  <span
+                    className={`admin-status admin-status--${offer.adminStatus}`}
+                  >
+                    {adminStatusLabels[offer.adminStatus]}
+                  </span>
+                  <h2>{offer.fullName}</h2>
+                  <p>
+                    {offer.propertyAddress} · {offer.plotAreaM2} m2 ·{" "}
+                    {formatDate(offer.createdAt)}
+                  </p>
+                </div>
+                <WorkflowSelect
+                  value={offer.adminStatus}
+                  onChange={(adminStatus) =>
+                    void persistOfferChanges(
+                      offer.id,
+                      { adminStatus },
+                      "Status ponude je sacuvan.",
+                    )
+                  }
+                />
               </div>
-              <WorkflowSelect
-                value={offer.adminStatus}
-                onChange={(adminStatus) =>
-                  void persistOfferChanges(offer.id, { adminStatus }, "Status ponude je sacuvan.")
-                }
-              />
-            </div>
 
-            <div className="admin-contact-grid">
-              <a href={createPhoneHref(offer.phone)}>
-                <Phone />
-                {offer.phone}
-              </a>
-              <a href={`mailto:${offer.email}`}>
-                <Mail />
-                {offer.email}
-              </a>
-            </div>
-
-            {sourceHref ? (
-              <div className="admin-card__links" aria-label="Kontekst ponude">
-                <a href={sourceHref} target="_blank" rel="noopener noreferrer">
-                  Izvor ponude
-                  <ArrowUpRight />
+              <div className="admin-contact-grid">
+                <a href={createPhoneHref(offer.phone)}>
+                  <Phone />
+                  {offer.phone}
+                </a>
+                <a href={`mailto:${offer.email}`}>
+                  <Mail />
+                  {offer.email}
                 </a>
               </div>
-            ) : null}
 
-            <p className="admin-card__message">{offer.details}</p>
+              {sourceHref ? (
+                <div className="admin-card__links" aria-label="Kontekst ponude">
+                  <a
+                    href={sourceHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Izvor ponude
+                    <ArrowUpRight />
+                  </a>
+                </div>
+              ) : null}
 
-            <label className="form-field">
-              <span className="form-label">Interna beleska</span>
-              <textarea
-                className="form-textarea admin-note"
-                value={offer.adminNote}
-                onChange={(event) => patchOffer(offer.id, { adminNote: event.target.value })}
-              />
-            </label>
-            <div className="admin-note-actions">
-              <button
-                className="site-button site-button--outline admin-note-save"
-                type="button"
-                onClick={() =>
-                  void persistOfferChanges(
-                    offer.id,
-                    { adminNote: offer.adminNote },
-                    "Beleska je sacuvana.",
-                  )
-                }
-              >
-                <Save />
-                Sacuvaj belesku
-              </button>
-            </div>
-            <AdminCardFeedbackMessage feedback={cardFeedback[offer.id]} />
+              <p className="admin-card__message">{offer.details}</p>
+
+              <label className="form-field">
+                <span className="form-label">Interna beleska</span>
+                <textarea
+                  className="form-textarea admin-note"
+                  value={offer.adminNote}
+                  onChange={(event) =>
+                    patchOffer(offer.id, { adminNote: event.target.value })
+                  }
+                />
+              </label>
+              <div className="admin-note-actions">
+                <button
+                  className="site-button site-button--outline admin-note-save"
+                  type="button"
+                  onClick={() =>
+                    void persistOfferChanges(
+                      offer.id,
+                      { adminNote: offer.adminNote },
+                      "Beleska je sacuvana.",
+                    )
+                  }
+                >
+                  <Save />
+                  Sacuvaj belesku
+                </button>
+              </div>
+              <AdminCardFeedbackMessage feedback={cardFeedback[offer.id]} />
             </article>
           );
         })}
@@ -1187,23 +1318,41 @@ const LandOfferPanel = ({
 type UnitPanelProps = {
   units: AdminUnit[];
   onUpdate: (items: AdminUnit[]) => void;
-  onPersist: (id: string, changes: Partial<AdminUnit>) => Promise<AdminPersistResult>;
+  onPersist: (
+    id: string,
+    changes: Partial<AdminUnit>,
+  ) => Promise<AdminPersistResult>;
 };
 
 const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
   const [unitQuery, setUnitQuery] = useState("");
-  const [unitStatusFilter, setUnitStatusFilter] = useState<"all" | AdminUnitStatus>("all");
+  const [unitStatusFilter, setUnitStatusFilter] = useState<
+    "all" | AdminUnitStatus
+  >("all");
   const [floorFilter, setFloorFilter] = useState("all");
-  const [publishFilter, setPublishFilter] = useState<"all" | "published" | "hidden">("all");
-  const [descriptionDrafts, setDescriptionDrafts] = useState<Record<string, string>>({});
-  const [contentDrafts, setContentDrafts] = useState<Record<string, AdminUnitContentDraft>>({});
-  const [activeContentUnitId, setActiveContentUnitId] = useState<string | null>(null);
-  const [unitFeedback, setUnitFeedback] = useState<Record<string, AdminCardFeedback>>({});
+  const [publishFilter, setPublishFilter] = useState<
+    "all" | "published" | "hidden"
+  >("all");
+  const [descriptionDrafts, setDescriptionDrafts] = useState<
+    Record<string, string>
+  >({});
+  const [contentDrafts, setContentDrafts] = useState<
+    Record<string, AdminUnitContentDraft>
+  >({});
+  const [activeContentUnitId, setActiveContentUnitId] = useState<string | null>(
+    null,
+  );
+  const [unitFeedback, setUnitFeedback] = useState<
+    Record<string, AdminCardFeedback>
+  >({});
 
   const floorOptions = useMemo(
     () =>
-      Array.from(new Set(units.map((unit) => unit.floorLabel).filter(Boolean))).sort(
-        (firstFloor, secondFloor) => getSortNumber(firstFloor) - getSortNumber(secondFloor),
+      Array.from(
+        new Set(units.map((unit) => unit.floorLabel).filter(Boolean)),
+      ).sort(
+        (firstFloor, secondFloor) =>
+          getSortNumber(firstFloor) - getSortNumber(secondFloor),
       ),
     [units],
   );
@@ -1225,16 +1374,21 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
         ]
           .join(" ")
           .toLowerCase();
-        const matchesQuery = !normalizedQuery || searchable.includes(normalizedQuery);
-        const matchesStatus = unitStatusFilter === "all" || unit.status === unitStatusFilter;
-        const matchesFloor = floorFilter === "all" || unit.floorLabel === floorFilter;
+        const matchesQuery =
+          !normalizedQuery || searchable.includes(normalizedQuery);
+        const matchesStatus =
+          unitStatusFilter === "all" || unit.status === unitStatusFilter;
+        const matchesFloor =
+          floorFilter === "all" || unit.floorLabel === floorFilter;
         const matchesPublish =
           publishFilter === "all" ||
-          (publishFilter === "published" ? unit.isPublished : !unit.isPublished);
+          (publishFilter === "published"
+            ? unit.isPublished
+            : !unit.isPublished);
 
-        return matchesQuery && matchesStatus && matchesFloor && matchesPublish;
+        return matchesQuery && matchesstatus && matchesFloor && matchesPublish;
       }),
-    [floorFilter, publishFilter, unitQuery, unitStatusFilter, units],
+    [floorFilter, publishFilter, unitQuery, unitstatusFilter, units],
   );
 
   const persistUnitChange = async (
@@ -1248,12 +1402,18 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
       ...current,
       [unit.id]: { tone: "pending", message: "Cuvanje izmene..." },
     }));
-    onUpdate(units.map((item) => (item.id === unit.id ? { ...item, ...changes } : item)));
+    onUpdate(
+      units.map((item) =>
+        item.id === unit.id ? { ...item, ...changes } : item,
+      ),
+    );
 
     const result = await onPersist(unit.id, changes);
 
     if (result.status === "failed") {
-      onUpdate(units.map((item) => (item.id === unit.id ? previousUnit : item)));
+      onUpdate(
+        units.map((item) => (item.id === unit.id ? previousUnit : item)),
+      );
     }
 
     setUnitFeedback((current) => ({
@@ -1270,7 +1430,8 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
         ...current,
         [unit.id]: {
           tone: "error",
-          message: "Kratak opis ne sme biti prazan jer se prikazuje na javnoj ponudi.",
+          message:
+            "Kratak opis ne sme biti prazan jer se prikazuje na javnoj ponudi.",
         },
       }));
       return;
@@ -1279,15 +1440,25 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
     if (draft === unit.shortDescription) {
       setUnitFeedback((current) => ({
         ...current,
-        [unit.id]: { tone: "success", message: "Nema novih izmena za cuvanje." },
+        [unit.id]: {
+          tone: "success",
+          message: "Nema novih izmena za cuvanje.",
+        },
       }));
       return;
     }
 
-    await persistUnitChange(unit, { shortDescription: draft }, "Kratak opis stana je sacuvan.");
+    await persistUnitChange(
+      unit,
+      { shortDescription: draft },
+      "Kratak opis stana je sacuvan.",
+    );
   };
 
-  const updateContentDraft = (unit: AdminUnit, changes: Partial<AdminUnitContentDraft>) => {
+  const updateContentDraft = (
+    unit: AdminUnit,
+    changes: Partial<AdminUnitContentDraft>,
+  ) => {
     setContentDrafts((current) => ({
       ...current,
       [unit.id]: {
@@ -1309,7 +1480,8 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
         ...current,
         [unit.id]: {
           tone: "error",
-          message: "Opis detalja ne sme biti prazan jer se prikazuje na stranici stana.",
+          message:
+            "Opis detalja ne sme biti prazan jer se prikazuje na stranici stana.",
         },
       }));
       return;
@@ -1322,7 +1494,10 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
     ) {
       setUnitFeedback((current) => ({
         ...current,
-        [unit.id]: { tone: "success", message: "Nema novih content/SEO izmena za cuvanje." },
+        [unit.id]: {
+          tone: "success",
+          message: "Nema novih content/SEO izmena za cuvanje.",
+        },
       }));
       return;
     }
@@ -1342,7 +1517,7 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
           <span className="sr-only">Pretraga stanova</span>
           <input
             type="search"
-            placeholder="Pretrazite stan, etazu, strukturu ili opis..."
+            placeholder="Pretražite stan, etazu, strukturu ili opis..."
             value={unitQuery}
             onChange={(event) => setUnitQuery(event.target.value)}
           />
@@ -1350,15 +1525,17 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
 
         <label className="admin-filter">
           <Filter />
-          <span>Status</span>
+          <span>status</span>
           <select
             value={unitStatusFilter}
-            onChange={(event) => setUnitStatusFilter(event.target.value as "all" | AdminUnitStatus)}
+            onChange={(event) =>
+              setUnitStatusFilter(event.target.value as "all" | AdminUnitStatus)
+            }
           >
             <option value="all">Svi statusi</option>
-            {unitStatuses.map((status) => (
+            {unitstatuses.map((status) => (
               <option key={status} value={status}>
-                {adminUnitStatusLabels[status]}
+                {adminUnitstatusLabels[status]}
               </option>
             ))}
           </select>
@@ -1366,7 +1543,10 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
 
         <label className="admin-filter">
           <span>Etaza</span>
-          <select value={floorFilter} onChange={(event) => setFloorFilter(event.target.value)}>
+          <select
+            value={floorFilter}
+            onChange={(event) => setFloorFilter(event.target.value)}
+          >
             <option value="all">Sve etaze</option>
             {floorOptions.map((floor) => (
               <option key={floor} value={floor}>
@@ -1381,7 +1561,9 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
           <select
             value={publishFilter}
             onChange={(event) =>
-              setPublishFilter(event.target.value as "all" | "published" | "hidden")
+              setPublishFilter(
+                event.target.value as "all" | "published" | "hidden",
+              )
             }
           >
             <option value="all">Svi stanovi</option>
@@ -1392,8 +1574,8 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
       </div>
 
       <div className="admin-unit-summary" role="status">
-        Prikazano {filteredUnits.length} od {units.length} stanova. Status i objava se cuvaju odmah;
-        kratak opis cuvajte dugmetom po stanu.
+        Prikazano {filteredUnits.length} od {units.length} stanova. Status i
+        objava se cuvaju odmah; kratak opis cuvajte dugmetom po stanu.
       </div>
 
       <div className="admin-table-wrap">
@@ -1402,7 +1584,7 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
             <tr>
               <th>Jedinica</th>
               <th>Detalji</th>
-              <th>Status</th>
+              <th>status</th>
               <th>Kratak opis za javnu ponudu</th>
               <th>Tlocrt i javni prikaz</th>
               <th>Objava</th>
@@ -1410,9 +1592,12 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
           </thead>
           <tbody>
             {filteredUnits.map((unit) => {
-              const descriptionDraft = descriptionDrafts[unit.id] ?? unit.shortDescription;
-              const hasDescriptionChange = descriptionDraft.trim() !== unit.shortDescription;
-              const contentDraft = contentDrafts[unit.id] ?? createUnitContentDraft(unit);
+              const descriptionDraft =
+                descriptionDrafts[unit.id] ?? unit.shortDescription;
+              const hasDescriptionChange =
+                descriptionDraft.trim() !== unit.shortDescription;
+              const contentDraft =
+                contentDrafts[unit.id] ?? createUnitContentDraft(unit);
               const hasContentChange =
                 contentDraft.fullDescription.trim() !== unit.fullDescription ||
                 contentDraft.seoTitle.trim() !== unit.seoTitle ||
@@ -1420,217 +1605,261 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
               const isContentOpen = activeContentUnitId === unit.id;
 
               return (
-              <Fragment key={unit.id}>
-              <tr>
-                <td>
-                  <strong>{unit.unitCode}</strong>
-                  <span>{formatUnitType(unit.unitType)}</span>
-                  <a
-                    className="admin-table-link"
-                    href={unit.publicPath ?? getApartmentPublicPath(unit.unitCode)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Javni detalj
-                    <ArrowUpRight />
-                  </a>
-                </td>
-                <td>
-                  <dl className="admin-unit-facts">
-                    <div>
-                      <dt>Etaza</dt>
-                      <dd>{unit.floorLabel}</dd>
-                    </div>
-                    <div>
-                      <dt>Povrsina</dt>
-                      <dd>{unit.areaM2}</dd>
-                    </div>
-                    <div>
-                      <dt>Struktura</dt>
-                      <dd>{unit.roomStructure}</dd>
-                    </div>
-                  </dl>
-                </td>
-                <td>
-                  <span className={`admin-unit-status admin-unit-status--${unit.status}`}>
-                    {adminUnitStatusLabels[unit.status]}
-                  </span>
-                  <select
-                    className="admin-table-select"
-                    aria-label={`Promeni status za ${unit.unitCode}`}
-                    value={unit.status}
-                    onChange={(event) =>
-                      void persistUnitChange(
-                        unit,
-                        { status: event.target.value as AdminUnitStatus },
-                        "Status stana je sacuvan.",
-                      )
-                    }
-                  >
-                    {unitStatuses.map((status) => (
-                      <option key={status} value={status}>
-                        {adminUnitStatusLabels[status]}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td>
-                  <label className="admin-unit-description">
-                    <span>Opis na kartici/detalju</span>
-                    <textarea
-                      value={descriptionDraft}
-                      rows={3}
-                      maxLength={220}
-                      onChange={(event) =>
-                        setDescriptionDrafts((current) => ({
-                          ...current,
-                          [unit.id]: event.target.value,
-                        }))
-                      }
-                    />
-                  </label>
-                  <div className="admin-unit-description__actions">
-                    <small>{descriptionDraft.trim().length}/220</small>
-                    <button
-                      className="site-button site-button--outline admin-note-save"
-                      type="button"
-                      disabled={!hasDescriptionChange}
-                      onClick={() => void saveDescription(unit)}
-                    >
-                      <Save />
-                      Sacuvaj opis
-                    </button>
-                  </div>
-                  <AdminCardFeedbackMessage feedback={unitFeedback[unit.id]} />
-                </td>
-                <td>
-                  <div className="admin-unit-assets">
-                    {unit.floorPlanPath ? (
-                      <a href={unit.floorPlanPath} target="_blank" rel="noopener noreferrer">
-                        Tlocrt spreman
+                <Fragment key={unit.id}>
+                  <tr>
+                    <td>
+                      <strong>{unit.unitCode}</strong>
+                      <span>{formatUnitType(unit.unitType)}</span>
+                      <a
+                        className="admin-table-link"
+                        href={
+                          unit.publicPath ??
+                          getApartmentPublicPath(unit.unitCode)
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Javni detalj
                         <ArrowUpRight />
                       </a>
-                    ) : (
-                      <span className="admin-unit-warning">
-                        <AlertTriangle />
-                        Nedostaje tlocrt
-                      </span>
-                    )}
-                    <small>{unit.planVariant ? formatPlanVariant(unit.planVariant) : "Plan nije oznacen"}</small>
-                    <button
-                      className="admin-table-secondary-action"
-                      type="button"
-                      onClick={() => setActiveContentUnitId(isContentOpen ? null : unit.id)}
-                    >
-                      <FileText />
-                      {isContentOpen ? "Sakrij opis/SEO" : "Opis i SEO"}
-                    </button>
-                  </div>
-                </td>
-                <td>
-                  <label className="admin-toggle">
-                    <input
-                      type="checkbox"
-                      checked={unit.isPublished}
-                      onChange={(event) =>
-                        void persistUnitChange(
-                          unit,
-                          { isPublished: event.target.checked },
-                          event.target.checked ? "Stan je objavljen." : "Stan je sakriven.",
-                        )
-                      }
-                    />
-                    <span>{unit.isPublished ? "Objavljeno" : "Sakriveno"}</span>
-                  </label>
-                </td>
-              </tr>
-              {isContentOpen ? (
-                <tr className="admin-unit-content-row">
-                  <td colSpan={6}>
-                    <div className="admin-unit-content-editor">
-                      <div className="admin-unit-content-editor__head">
+                    </td>
+                    <td>
+                      <dl className="admin-unit-facts">
                         <div>
-                          <strong>Opis detalja i SEO za {unit.unitCode}</strong>
-                          <p>
-                            Ova polja hrane stranicu detalja stana kada su podaci
-                            ucitani iz Supabase baze.
-                          </p>
+                          <dt>Etaza</dt>
+                          <dd>{unit.floorLabel}</dd>
                         </div>
-                        <a
-                          className="admin-table-link"
-                          href={unit.publicPath ?? getApartmentPublicPath(unit.unitCode)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Pogledaj javno
-                          <ArrowUpRight />
-                        </a>
-                      </div>
-
-                      <div className="admin-unit-content-editor__grid">
-                        <label className="form-field">
-                          <span className="form-label">Opis na detalju stana *</span>
-                          <textarea
-                            className="form-textarea"
-                            rows={5}
-                            value={contentDraft.fullDescription}
-                            onChange={(event) =>
-                              updateContentDraft(unit, { fullDescription: event.target.value })
-                            }
-                          />
-                        </label>
-
-                        <div className="admin-unit-seo-fields">
-                          <label className="form-field">
-                            <span className="form-label">SEO title</span>
-                            <input
-                              className="form-input"
-                              maxLength={70}
-                              value={contentDraft.seoTitle}
-                              placeholder={`Stan ${unit.unitCode.replace(/\D/g, "")} | Heroja Pinkija 13`}
-                              onChange={(event) =>
-                                updateContentDraft(unit, { seoTitle: event.target.value })
-                              }
-                            />
-                            <small>{contentDraft.seoTitle.trim().length}/70</small>
-                          </label>
-
-                          <label className="form-field">
-                            <span className="form-label">SEO description</span>
-                            <textarea
-                              className="form-textarea"
-                              rows={3}
-                              maxLength={170}
-                              value={contentDraft.seoDescription}
-                              placeholder="Kratak opis stana za search/social preview."
-                              onChange={(event) =>
-                                updateContentDraft(unit, { seoDescription: event.target.value })
-                              }
-                            />
-                            <small>{contentDraft.seoDescription.trim().length}/170</small>
-                          </label>
+                        <div>
+                          <dt>Povrsina</dt>
+                          <dd>{unit.areaM2}</dd>
                         </div>
-                      </div>
-
-                      <div className="admin-unit-content-editor__actions">
-                        <p>
-                          Preporuka: title do 60-70 karaktera, description do 150-170.
-                        </p>
+                        <div>
+                          <dt>Struktura</dt>
+                          <dd>{unit.roomStructure}</dd>
+                        </div>
+                      </dl>
+                    </td>
+                    <td>
+                      <span
+                        className={`admin-unit-status admin-unit-status--${unit.status}`}
+                      >
+                        {adminUnitStatusLabels[unit.status]}
+                      </span>
+                      <select
+                        className="admin-table-select"
+                        aria-label={`Promeni status za ${unit.unitCode}`}
+                        value={unit.status}
+                        onChange={(event) =>
+                          void persistUnitChange(
+                            unit,
+                            { status: event.target.value as AdminUnitStatus },
+                            "Status stana je sacuvan.",
+                          )
+                        }
+                      >
+                        {unitStatuses.map((status) => (
+                          <option key={status} value={status}>
+                            {adminUnitStatusLabels[status]}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>
+                      <label className="admin-unit-description">
+                        <span>Opis na kartici/detalju</span>
+                        <textarea
+                          value={descriptionDraft}
+                          rows={3}
+                          maxLength={220}
+                          onChange={(event) =>
+                            setDescriptionDrafts((current) => ({
+                              ...current,
+                              [unit.id]: event.target.value,
+                            }))
+                          }
+                        />
+                      </label>
+                      <div className="admin-unit-description__actions">
+                        <small>{descriptionDraft.trim().length}/220</small>
                         <button
-                          className="site-button site-button--dark"
+                          className="site-button site-button--outline admin-note-save"
                           type="button"
-                          disabled={!hasContentChange}
-                          onClick={() => void saveContent(unit)}
+                          disabled={!hasDescriptionChange}
+                          onClick={() => void saveDescription(unit)}
                         >
                           <Save />
-                          Sacuvaj opis i SEO
+                          Sacuvaj opis
                         </button>
                       </div>
-                    </div>
-                  </td>
-                </tr>
-              ) : null}
-              </Fragment>
+                      <AdminCardFeedbackMessage
+                        feedback={unitFeedback[unit.id]}
+                      />
+                    </td>
+                    <td>
+                      <div className="admin-unit-assets">
+                        {unit.floorPlanPath ? (
+                          <a
+                            href={unit.floorPlanPath}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Tlocrt spreman
+                            <ArrowUpRight />
+                          </a>
+                        ) : (
+                          <span className="admin-unit-warning">
+                            <AlertTriangle />
+                            Nedostaje tlocrt
+                          </span>
+                        )}
+                        <small>
+                          {unit.planVariant
+                            ? formatPlanVariant(unit.planVariant)
+                            : "Plan nije oznacen"}
+                        </small>
+                        <button
+                          className="admin-table-secondary-action"
+                          type="button"
+                          onClick={() =>
+                            setActiveContentUnitId(
+                              isContentOpen ? null : unit.id,
+                            )
+                          }
+                        >
+                          <FileText />
+                          {isContentOpen ? "Sakrij opis/SEO" : "Opis i SEO"}
+                        </button>
+                      </div>
+                    </td>
+                    <td>
+                      <label className="admin-toggle">
+                        <input
+                          type="checkbox"
+                          checked={unit.isPublished}
+                          onChange={(event) =>
+                            void persistUnitChange(
+                              unit,
+                              { isPublished: event.target.checked },
+                              event.target.checked
+                                ? "Stan je objavljen."
+                                : "Stan je sakriven.",
+                            )
+                          }
+                        />
+                        <span>
+                          {unit.isPublished ? "Objavljeno" : "Sakriveno"}
+                        </span>
+                      </label>
+                    </td>
+                  </tr>
+                  {isContentOpen ? (
+                    <tr className="admin-unit-content-row">
+                      <td colSpan={6}>
+                        <div className="admin-unit-content-editor">
+                          <div className="admin-unit-content-editor__head">
+                            <div>
+                              <strong>
+                                Opis detalja i SEO za {unit.unitCode}
+                              </strong>
+                              <p>
+                                Ova polja hrane stranicu detalja stana kada su
+                                podaci ucitani iz Supabase baze.
+                              </p>
+                            </div>
+                            <a
+                              className="admin-table-link"
+                              href={
+                                unit.publicPath ??
+                                getApartmentPublicPath(unit.unitCode)
+                              }
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Pogledaj javno
+                              <ArrowUpRight />
+                            </a>
+                          </div>
+
+                          <div className="admin-unit-content-editor__grid">
+                            <label className="form-field">
+                              <span className="form-label">
+                                Opis na detalju stana *
+                              </span>
+                              <textarea
+                                className="form-textarea"
+                                rows={5}
+                                value={contentDraft.fullDescription}
+                                onChange={(event) =>
+                                  updateContentDraft(unit, {
+                                    fullDescription: event.target.value,
+                                  })
+                                }
+                              />
+                            </label>
+
+                            <div className="admin-unit-seo-fields">
+                              <label className="form-field">
+                                <span className="form-label">SEO title</span>
+                                <input
+                                  className="form-input"
+                                  maxLength={70}
+                                  value={contentDraft.seoTitle}
+                                  placeholder={`Stan ${unit.unitCode.replace(/\D/g, "")} | Heroja Pinkija 13`}
+                                  onChange={(event) =>
+                                    updateContentDraft(unit, {
+                                      seoTitle: event.target.value,
+                                    })
+                                  }
+                                />
+                                <small>
+                                  {contentDraft.seoTitle.trim().length}/70
+                                </small>
+                              </label>
+
+                              <label className="form-field">
+                                <span className="form-label">
+                                  SEO description
+                                </span>
+                                <textarea
+                                  className="form-textarea"
+                                  rows={3}
+                                  maxLength={170}
+                                  value={contentDraft.seoDescription}
+                                  placeholder="Kratak opis stana za search/social preview."
+                                  onChange={(event) =>
+                                    updateContentDraft(unit, {
+                                      seoDescription: event.target.value,
+                                    })
+                                  }
+                                />
+                                <small>
+                                  {contentDraft.seoDescription.trim().length}
+                                  /170
+                                </small>
+                              </label>
+                            </div>
+                          </div>
+
+                          <div className="admin-unit-content-editor__actions">
+                            <p>
+                              Preporuka: title do 60-70 karaktera, description
+                              do 150-170.
+                            </p>
+                            <button
+                              className="site-button site-button--dark"
+                              type="button"
+                              disabled={!hasContentChange}
+                              onClick={() => void saveContent(unit)}
+                            >
+                              <Save />
+                              Sacuvaj opis i SEO
+                            </button>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : null}
+                </Fragment>
               );
             })}
           </tbody>
@@ -1661,16 +1890,20 @@ type ProjectPanelProps = {
   ) => Promise<AdminPersistResult>;
 };
 
-type ProjectCoverageStatus = "connected" | "attention" | "static";
+type ProjectCoveragestatus = "connected" | "attention" | "static";
 
-const projectStatusLabels: Record<AdminProjectDraft["projectStatus"], string> = {
-  planned: "Planirano",
-  active: "Aktivno",
-  completed: "Zavrseno",
-  hidden: "Sakriveno",
-};
+const projectStatusLabels: Record<AdminProjectDraft["projectStatus"], string> =
+  {
+    planned: "Planirano",
+    active: "Aktivno",
+    completed: "Zavrseno",
+    hidden: "Sakriveno",
+  };
 
-const timelineStateLabels: Record<AdminConstructionUpdate["timelineState"], string> = {
+const timelineStateLabels: Record<
+  AdminConstructionUpdate["timelineState"],
+  string
+> = {
   done: "Zavrseno",
   active: "Aktuelno",
   upcoming: "Planirano",
@@ -1703,7 +1936,9 @@ const ProjectPanel = ({
     changes: Partial<AdminConstructionUpdate>,
   ) => {
     onConstructionUpdatesUpdate(
-      constructionUpdates.map((step) => (step.id === id ? { ...step, ...changes } : step)),
+      constructionUpdates.map((step) =>
+        step.id === id ? { ...step, ...changes } : step,
+      ),
     );
     setConstructionFeedback((current) => ({
       ...current,
@@ -1725,7 +1960,9 @@ const ProjectPanel = ({
     }));
   };
   const publishedUnits = units.filter((unit) => unit.isPublished);
-  const availableUnits = publishedUnits.filter((unit) => unit.status === "available");
+  const availableUnits = publishedUnits.filter(
+    (unit) => unit.status === "available",
+  );
   const publishedProjectImages = mediaItems.filter(
     (item) =>
       item.isPublished &&
@@ -1743,12 +1980,12 @@ const ProjectPanel = ({
     title: string;
     detail: string;
     meta: string;
-    status: ProjectCoverageStatus;
+    status: ProjectCoveragestatus;
   }> = [
     {
       title: "Hero i osnovni opis",
       detail: projectDraft.shortDescription.trim()
-        ? "Javna strana moze da koristi naziv, status i kratak opis projekta."
+        ? "Javna strana može da koristi naziv, status i kratak opis projekta."
         : "Dodajte kratak opis koji odmah objasnjava lokaciju i tip ponude.",
       meta: "projects.name, status_label, short_description",
       status: projectDraft.shortDescription.trim() ? "connected" : "attention",
@@ -1756,24 +1993,26 @@ const ProjectPanel = ({
     {
       title: "Detaljan opis projekta",
       detail: projectDraft.fullDescription.trim()
-        ? "Dugi opis je spreman za SEO, structured data i buduce javne sekcije."
-        : "Unesite opis koji jasno razdvaja stanove, poslovni deo, garaze i ostave.",
+        ? "Dugi opis je spreman za SEO, structured data i buduće javne sekcije."
+        : "Unesite opis koji jasno razdvaja stanove, poslovni deo, garaže i ostave.",
       meta: "projects.full_description",
       status: projectDraft.fullDescription.trim() ? "connected" : "attention",
     },
     {
       title: "Lokacija",
       detail: projectDraft.locationDescription.trim()
-        ? "Lokacijski tekst postoji i moze da hrani javnu sekciju lokacije."
-        : "Dodajte tekst o mikro-lokaciji, saobracaju i sadrzajima u blizini.",
+        ? "Lokacijski tekst postoji i može da hrani javnu sekciju lokacije."
+        : "Dodajte tekst o mikro-lokaciji, saobracaju i sadržajima u blizini.",
       meta: "projects.location_description",
-      status: projectDraft.locationDescription.trim() ? "connected" : "attention",
+      status: projectDraft.locationDescription.trim()
+        ? "connected"
+        : "attention",
     },
     {
       title: "Rokovi i status radova",
       detail: projectDatesReady
-        ? "Pocetak i planirani zavrsetak su popunjeni za prikaz rokova."
-        : "Unesite pocetak i planirani zavrsetak da kupci dobiju jasan okvir.",
+        ? "Početak i planirani završetak su popunjeni za prikaz rokova."
+        : "Unesite početak i planirani završetak da kupci dobiju jasan okvir.",
       meta: "projects.construction_* + status_label",
       status: projectDatesReady ? "connected" : "attention",
     },
@@ -1801,13 +2040,19 @@ const ProjectPanel = ({
       title: "Parking, ostave i prednosti",
       detail:
         "Ove prodajne sekcije su trenutno kvalitetno postavljene u kodu; za pun CMS treba zaseban model sekcija ili page_sections.",
-      meta: "staticki v1 sadrzaj",
+      meta: "staticki v1 sadržaj",
       status: "static",
     },
   ];
-  const connectedCoverage = projectCoverage.filter((item) => item.status === "connected").length;
-  const actionableCoverage = projectCoverage.filter((item) => item.status !== "static").length;
-  const coveragePercent = Math.round((connectedCoverage / actionableCoverage) * 100);
+  const connectedCoverage = projectCoverage.filter(
+    (item) => item.status === "connected",
+  ).length;
+  const actionableCoverage = projectCoverage.filter(
+    (item) => item.status !== "static",
+  ).length;
+  const coveragePercent = Math.round(
+    (connectedCoverage / actionableCoverage) * 100,
+  );
 
   return (
     <section className="admin-section admin-project-panel">
@@ -1830,21 +2075,21 @@ const ProjectPanel = ({
             <Eye />
             Otvori javnu stranu
           </Link>
-          <Link
-            className="site-button site-button--dark"
-            to="/admin/stanovi"
-          >
+          <Link className="site-button site-button--dark" to="/admin/stanovi">
             <Home />
-            Statusi stanova
+            statusi stanova
           </Link>
         </div>
       </div>
 
       <div className="admin-project-metrics">
         <article>
-          <span>Spremnost sadrzaja</span>
+          <span>Spremnost sadržaja</span>
           <strong>{coveragePercent}%</strong>
-          <p>{connectedCoverage}/{actionableCoverage} povezanih oblasti je popunjeno.</p>
+          <p>
+            {connectedCoverage}/{actionableCoverage} povezanih oblasti je
+            popunjeno.
+          </p>
         </article>
         <article>
           <span>Objavljeni stanovi</span>
@@ -1857,14 +2102,17 @@ const ProjectPanel = ({
           <p>Objavljeni hero/status vizuali u media biblioteci.</p>
         </article>
         <article>
-          <span>Status</span>
+          <span>status</span>
           <strong>{projectStatusLabels[projectDraft.projectStatus]}</strong>
           <p>{projectDraft.statusLabel || "Dodajte javnu oznaku statusa."}</p>
         </article>
       </div>
 
       <div className="admin-project-layout">
-        <div className="admin-project-checklist" aria-label="Pregled javnih sekcija projekta">
+        <div
+          className="admin-project-checklist"
+          aria-label="Pregled javnih sekcija projekta"
+        >
           {projectCoverage.map((item) => (
             <article
               className={`admin-project-check admin-project-check--${item.status}`}
@@ -1884,7 +2132,10 @@ const ProjectPanel = ({
           ))}
         </div>
 
-        <aside className="admin-project-preview" aria-label="Brzi pregled javnog projekta">
+        <aside
+          className="admin-project-preview"
+          aria-label="Brzi pregled javnog projekta"
+        >
           <p className="section-eyebrow">Brzi preview</p>
           <h3>{projectDraft.name}</h3>
           <dl>
@@ -1894,28 +2145,35 @@ const ProjectPanel = ({
             </div>
             <div>
               <dt>Status</dt>
-              <dd>{projectDraft.statusLabel || projectStatusLabels[projectDraft.projectStatus]}</dd>
+              <dd>
+                {projectDraft.statusLabel ||
+                  projectStatusLabels[projectDraft.projectStatus]}
+              </dd>
             </div>
             <div>
               <dt>Spratnost</dt>
               <dd>{projectDraft.floorStructure || "Nije uneto"}</dd>
             </div>
             <div>
-              <dt>Planirani zavrsetak</dt>
+              <dt>Planirani završetak</dt>
               <dd>{projectDraft.constructionEndDate || "Nije uneto"}</dd>
             </div>
           </dl>
           <p>
             Za punu CMS kontrolu naredni korak je da parking/ostave, benefiti i
-            timeline dobiju posebne uredjive sekcije, a ne samo osnovna polja projekta.
+            timeline dobiju posebne uredjive sekcije, a ne samo osnovna polja
+            projekta.
           </p>
         </aside>
       </div>
 
-      <div className="admin-construction-editor" aria-label="Uredjivanje statusa radova">
+      <div
+        className="admin-construction-editor"
+        aria-label="Uredjivanje statusa radova"
+      >
         <div className="admin-construction-editor__head">
           <div>
-            <p className="section-eyebrow">Status radova</p>
+            <p className="section-eyebrow">status radova</p>
             <h3>Timeline koji se prikazuje na javnoj strani.</h3>
             <p>
               Koraci su povezani sa `construction_updates` tabelom. Objavljeni
@@ -1937,7 +2195,9 @@ const ProjectPanel = ({
                       type="checkbox"
                       checked={step.isPublished}
                       onChange={(event) =>
-                        updateConstructionStep(step.id, { isPublished: event.target.checked })
+                        updateConstructionStep(step.id, {
+                          isPublished: event.target.checked,
+                        })
                       }
                     />
                     Objavljeno
@@ -1950,7 +2210,9 @@ const ProjectPanel = ({
                     className="form-input"
                     value={step.title}
                     onChange={(event) =>
-                      updateConstructionStep(step.id, { title: event.target.value })
+                      updateConstructionStep(step.id, {
+                        title: event.target.value,
+                      })
                     }
                   />
                 </label>
@@ -1963,7 +2225,9 @@ const ProjectPanel = ({
                       type="date"
                       value={step.updateDate}
                       onChange={(event) =>
-                        updateConstructionStep(step.id, { updateDate: event.target.value })
+                        updateConstructionStep(step.id, {
+                          updateDate: event.target.value,
+                        })
                       }
                     />
                   </label>
@@ -1990,26 +2254,31 @@ const ProjectPanel = ({
                       className="form-input"
                       value={step.tag}
                       onChange={(event) =>
-                        updateConstructionStep(step.id, { tag: event.target.value })
+                        updateConstructionStep(step.id, {
+                          tag: event.target.value,
+                        })
                       }
                     />
                   </label>
                   <label className="form-field">
-                    <span className="form-label">Stanje</span>
+                    <span className="form-label">stanje</span>
                     <select
                       className="form-select"
                       value={step.timelineState}
                       onChange={(event) =>
                         updateConstructionStep(step.id, {
-                          timelineState: event.target.value as AdminConstructionUpdate["timelineState"],
+                          timelineState: event.target
+                            .value as AdminConstructionUpdate["timelineState"],
                         })
                       }
                     >
-                      {Object.entries(timelineStateLabels).map(([value, label]) => (
-                        <option key={value} value={value}>
-                          {label}
-                        </option>
-                      ))}
+                      {Object.entries(timelineStateLabels).map(
+                        ([value, label]) => (
+                          <option key={value} value={value}>
+                            {label}
+                          </option>
+                        ),
+                      )}
                     </select>
                   </label>
                 </div>
@@ -2020,7 +2289,9 @@ const ProjectPanel = ({
                     className="form-input"
                     value={step.statusLabel}
                     onChange={(event) =>
-                      updateConstructionStep(step.id, { statusLabel: event.target.value })
+                      updateConstructionStep(step.id, {
+                        statusLabel: event.target.value,
+                      })
                     }
                     placeholder={timelineStateLabels[step.timelineState]}
                   />
@@ -2032,7 +2303,9 @@ const ProjectPanel = ({
                     className="form-textarea"
                     value={step.shortDescription}
                     onChange={(event) =>
-                      updateConstructionStep(step.id, { shortDescription: event.target.value })
+                      updateConstructionStep(step.id, {
+                        shortDescription: event.target.value,
+                      })
                     }
                   />
                 </label>
@@ -2077,25 +2350,28 @@ const ProjectPanel = ({
           <input
             className="form-input"
             value={projectDraft.statusLabel}
-            onChange={(event) => updateProject({ statusLabel: event.target.value })}
+            onChange={(event) =>
+              updateProject({ statusLabel: event.target.value })
+            }
             placeholder="Izgradnja u toku"
           />
         </label>
 
         <label className="form-field">
-          <span className="form-label">Status projekta</span>
+          <span className="form-label">status projekta</span>
           <select
             className="form-select"
             value={projectDraft.projectStatus}
             onChange={(event) =>
               updateProject({
-                projectStatus: event.target.value as AdminProjectDraft["projectStatus"],
+                projectStatus: event.target
+                  .value as AdminProjectDraft["projectStatus"],
               })
             }
           >
             <option value="planned">Planirano</option>
             <option value="active">Aktivno</option>
-            <option value="completed">Zavrseno</option>
+            <option value="completed">Završeno</option>
             <option value="hidden">Sakriveno</option>
           </select>
         </label>
@@ -2105,7 +2381,9 @@ const ProjectPanel = ({
           <textarea
             className="form-textarea"
             value={projectDraft.shortDescription}
-            onChange={(event) => updateProject({ shortDescription: event.target.value })}
+            onChange={(event) =>
+              updateProject({ shortDescription: event.target.value })
+            }
           />
         </label>
 
@@ -2114,7 +2392,9 @@ const ProjectPanel = ({
           <textarea
             className="form-textarea"
             value={projectDraft.fullDescription}
-            onChange={(event) => updateProject({ fullDescription: event.target.value })}
+            onChange={(event) =>
+              updateProject({ fullDescription: event.target.value })
+            }
           />
         </label>
 
@@ -2123,7 +2403,9 @@ const ProjectPanel = ({
           <textarea
             className="form-textarea"
             value={projectDraft.locationDescription}
-            onChange={(event) => updateProject({ locationDescription: event.target.value })}
+            onChange={(event) =>
+              updateProject({ locationDescription: event.target.value })
+            }
           />
         </label>
 
@@ -2132,27 +2414,33 @@ const ProjectPanel = ({
           <input
             className="form-input"
             value={projectDraft.floorStructure}
-            onChange={(event) => updateProject({ floorStructure: event.target.value })}
+            onChange={(event) =>
+              updateProject({ floorStructure: event.target.value })
+            }
           />
         </label>
 
         <label className="form-field">
-          <span className="form-label">Pocetak izgradnje</span>
+          <span className="form-label">Početak izgradnje</span>
           <input
             className="form-input"
             type="date"
             value={projectDraft.constructionStartDate}
-            onChange={(event) => updateProject({ constructionStartDate: event.target.value })}
+            onChange={(event) =>
+              updateProject({ constructionStartDate: event.target.value })
+            }
           />
         </label>
 
         <label className="form-field">
-          <span className="form-label">Planirani zavrsetak</span>
+          <span className="form-label">Planirani završetak</span>
           <input
             className="form-input"
             type="date"
             value={projectDraft.constructionEndDate}
-            onChange={(event) => updateProject({ constructionEndDate: event.target.value })}
+            onChange={(event) =>
+              updateProject({ constructionEndDate: event.target.value })
+            }
           />
         </label>
 
@@ -2161,7 +2449,9 @@ const ProjectPanel = ({
           <input
             className="form-input"
             value={projectDraft.heroImageUrl}
-            onChange={(event) => updateProject({ heroImageUrl: event.target.value })}
+            onChange={(event) =>
+              updateProject({ heroImageUrl: event.target.value })
+            }
             placeholder="/images/heroja-pinkija-13/gradilisna-tabla.jpg"
           />
         </label>
@@ -2171,7 +2461,9 @@ const ProjectPanel = ({
           <input
             className="form-input"
             value={projectDraft.seoTitle}
-            onChange={(event) => updateProject({ seoTitle: event.target.value })}
+            onChange={(event) =>
+              updateProject({ seoTitle: event.target.value })
+            }
           />
         </label>
 
@@ -2180,7 +2472,9 @@ const ProjectPanel = ({
           <textarea
             className="form-textarea"
             value={projectDraft.seoDescription}
-            onChange={(event) => updateProject({ seoDescription: event.target.value })}
+            onChange={(event) =>
+              updateProject({ seoDescription: event.target.value })
+            }
           />
         </label>
 
@@ -2201,8 +2495,14 @@ type MediaPanelProps = {
   projectDraft: AdminProjectDraft | null;
   units: AdminUnit[];
   onUpdate: (items: AdminMediaItem[]) => void;
-  onPersist: (id: string, changes: Partial<AdminMediaItem>) => Promise<AdminPersistResult>;
-  onUpload: (item: AdminMediaItem, file: File) => Promise<AdminMediaUploadPersistResult>;
+  onPersist: (
+    id: string,
+    changes: Partial<AdminMediaItem>,
+  ) => Promise<AdminPersistResult>;
+  onUpload: (
+    item: AdminMediaItem,
+    file: File,
+  ) => Promise<AdminMediaUploadPersistResult>;
   onCreate: (
     draft: AdminMediaCreateDraft,
     file?: File,
@@ -2210,7 +2510,9 @@ type MediaPanelProps = {
   onDelete: (item: AdminMediaItem) => Promise<AdminMediaDeletePersistResult>;
 };
 
-const createDefaultMediaDraft = (units: AdminUnit[]): AdminMediaCreateDraft => ({
+const createDefaultMediaDraft = (
+  units: AdminUnit[],
+): AdminMediaCreateDraft => ({
   title: "",
   mediaType: "project_image",
   ownerType: "project",
@@ -2230,36 +2532,53 @@ const MediaPanel = ({
   onCreate,
   onDelete,
 }: MediaPanelProps) => {
-  const [mediaTypeFilter, setMediaTypeFilter] = useState<"all" | AdminMediaItem["mediaType"]>("all");
-  const [cardFeedback, setCardFeedback] = useState<Record<string, AdminCardFeedback>>({});
+  const [mediaTypeFilter, setMediaTypeFilter] = useState<
+    "all" | AdminMediaItem["mediaType"]
+  >("all");
+  const [cardFeedback, setCardFeedback] = useState<
+    Record<string, AdminCardFeedback>
+  >({});
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [uploadingMediaId, setUploadingMediaId] = useState<string | null>(null);
   const [createDraft, setCreateDraft] = useState<AdminMediaCreateDraft>(() =>
     createDefaultMediaDraft(units),
   );
   const [createFile, setCreateFile] = useState<File | null>(null);
-  const [createFeedback, setCreateFeedback] = useState<AdminCardFeedback | null>(null);
+  const [createFeedback, setCreateFeedback] =
+    useState<AdminCardFeedback | null>(null);
   const [isCreatingMedia, setIsCreatingMedia] = useState(false);
   const [createFileInputKey, setCreateFileInputKey] = useState(0);
   const availableMediaTypes = useMemo(
     () =>
-      Array.from(new Set(mediaItems.map((item) => item.mediaType))).sort((firstType, secondType) =>
-        mediaTypeLabels[firstType].localeCompare(mediaTypeLabels[secondType], "sr"),
+      Array.from(new Set(mediaItems.map((item) => item.mediaType))).sort(
+        (firstType, secondType) =>
+          mediaTypeLabels[firstType].localeCompare(
+            mediaTypeLabels[secondType],
+            "sr",
+          ),
       ),
     [mediaItems],
   );
   const filteredMediaItems = useMemo(
     () =>
-      mediaItems.filter((item) => mediaTypeFilter === "all" || item.mediaType === mediaTypeFilter),
+      mediaItems.filter(
+        (item) =>
+          mediaTypeFilter === "all" || item.mediaType === mediaTypeFilter,
+      ),
     [mediaItems, mediaTypeFilter],
   );
   const publishedImageWarnings = filteredMediaItems.filter(
     (item) => item.isPublished && isImageMedia(item) && !item.altText.trim(),
   ).length;
-  const createDraftNeedsAltText = isImageMediaDraft(createDraft) && !createDraft.altText.trim();
+  const createDraftNeedsAltText =
+    isImageMediaDraft(createDraft) && !createDraft.altText.trim();
 
   const patchMedia = (id: string, changes: Partial<AdminMediaItem>) => {
-    onUpdate(mediaItems.map((item) => (item.id === id ? { ...item, ...changes } : item)));
+    onUpdate(
+      mediaItems.map((item) =>
+        item.id === id ? { ...item, ...changes } : item,
+      ),
+    );
   };
 
   const showCardFeedback = (id: string, feedback: AdminCardFeedback) => {
@@ -2299,7 +2618,11 @@ const MediaPanel = ({
     const result = await onPersist(id, { isPublished });
 
     if (result.status === "failed") {
-      onUpdate(mediaItems.map((mediaItem) => (mediaItem.id === id ? previousItem : mediaItem)));
+      onUpdate(
+        mediaItems.map((mediaItem) =>
+          mediaItem.id === id ? previousItem : mediaItem,
+        ),
+      );
     }
 
     showCardFeedback(
@@ -2320,7 +2643,10 @@ const MediaPanel = ({
       return;
     }
 
-    showCardFeedback(item.id, { tone: "pending", message: "Cuvanje metadata..." });
+    showCardFeedback(item.id, {
+      tone: "pending",
+      message: "Cuvanje metadata...",
+    });
 
     const result = await onPersist(item.id, {
       title: item.title,
@@ -2328,7 +2654,10 @@ const MediaPanel = ({
       altText: item.altText,
     });
 
-    showCardFeedback(item.id, createCardPersistFeedback(result, "Metadata fajla je sacuvan."));
+    showCardFeedback(
+      item.id,
+      createCardPersistFeedback(result, "Metadata fajla je sacuvan."),
+    );
   };
 
   const uploadReplacementFile = async (item: AdminMediaItem, file: File) => {
@@ -2348,17 +2677,20 @@ const MediaPanel = ({
       return;
     }
 
-    if (file.size > maxStandardUploadSizeBytes) {
+    if (file.size > maxstandardUploadSizeBytes) {
       showCardFeedback(item.id, {
         tone: "error",
         message:
-          "Fajl je veci od 6 MB. Za sada uploadujte optimizovan fajl ili uvedite resumable upload za velike fajlove.",
+          "Fajl je veći od 6 MB. Za sada uploadujte optimizovan fajl ili uvedite resumable upload za velike fajlove.",
       });
       return;
     }
 
     setUploadingMediaId(item.id);
-    showCardFeedback(item.id, { tone: "pending", message: "Upload fajla je u toku..." });
+    showCardFeedback(item.id, {
+      tone: "pending",
+      message: "Upload fajla je u toku...",
+    });
 
     try {
       const result = await onUpload(item, file);
@@ -2375,7 +2707,10 @@ const MediaPanel = ({
         createCardPersistFeedback(result, "Fajl je uploadovan i povezan."),
       );
     } catch (error) {
-      showCardFeedback(item.id, { tone: "error", message: getErrorMessage(error) });
+      showCardFeedback(item.id, {
+        tone: "error",
+        message: getErrorMessage(error),
+      });
     } finally {
       setUploadingMediaId(null);
     }
@@ -2398,17 +2733,23 @@ const MediaPanel = ({
     };
 
     if (!normalizedDraft.title) {
-      setCreateFeedback({ tone: "error", message: "Unesite naziv media kartice." });
+      setCreateFeedback({
+        tone: "error",
+        message: "Unesite naziv media kartice.",
+      });
       return;
     }
 
     if (normalizedDraft.ownerType === "project" && !projectDraft) {
-      setCreateFeedback({ tone: "error", message: "Projekat nije ucitan." });
+      setCreateFeedback({ tone: "error", message: "Projekat nije učitan." });
       return;
     }
 
     if (normalizedDraft.ownerType === "unit" && !normalizedDraft.unitId) {
-      setCreateFeedback({ tone: "error", message: "Izaberite stan za ovu media karticu." });
+      setCreateFeedback({
+        tone: "error",
+        message: "Izaberite stan za ovu media karticu.",
+      });
       return;
     }
 
@@ -2420,7 +2761,11 @@ const MediaPanel = ({
       return;
     }
 
-    if (normalizedDraft.isPublished && isImageMediaDraft(normalizedDraft) && !normalizedDraft.altText) {
+    if (
+      normalizedDraft.isPublished &&
+      isImageMediaDraft(normalizedDraft) &&
+      !normalizedDraft.altText
+    ) {
       setCreateFeedback({
         tone: "error",
         message: "Alt tekst je obavezan ako odmah objavljujete sliku.",
@@ -2429,21 +2774,27 @@ const MediaPanel = ({
     }
 
     if (createFile && !isAllowedMediaFile(normalizedDraft, createFile)) {
-      setCreateFeedback({ tone: "error", message: getMediaFileTypeError(normalizedDraft) });
+      setCreateFeedback({
+        tone: "error",
+        message: getMediaFileTypeError(normalizedDraft),
+      });
       return;
     }
 
-    if (createFile && createFile.size > maxStandardUploadSizeBytes) {
+    if (createFile && createFile.size > maxstandardUploadSizeBytes) {
       setCreateFeedback({
         tone: "error",
         message:
-          "Fajl je veci od 6 MB. Uploadujte optimizovan fajl ili kasnije uvedite resumable upload.",
+          "Fajl je veći od 6 MB. Uploadujte optimizovan fajl ili kasnije uvedite resumable upload.",
       });
       return;
     }
 
     setIsCreatingMedia(true);
-    setCreateFeedback({ tone: "pending", message: "Kreiranje media kartice..." });
+    setCreateFeedback({
+      tone: "pending",
+      message: "Kreiranje media kartice...",
+    });
 
     try {
       const result = await onCreate(normalizedDraft, createFile ?? undefined);
@@ -2456,7 +2807,9 @@ const MediaPanel = ({
         setCreateFileInputKey((current) => current + 1);
       }
 
-      setCreateFeedback(createCardPersistFeedback(result, "Nova media kartica je dodata."));
+      setCreateFeedback(
+        createCardPersistFeedback(result, "Nova media kartica je dodata."),
+      );
     } catch (error) {
       setCreateFeedback({ tone: "error", message: getErrorMessage(error) });
     } finally {
@@ -2470,12 +2823,15 @@ const MediaPanel = ({
       showCardFeedback(item.id, {
         tone: "error",
         message:
-          "Kliknite jos jednom na 'Potvrdite uklanjanje' ako zelite da uklonite karticu. Storage fajl nece biti obrisan.",
+          "Kliknite još jednom na 'Potvrdite uklanjanje' ako želite da uklonite karticu. Storage fajl neće biti obrisan.",
       });
       return;
     }
 
-    showCardFeedback(item.id, { tone: "pending", message: "Uklanjanje media kartice..." });
+    showCardFeedback(item.id, {
+      tone: "pending",
+      message: "Uklanjanje media kartice...",
+    });
 
     const result = await onDelete(item);
 
@@ -2497,12 +2853,14 @@ const MediaPanel = ({
           <div>
             <h2>Dodavanje fajla</h2>
             <p>
-              Upload ide po media kartici, kako bi se fajl odmah povezao sa tacnim tlocrtom,
-              slikom projekta ili PDF dokumentom.
+              Upload ide po media kartici, kako bi se fajl odmah povezao sa
+              tacnim tlocrtom, slikom projekta ili PDF dokumentom.
             </p>
           </div>
         </div>
-        <span className="admin-upload-panel__badge">Storage: public-assets</span>
+        <span className="admin-upload-panel__badge">
+          Storage: public-assets
+        </span>
       </div>
 
       <form className="admin-create-media" onSubmit={handleCreateMedia}>
@@ -2512,8 +2870,9 @@ const MediaPanel = ({
             <h2>Dodajte novi fajl u media biblioteku.</h2>
           </div>
           <p>
-            Kreirajte zapis za projekat ili konkretan stan. Ako izaberete fajl, upload se radi
-            odmah; ako unesete putanju, kartica koristi vec postojeci asset.
+            Kreirajte zapis za projekat ili konkretan stan. Ako izaberete fajl,
+            upload se radi odmah; ako unesete putanju, kartica koristi vec
+            postojeci asset.
           </p>
         </div>
 
@@ -2522,8 +2881,14 @@ const MediaPanel = ({
           <input
             className="form-input"
             value={createDraft.title}
-            onChange={(event) => updateCreateDraft({ title: event.target.value })}
-            aria-invalid={createFeedback?.tone === "error" && !createDraft.title.trim() ? true : undefined}
+            onChange={(event) =>
+              updateCreateDraft({ title: event.target.value })
+            }
+            aria-invalid={
+              createFeedback?.tone === "error" && !createDraft.title.trim()
+                ? true
+                : undefined
+            }
           />
         </label>
 
@@ -2552,10 +2917,14 @@ const MediaPanel = ({
             className="form-select"
             value={createDraft.ownerType}
             onChange={(event) => {
-              const ownerType = event.target.value as AdminMediaCreateDraft["ownerType"];
+              const ownerType = event.target
+                .value as AdminMediaCreateDraft["ownerType"];
               updateCreateDraft({
                 ownerType,
-                unitId: ownerType === "unit" ? createDraft.unitId || units[0]?.id || "" : createDraft.unitId,
+                unitId:
+                  ownerType === "unit"
+                    ? createDraft.unitId || units[0]?.id || ""
+                    : createDraft.unitId,
               });
             }}
           >
@@ -2566,11 +2935,13 @@ const MediaPanel = ({
 
         {createDraft.ownerType === "unit" ? (
           <label className="form-field">
-            <span className="form-label">Stan</span>
+            <span className="form-label">stan</span>
             <select
               className="form-select"
               value={createDraft.unitId || units[0]?.id || ""}
-              onChange={(event) => updateCreateDraft({ unitId: event.target.value })}
+              onChange={(event) =>
+                updateCreateDraft({ unitId: event.target.value })
+              }
             >
               {units.map((unit) => (
                 <option key={unit.id} value={unit.id}>
@@ -2601,19 +2972,29 @@ const MediaPanel = ({
             className="form-input"
             value={createDraft.filePath}
             placeholder="/images/... ili https://..."
-            onChange={(event) => updateCreateDraft({ filePath: event.target.value })}
+            onChange={(event) =>
+              updateCreateDraft({ filePath: event.target.value })
+            }
           />
         </label>
 
         <label className="form-field">
           <span className="form-label">
-            {isImageMediaDraft(createDraft) ? "Alt tekst (obavezan za objavu)" : "Alt tekst"}
+            {isImageMediaDraft(createDraft)
+              ? "Alt tekst (obavezan za objavu)"
+              : "Alt tekst"}
           </span>
           <input
             className="form-input"
             value={createDraft.altText}
-            aria-invalid={createDraft.isPublished && createDraftNeedsAltText ? true : undefined}
-            onChange={(event) => updateCreateDraft({ altText: event.target.value })}
+            aria-invalid={
+              createDraft.isPublished && createDraftNeedsAltText
+                ? true
+                : undefined
+            }
+            onChange={(event) =>
+              updateCreateDraft({ altText: event.target.value })
+            }
           />
         </label>
 
@@ -2622,17 +3003,25 @@ const MediaPanel = ({
             <input
               type="checkbox"
               checked={createDraft.isPublished}
-              onChange={(event) => updateCreateDraft({ isPublished: event.target.checked })}
+              onChange={(event) =>
+                updateCreateDraft({ isPublished: event.target.checked })
+              }
             />
             <span>Odmah objavi</span>
           </label>
-          <button className="site-button site-button--dark" type="submit" disabled={isCreatingMedia}>
+          <button
+            className="site-button site-button--dark"
+            type="submit"
+            disabled={isCreatingMedia}
+          >
             <FileUp />
             {isCreatingMedia ? "Dodavanje..." : "Dodaj media karticu"}
           </button>
         </div>
 
-        {createFeedback ? <AdminCardFeedbackMessage feedback={createFeedback} /> : null}
+        {createFeedback ? (
+          <AdminCardFeedbackMessage feedback={createFeedback} />
+        ) : null}
       </form>
 
       <div className="admin-media-toolbar">
@@ -2642,7 +3031,9 @@ const MediaPanel = ({
           <select
             value={mediaTypeFilter}
             onChange={(event) =>
-              setMediaTypeFilter(event.target.value as "all" | AdminMediaItem["mediaType"])
+              setMediaTypeFilter(
+                event.target.value as "all" | AdminMediaItem["mediaType"],
+              )
             }
           >
             <option value="all">Svi tipovi</option>
@@ -2684,7 +3075,11 @@ const MediaPanel = ({
             <article className="admin-media-card" key={item.id}>
               <div className="admin-media-card__preview">
                 {isImagePath(item.filePath) ? (
-                  <img src={item.filePath} alt={item.altText || item.title} loading="lazy" />
+                  <img
+                    src={item.filePath}
+                    alt={item.altText || item.title}
+                    loading="lazy"
+                  />
                 ) : (
                   <div>
                     <FileText />
@@ -2702,7 +3097,9 @@ const MediaPanel = ({
                   >
                     {item.isPublished ? "Objavljeno" : "Sakriveno"}
                   </span>
-                  <span className="admin-type">{mediaTypeLabels[item.mediaType]}</span>
+                  <span className="admin-type">
+                    {mediaTypeLabels[item.mediaType]}
+                  </span>
                 </div>
                 <div className="admin-media-card__icon">
                   {imageMedia ? <ImageIcon /> : <FileText />}
@@ -2729,7 +3126,9 @@ const MediaPanel = ({
                 <input
                   className="form-input"
                   value={item.title}
-                  onChange={(event) => patchMedia(item.id, { title: event.target.value })}
+                  onChange={(event) =>
+                    patchMedia(item.id, { title: event.target.value })
+                  }
                 />
               </label>
               <label className="form-field">
@@ -2737,7 +3136,9 @@ const MediaPanel = ({
                 <input
                   className="form-input"
                   value={item.filePath}
-                  onChange={(event) => patchMedia(item.id, { filePath: event.target.value })}
+                  onChange={(event) =>
+                    patchMedia(item.id, { filePath: event.target.value })
+                  }
                 />
               </label>
               <label className="form-field">
@@ -2748,8 +3149,12 @@ const MediaPanel = ({
                   className="form-input"
                   value={item.altText}
                   aria-describedby={imageMedia ? altFieldHintId : undefined}
-                  aria-invalid={item.isPublished && missingImageAltText ? true : undefined}
-                  onChange={(event) => patchMedia(item.id, { altText: event.target.value })}
+                  aria-invalid={
+                    item.isPublished && missingImageAltText ? true : undefined
+                  }
+                  onChange={(event) =>
+                    patchMedia(item.id, { altText: event.target.value })
+                  }
                 />
                 {imageMedia ? (
                   <small className="admin-media-card__hint" id={altFieldHintId}>
@@ -2795,7 +3200,9 @@ const MediaPanel = ({
                   <input
                     type="checkbox"
                     checked={item.isPublished}
-                    onChange={(event) => void publishMedia(item.id, event.target.checked)}
+                    onChange={(event) =>
+                      void publishMedia(item.id, event.target.checked)
+                    }
                   />
                   <span>{item.isPublished ? "Objavljeno" : "Sakriveno"}</span>
                 </label>
@@ -2807,7 +3214,9 @@ const MediaPanel = ({
                   onClick={() => void deleteMediaCard(item)}
                 >
                   <Trash2 />
-                  {deleteConfirmId === item.id ? "Potvrdite uklanjanje" : "Ukloni karticu"}
+                  {deleteConfirmId === item.id
+                    ? "Potvrdite uklanjanje"
+                    : "Ukloni karticu"}
                 </button>
               </div>
               <AdminCardFeedbackMessage feedback={cardFeedback[item.id]} />
@@ -2837,5 +3246,7 @@ function createCardPersistFeedback(
 function withAdminRecoveryHint(message: string) {
   const recoveryHint = "Proverite vezu/Supabase pristup i pokusajte ponovo.";
 
-  return message.includes(recoveryHint) ? message : `${message} ${recoveryHint}`;
+  return message.includes(recoveryHint)
+    ? message
+    : `${message} ${recoveryHint}`;
 }

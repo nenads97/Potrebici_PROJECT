@@ -14,12 +14,12 @@ type ApartmentAvailabilityProps = {
   compactHeading?: boolean;
 };
 
-type StatusFilter = "All" | ApartmentStatus;
+type statusFilter = "All" | ApartmentStatus;
 type StructureFilter = "All" | "Garsonjera" | "Dvosoban" | "Trosoban";
 
 const apartmentsPerPage = 6;
 
-const statusTabs: Array<{ label: string; value: StatusFilter }> = [
+const statusTabs: Array<{ label: string; value: statusFilter }> = [
   { label: "Svi stanovi", value: "All" },
   { label: "Slobodni", value: "Available" },
   { label: "Rezervisani", value: "Reserved" },
@@ -41,7 +41,7 @@ const matchesStructureFilter = (apartment: Apartment, structure: StructureFilter
   return apartment.rooms === structure;
 };
 
-const statusQueryMap: Record<Exclude<StatusFilter, "All">, string> = {
+const statusQueryMap: Record<Exclude<statusFilter, "All">, string> = {
   Available: "available",
   Reserved: "reserved",
   Sold: "sold",
@@ -53,9 +53,9 @@ const structureQueryMap: Record<Exclude<StructureFilter, "All">, string> = {
   Trosoban: "trosoban",
 };
 
-const getStatusFromQuery = (value: string | null): StatusFilter => {
+const getstatusFromQuery = (value: string | null): statusFilter => {
   const match = Object.entries(statusQueryMap).find(([, queryValue]) => queryValue === value);
-  return (match?.[0] as StatusFilter | undefined) ?? "All";
+  return (match?.[0] as statusFilter | undefined) ?? "All";
 };
 
 const getStructureFromQuery = (value: string | null): StructureFilter => {
@@ -69,16 +69,16 @@ export const ApartmentAvailability = ({
 }: ApartmentAvailabilityProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
-  const status = getStatusFromQuery(searchParams.get("status"));
+  const status = getstatusFromQuery(searchParams.get("status"));
   const structure = getStructureFromQuery(searchParams.get("structure"));
 
   const filteredApartments = useMemo(() => {
     return apartments
       .filter((apartment) => {
-        const matchesStatus = status === "All" || apartment.status === status;
+        const matchesstatus = status === "All" || apartment.status === status;
         const matchesStructure = matchesStructureFilter(apartment, structure);
 
-        return matchesStatus && matchesStructure;
+        return matchesstatus && matchesStructure;
       })
       .sort((firstApartment, secondApartment) => Number(firstApartment.number) - Number(secondApartment.number));
   }, [apartments, status, structure]);
@@ -101,18 +101,18 @@ export const ApartmentAvailability = ({
   const hasActiveFilters = status !== "All" || structure !== "All";
 
   const updateSearchParams = ({
-    nextStatus = status,
+    nextstatus = status,
     nextStructure = structure,
     nextPage = 1,
   }: {
-    nextStatus?: StatusFilter;
+    nextstatus?: statusFilter;
     nextStructure?: StructureFilter;
     nextPage?: number;
   }) => {
     const nextParams = new URLSearchParams();
 
-    if (nextStatus !== "All") {
-      nextParams.set("status", statusQueryMap[nextStatus]);
+    if (nextstatus !== "All") {
+      nextParams.set("status", statusQueryMap[nextstatus]);
     }
 
     if (nextStructure !== "All") {
@@ -161,7 +161,7 @@ export const ApartmentAvailability = ({
             </h2>
           </div>
           <p className="section-copy">
-            Stanovi su organizovani po pet na etazi. Isti tipovi se ponavljaju kroz
+            stanovi su organizovani po pet na etaži. Isti tipovi se ponavljaju kroz
             vertikalu, pa je lako uporediti sprat, kvadraturu i strukturu.
           </p>
         </div>
@@ -175,7 +175,7 @@ export const ApartmentAvailability = ({
                   aria-pressed={status === tab.value}
                   className={status === tab.value ? "is-active" : ""}
                   key={tab.value}
-                  onClick={() => updateSearchParams({ nextStatus: tab.value })}
+                  onClick={() => updateSearchParams({ nextstatus: tab.value })}
                   type="button"
                 >
                   {tab.label}
@@ -204,7 +204,7 @@ export const ApartmentAvailability = ({
           {hasActiveFilters ? (
             <button className="apartments-filters__reset" type="button" onClick={resetFilters}>
               <RotateCcw />
-              Ponistite filtere
+              Poništite filtere
             </button>
           ) : null}
         </div>
@@ -255,7 +255,7 @@ export const ApartmentAvailability = ({
 
                 <div className="apartment-card__facts">
                   <ApartmentFact icon={Layers3} label="Sprat" value={apartment.floor} />
-                  <ApartmentFact icon={Ruler} label="Povrsina" value={apartment.size} />
+                  <ApartmentFact icon={Ruler} label="Površina" value={apartment.size} />
                   <ApartmentFact icon={BedDouble} label="Struktura" value={apartment.rooms} />
                 </div>
 
@@ -274,21 +274,21 @@ export const ApartmentAvailability = ({
             <div className="apartments-empty__actions">
               <button className="site-button site-button--dark" type="button" onClick={resetFilters}>
                 <RotateCcw />
-                Ponistite filtere
+                Poništite filtere
               </button>
               <ContactModalButton
                 className="site-button site-button--outline"
                 modalOptions={{
                   eyebrow: "Ponuda stanova",
-                  title: "Pisite nam za pomoc pri izboru",
+                  title: "Pišite nam za pomoć pri izboru",
                   description:
-                    "Ako trenutni filter nema rezultata, posaljite nam sta trazite i provericemo koje jedinice mogu da vam odgovaraju.",
+                    "Ako trenutni filter nema rezultata, pošaljite nam sta tražite i proverićemo koje jedinice mogu da vam odgovaraju.",
                   inquiryType: "availability",
                   details: [{ label: "Projekat", value: "Heroja Pinkija 13" }],
-                  messagePlaceholder: "Napisite zeljenu strukturu, kvadraturu, sprat ili budzet.",
+                  messagePlaceholder: "Napišite zeljenu strukturu, kvadraturu, sprat ili budzet.",
                 }}
               >
-                Pisite nam
+                Pišite nam
               </ContactModalButton>
             </div>
           </div>

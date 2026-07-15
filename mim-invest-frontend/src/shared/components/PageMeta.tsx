@@ -38,7 +38,7 @@ type StructuredDataInput =
   | ((context: StructuredDataContext) => StructuredDataObject | StructuredDataObject[]);
 
 const defaultShareImage = "/images/heroja-pinkija-13/gradilisna-tabla.jpg";
-const defaultShareImageAlt = "Gradilisna tabla projekta Heroja Pinkija 13";
+const defaultShareImageAlt = "Gradilišna tabla projekta Heroja Pinkija 13";
 const structuredDataScriptId = "page-structured-data";
 
 export const PageMeta = ({

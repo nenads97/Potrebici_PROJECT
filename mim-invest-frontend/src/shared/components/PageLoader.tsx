@@ -7,7 +7,7 @@ type PageLoaderProps = {
   tone?: "page" | "panel";
 };
 
-export const PageLoader = ({ label = "Ucitavanje", tone = "page" }: PageLoaderProps) => {
+export const PageLoader = ({ label = "Učitavanje", tone = "page" }: PageLoaderProps) => {
   return (
     <div className={`page-loader page-loader--${tone}`} role="status" aria-live="polite">
       <div className="page-loader__card">
@@ -28,7 +28,7 @@ type LazySectionProps = {
   label?: string;
 };
 
-export const LazySectionLoader = ({ children, label = "Ucitavanje sadrzaja" }: LazySectionProps) => {
+export const LazySectionLoader = ({ children, label = "Učitavanje sadržaja" }: LazySectionProps) => {
   return (
     <div className="lazy-section-loader">
       {children ?? <PageLoader label={label} tone="panel" />}

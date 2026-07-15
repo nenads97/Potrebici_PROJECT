@@ -1,5 +1,13 @@
-import { useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import {
   ArrowUpRight,
   Building2,
@@ -21,22 +29,24 @@ import {
   contactPhone,
   contactPhoneHref,
 } from "../../features/projects/data/herojaPinkija13.data";
+import { fetchProjectMedia } from "../../features/projects/data/projectSupabase.api";
+import type { ProjectMediaItem } from "../../features/projects/types/project.types";
 import { PageMeta } from "../../shared/components/PageMeta";
 
 const images = {
-  hero: "/images/heroja-pinkija-13/gradilisna-tabla.jpg",
-  living: "/images/heroja-pinkija-13/gradilisna-tabla-slika.jpg",
+  hero: "/images/heroja-pinkija-13/hero-generated.png",
+  living: "/images/heroja-pinkija-13/hero-generated.png",
   terrace: "/images/heroja-pinkija-13/radovi-u-toku.jpg",
 };
 
-const heroLines = ["Tvoj prostor.", "Tvoja pravila.", "Tvoj novi pocetak."];
+const heroLines = ["Tvoj prostor.", "Tvoja pravila.", "Tvoj novi početak."];
 
 const heroLeadItems = ["Heroja Pinkija 13, Novi Sad", "15 stanova", "prodaja u toku"];
 
 const availabilityItems = [
-  { icon: Home, label: "Stanovi", value: "15 stanova" },
+  { icon: Home, label: "stanovi", value: "15 stanova" },
   { icon: Building2, label: "Objekat", value: "PO + PR + 3" },
-  { icon: Ruler, label: "Garaza", value: "13 mesta" },
+  { icon: Ruler, label: "Garaža", value: "13 mesta" },
   { icon: ClipboardCheck, label: "Ostave", value: "15 ostava" },
   { icon: Sparkles, label: "Grejanje", value: "Podno grejanje" },
   { icon: CalendarDays, label: "Rok", value: "15.11.2027." },
@@ -77,27 +87,27 @@ const instantTransition = { duration: 0 };
 const lifestyleItems = [
   {
     icon: MapPin,
-    title: "Pocetak Telepa / Liman 5",
+    title: "Početak Telepa / Liman 5",
     text:
-      "Dinamicna gradska lokacija sa odlicnom povezanoscu i kompletnim sadrzajem u neposrednoj blizini.",
+      "Dinamična gradska lokacija sa odličnom povezanošću i kompletnim sadržajem u neposrednoj blizini.",
   },
   {
     icon: Building2,
     title: "Kvalitetna i moderna gradnja",
     text:
-      "Gradnja po savremenim standardima, uz materijale i sisteme koji podrzavaju dugotrajnost i udobnost.",
+      "Gradnja po savremenim standardima, uz materijale i sisteme koji podržavaju dugotrajnost i udobnost.",
   },
   {
     icon: Sparkles,
     title: "Komfor koji se vidi u svakom detalju",
     text:
-      "Podno grejanje, lift iz garaze i optimalno organizovani stanovi, uz mogucnost odvojene kupovine garaznog mesta i ostave.",
+      "Podno grejanje, lift iz garaže i optimalno organizovani stanovi, uz mogućnost odvojene kupovine garažnog mesta i ostave.",
   },
 ];
 
 const projectFacts = [
   { label: "Aktuelno", value: "Heroja Pinkija 13" },
-  { label: "Stambenih jedinica", value: "15 stanova" },
+  { label: "stambenih jedinica", value: "15 stanova" },
   { label: "Struktura", value: "PO + PR + 3" },
 ];
 
@@ -105,35 +115,35 @@ const futureProjectSlots = [
   {
     icon: Building2,
     title: "Novi projekat",
-    text: "Mesto za sledecu stambenu lokaciju kada udje u aktivnu pripremu.",
+    text: "Mesto za sledeću stambenu lokaciju kada uđe u aktivnu pripremu.",
   },
   {
     icon: MapPin,
     title: "Nova lokacija",
-    text: "Buduci projekti bice dodati ovde, u istom preglednom formatu.",
+    text: "Buduci projekti biće dodati ovde, u istom preglednom formatu.",
   },
 ];
 
 const landAcquisitionHighlights = [
   {
     icon: MapPin,
-    title: "Novi Sad i bliza okolina",
+    title: "Novi Sad i bliža okolina",
     text: "Razmatramo lokacije sa dobrim pristupom, infrastrukturom i potencijalom za stambenu gradnju.",
   },
   {
     icon: Home,
-    title: "Plac ili kuca za rusenje",
-    text: "Interesuju nas parcele i postojeci objekti pogodni za razvoj novih stambenih projekata.",
+    title: "Plac ili kuća za rusenje",
+    text: "Interesuju nas parcele i postojeći objekti pogodni za razvoj novih stambenih projekata.",
   },
   {
     icon: ShieldCheck,
     title: "Jasna dokumentacija",
-    text: "Najbrze reagujemo kada su vlasnistvo, osnovni podaci i uslovi prodaje spremni za proveru.",
+    text: "Najbrže reagujemo kada su vlasništvo, osnovni podaci i uslovi prodaje spremni za proveru.",
   },
 ];
 
 const landAcquisitionFacts = [
-  { icon: Ruler, label: "Namena", value: "Stambena gradnja" },
+  { icon: Ruler, label: "Namena", value: "stambena gradnja" },
   { icon: ClipboardCheck, label: "Prvi korak", value: "Kratka procena" },
   { icon: MessageCircle, label: "Kontakt", value: "Direktan razgovor" },
 ];
@@ -143,7 +153,20 @@ type ProjectTab = "active" | "upcoming" | "completed";
 export const HomePage = () => {
   const heroRef = useRef<HTMLElement>(null);
   const [activeTab, setActiveTab] = useState<ProjectTab>("active");
+  const [projectMedia, setProjectMedia] = useState<ProjectMediaItem[]>([]);
   const reduceMotion = useReducedMotion();
+  const heroPointerX = useMotionValue(0);
+  const heroPointerY = useMotionValue(0);
+  const smoothHeroPointerX = useSpring(heroPointerX, {
+    stiffness: 180,
+    damping: 24,
+    mass: 0.4,
+  });
+  const smoothHeroPointerY = useSpring(heroPointerY, {
+    stiffness: 180,
+    damping: 24,
+    mass: 0.4,
+  });
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
@@ -154,7 +177,11 @@ export const HomePage = () => {
     mass: 0.35,
   });
   const imageY = useTransform(smoothScroll, [0, 1], ["-7%", "22%"]);
+  const imageX = useTransform(smoothHeroPointerX, [-1, 1], [-12, 12]);
+  const imageRotate = useTransform(smoothHeroPointerX, [-1, 1], [-0.35, 0.35]);
+  const imageRotateX = useTransform(smoothHeroPointerY, [-1, 1], [0.35, -0.35]);
   const imageScale = useTransform(smoothScroll, [0, 1], [1.12, 1.18]);
+  const imageOpacity = useTransform(smoothScroll, [0, 0.48, 1], [1, 0.86, 0.48]);
   const contentOpacity = useTransform(smoothScroll, [0, 0.28, 0.62], [1, 0.78, 0]);
   const contentY = useTransform(smoothScroll, [0, 0.68], ["0px", "-58px"]);
   const contentScale = useTransform(smoothScroll, [0, 0.68], [1, 0.96]);
@@ -163,10 +190,44 @@ export const HomePage = () => {
   const heroText = reduceMotion ? staticHeroTextLine : heroTextLine;
   const revealTransition = reduceMotion ? instantTransition : { duration: 0.55 };
 
+  const handleHeroMouseMove = (event: MouseEvent<HTMLElement>) => {
+    if (reduceMotion) return;
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+    heroPointerX.set(((event.clientX - bounds.left) / bounds.width - 0.5) * 2);
+    heroPointerY.set(((event.clientY - bounds.top) / bounds.height - 0.5) * 2);
+  };
+
+  const resetHeroPointer = () => {
+    heroPointerX.set(0);
+    heroPointerY.set(0);
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetchProjectMedia()
+      .then((media) => {
+        if (isMounted) {
+          setProjectMedia(media);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setProjectMedia([]);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
-    <main>
+    <main className="home-page">
+      <div className="home-page__ambient" aria-hidden="true" />
       <PageMeta
-        title="M & M Gradnja | Stanovi Heroja Pinkija 13 Novi Sad"
+        title="M & M Gradnja | stanovi Heroja Pinkija 13 Novi Sad"
         description="Premium prezentacija projekta Heroja Pinkija 13 u Novom Sadu, sa ponudom stanova, tlocrtima, lokacijom i direktnim upitom prodaji."
         structuredData={({ canonicalUrl, origin }) => ({
           "@context": "https://schema.org",
@@ -192,20 +253,49 @@ export const HomePage = () => {
           },
         })}
       />
-      <section className="home-hero" ref={heroRef}>
+      <section
+        className="home-hero"
+        ref={heroRef}
+        onMouseMove={handleHeroMouseMove}
+        onMouseLeave={resetHeroPointer}
+      >
         <motion.img
           src={images.hero}
-          alt="Gradilisna tabla projekta Heroja Pinkija 13"
+          alt="Gradilišna tabla projekta Heroja Pinkija 13"
           className="home-hero__image"
-          width="818"
-          height="783"
+          width="1672"
+          height="941"
           fetchPriority="high"
           decoding="async"
-          style={reduceMotion ? undefined : { y: imageY, scale: imageScale }}
+          style={
+            reduceMotion
+              ? undefined
+              : {
+                  y: imageY,
+                  x: imageX,
+                  rotate: imageRotate,
+                  rotateX: imageRotateX,
+                  scale: imageScale,
+                  opacity: imageOpacity,
+                }
+          }
         />
         <div className="home-hero__overlay" />
         <div className="home-hero__fade" />
-
+        <div className="home-hero__kicker">M &amp; M GRADNJA / NOVI SAD</div>
+        <div className="home-hero__project-card">
+          <div>
+            <span>AKTUELNO</span>
+            <strong>Heroja Pinkija 13</strong>
+            <small>Telep / Novi Sad / prodaja u toku</small>
+          </div>
+          <Link
+            to="/projekti/heroja-pinkija-13/o-projektu"
+            aria-label="Otvori projekat Heroja Pinkija 13"
+          >
+            <ArrowUpRight />
+          </Link>
+        </div>
         <motion.div
           className="home-hero__content"
           initial="hidden"
@@ -222,6 +312,7 @@ export const HomePage = () => {
                 }
           }
         >
+          <span className="home-hero__anchor">AKTUELNI PROJEKAT</span>
           <h1>
             {heroLines.map((line) => (
               <motion.span
@@ -245,13 +336,17 @@ export const HomePage = () => {
             </Link>
             <ContactModalButton className="site-button site-button--light">
               <MessageCircle />
-              Pisite nam
+              Pišite nam
             </ContactModalButton>
           </div>
         </motion.div>
       </section>
 
-      <section className="home-availability" aria-label="Kljucne informacije o projektu">
+      <section
+        id="home-project-facts"
+        className="home-availability"
+        aria-label="Kljucne informacije o projektu"
+      >
         <div className="page-container">
           <div className="home-availability__grid">
             {availabilityItems.map(({ icon: Icon, label, value }) => (
@@ -267,7 +362,7 @@ export const HomePage = () => {
             ))}
           </div>
           <p className="home-availability__note">
-            Garazna mesta i ostave kupuju se odvojeno od stana.
+            Garažna mesta i ostave kupuju se odvojeno od stana.
           </p>
         </div>
       </section>
@@ -285,14 +380,14 @@ export const HomePage = () => {
             <div>
               <p className="section-eyebrow">Projekti</p>
               <h2 className="section-title section-title--medium">
-                Prostori za mirniji, udobniji ritam zivota.
+                Prostori za mirniji, udobniji ritam života.
               </h2>
             </div>
             <div className="home-projects__intro">
               <p>
                 Svaka lokacija se bira pazljivo, sa idejom da stan bude vise od
                 kvadrature: dobro povezan, funkcionalan i prijatan za svakodnevni
-                zivot.
+                život.
               </p>
               <p>
                 Pregledajte aktuelne projekte, lokacije u pripremi i realizovane
@@ -332,7 +427,13 @@ export const HomePage = () => {
           </div>
 
           <AnimatePresence mode="wait">
-            {activeTab === "active" ? <ActiveProjectCard key="active" reduceMotion={Boolean(reduceMotion)} /> : null}
+            {activeTab === "active" ? (
+              <ActiveProjectCard
+                key="active"
+                projectMedia={projectMedia}
+                reduceMotion={Boolean(reduceMotion)}
+              />
+            ) : null}
             {activeTab === "upcoming" ? <UpcomingProjectsCard key="upcoming" reduceMotion={Boolean(reduceMotion)} /> : null}
             {activeTab === "completed" ? (
               <CompletedProjectsCard key="completed" reduceMotion={Boolean(reduceMotion)} />
@@ -354,13 +455,13 @@ export const HomePage = () => {
             <div>
               <p className="section-eyebrow">Kupujemo placeve</p>
               <h2 className="section-title section-title--medium">
-                Imate lokaciju za buduci stambeni projekat?
+                Imate lokaciju za budući stambeni projekat?
               </h2>
             </div>
             <p className="section-copy">
               Pored aktuelne novogradnje, M & M Gradnja razmatra nove parcele i
-              kuce za rusenje na kvalitetnim lokacijama. Posaljite osnovne podatke
-              i dobicete jasan prvi odgovor o potencijalu saradnje.
+              kuće za rusenje na kvalitetnim lokacijama. Pošaljite osnovne podatke
+              i dobićete jasan prvi odgovor o potencijalu saradnje.
             </p>
           </motion.div>
 
@@ -376,10 +477,10 @@ export const HomePage = () => {
               <span className="icon-bubble">
                 <Building2 />
               </span>
-              <h3>Trazimo parcele za plansku, kvalitetnu stambenu izgradnju.</h3>
+              <h3>Tražimo parcele za plansku, kvalitetnu stambenu izgradnju.</h3>
               <p>
                 Ako imate plac, stariji objekat ili lokaciju sa potencijalom,
-                mozemo brzo da proverimo osnovne uslove i predlozimo sledeci
+                možemo brzo da proverimo osnovne uslove i predložimo sledeći
                 korak bez komplikovane procedure.
               </p>
 
@@ -389,7 +490,7 @@ export const HomePage = () => {
                   <ArrowUpRight />
                 </Link>
                 <Link className="site-button site-button--outline" to="/kupujemo-placeve">
-                  Posaljite ponudu
+                  Pošaljite ponudu
                 </Link>
               </div>
             </div>
@@ -446,7 +547,7 @@ export const HomePage = () => {
           <div className="home-contact__actions">
             <ContactModalButton className="site-button site-button--dark">
               <MessageCircle />
-              Pisite nam
+              Pišite nam
             </ContactModalButton>
             <a className="site-button site-button--outline" href={contactPhoneHref}>
               <Phone />
@@ -474,7 +575,26 @@ type PortfolioCardProps = {
   reduceMotion: boolean;
 };
 
-const ActiveProjectCard = ({ reduceMotion }: PortfolioCardProps) => {
+type ActiveProjectCardProps = PortfolioCardProps & {
+  projectMedia: ProjectMediaItem[];
+};
+
+const ActiveProjectCard = ({ projectMedia, reduceMotion }: ActiveProjectCardProps) => {
+  const [activeFeature, setActiveFeature] = useState(0);
+  const selectedFeature = lifestyleItems[activeFeature] ?? lifestyleItems[0];
+  const facadeImage =
+    projectMedia.find((item) => item.mediaType === "project_image") ??
+    ({
+      filePath: images.living,
+      altText: "Render fasade projekta Heroja Pinkija 13",
+    } as Pick<ProjectMediaItem, "filePath" | "altText">);
+  const worksImage =
+    projectMedia.find((item) => item.mediaType === "construction_update_image") ??
+    ({
+      filePath: images.terrace,
+      altText: "Radovi u toku na projektu Heroja Pinkija 13",
+    } as Pick<ProjectMediaItem, "filePath" | "altText">);
+
   return (
     <motion.article
       className="portfolio-card"
@@ -488,13 +608,23 @@ const ActiveProjectCard = ({ reduceMotion }: PortfolioCardProps) => {
         <p className="section-eyebrow">U prodaji</p>
         <h3>Heroja Pinkija 13</h3>
         <p>
-          Jedna od trazenijih lokacija u razvoju, povezana sa svim delovima grada
-          i prilagodjena svakodnevnom zivotu.
+          Jedna od traženijih lokacija u razvoju, povezana sa svim delovima grada
+          i prilagođena svakodnevnom životu.
         </p>
 
         <div className="portfolio-card__features">
-          {lifestyleItems.map(({ icon: Icon, title, text }) => (
-            <div key={title} className="portfolio-feature">
+          {lifestyleItems.map(({ icon: Icon, title, text }, index) => (
+            <button
+              key={title}
+              className={`portfolio-feature portfolio-feature--interactive${
+                activeFeature === index ? " is-active" : ""
+              }`}
+              type="button"
+              aria-pressed={activeFeature === index}
+              onPointerEnter={() => setActiveFeature(index)}
+              onFocus={() => setActiveFeature(index)}
+              onClick={() => setActiveFeature(index)}
+            >
               <span className="icon-bubble">
                 <Icon />
               </span>
@@ -502,7 +632,7 @@ const ActiveProjectCard = ({ reduceMotion }: PortfolioCardProps) => {
                 <h4>{title}</h4>
                 <p>{text}</p>
               </div>
-            </div>
+            </button>
           ))}
         </div>
 
@@ -524,18 +654,18 @@ const ActiveProjectCard = ({ reduceMotion }: PortfolioCardProps) => {
         <div className="portfolio-card__images">
           <img
             className="portfolio-card__image portfolio-card__image--facade"
-            src={images.living}
-            alt="Render fasade projekta Heroja Pinkija 13"
-            width="560"
-            height="676"
+            src={facadeImage.filePath}
+            alt={facadeImage.altText ?? "Render fasade projekta Heroja Pinkija 13"}
+            width="1672"
+            height="941"
             loading="lazy"
             decoding="async"
           />
           <div>
             <img
               className="portfolio-card__image portfolio-card__image--works"
-              src={images.terrace}
-              alt="Radovi u toku na projektu Heroja Pinkija 13"
+              src={worksImage.filePath}
+              alt={worksImage.altText ?? "Radovi u toku na projektu Heroja Pinkija 13"}
               width="1663"
               height="1247"
               loading="lazy"
@@ -544,12 +674,9 @@ const ActiveProjectCard = ({ reduceMotion }: PortfolioCardProps) => {
             <div className="portfolio-note">
               <div>
                 <Sparkles className="icon-inline" />
-                Realna prednost lokacije
+                {selectedFeature.title}
               </div>
-              <p>
-                Planirani novi most dodatno ce poboljsati vezu ovog dela grada sa
-                Fruskom Gorom.
-              </p>
+              <p>{selectedFeature.text}</p>
             </div>
           </div>
         </div>
@@ -579,9 +706,9 @@ const UpcomingProjectsCard = ({ reduceMotion }: PortfolioCardProps) => {
     >
       <div className="portfolio-card__copy portfolio-card__copy--surface">
         <p className="section-eyebrow">U pripremi</p>
-        <h3>Sledeci projekti ce biti prikazani ovde.</h3>
+        <h3>Sledeći projekti će biti prikazani ovde.</h3>
         <p>
-          Kada portfolio bude prosiren, svaki projekat ce dobiti svoje mesto sa
+          Kada portfolio bude proširen, svaki projekat će dobiti svoje mesto sa
           lokacijom, statusom, ponudom stanova i kontaktom.
         </p>
       </div>
@@ -616,17 +743,17 @@ const CompletedProjectsCard = ({ reduceMotion }: PortfolioCardProps) => {
     >
       <div className="portfolio-card__copy portfolio-card__copy--dark">
         <p className="section-eyebrow">Realizovani projekti</p>
-        <h3>Zavrseni objekti ce biti prikazani ovde.</h3>
+        <h3>Završeni objekti će biti prikazani ovde.</h3>
         <p>
-          Kada projekti budu zavrseni i useljeni, ovaj tab ce sluziti kao arhiva
+          Kada projekti budu završeni i useljeni, ovaj tab će slučiti kao arhiva
           realizovanih lokacija i referenci kompanije.
         </p>
       </div>
 
       <div className="portfolio-card__slots">
         {[
-          { icon: Building2, title: "Realizovani objekat", text: "Mesto za zavrsene projekte i osnovne podatke o lokaciji." },
-          { icon: MapPin, title: "Zavrsena lokacija", text: "Arhiva ce biti odvojena od aktuelne ponude." },
+          { icon: Building2, title: "Realizovani objekat", text: "Mesto za završene projekte i osnovne podatke o lokaciji." },
+          { icon: MapPin, title: "Završena lokacija", text: "Arhiva će biti odvojena od aktuelne ponude." },
         ].map(({ icon: Icon, title, text }) => (
           <div key={title} className="portfolio-slot">
             <div>
