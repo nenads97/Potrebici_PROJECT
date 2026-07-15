@@ -112,6 +112,20 @@ Admin priorities:
 - guardrails for published media: published images need alt text
 - no false optimistic state when Supabase persistence fails
 
+Admin maintainability rule:
+
+- `AdminDashboardPage.tsx` currently owns all v1 panels so the admin stayed simple while the public site was being finished.
+- Shared formatting, source-link, unit-display and media validation helpers now live in `src/features/admin/utils/adminDisplay.ts`; keep new shared admin helper logic there instead of growing the page component.
+- Reusable admin UI pieces such as toolbar, empty-state, workflow select and per-card feedback message now live in `src/features/admin/components/AdminUi.tsx`; keep repeated admin chrome there before splitting larger panels.
+- Before adding admin v2 features such as status history, richer analytics, CRM-like follow-ups, media crop/focal-point controls or editable page sections, split the current panels into feature components:
+  - overview
+  - apartment inquiries
+  - land offers
+  - units/content
+  - project
+  - media
+- Keep shared admin helpers, labels and formatting utilities outside panel components so a future admin polish pass does not duplicate workflow/status logic.
+
 ## Quality gates
 
 Run these before handing off a larger UI/admin/Supabase-facing change:

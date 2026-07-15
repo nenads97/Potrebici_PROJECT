@@ -23,6 +23,13 @@ import {
 import { Link } from "react-router-dom";
 
 import {
+  AdminCardFeedbackMessage,
+  AdminToolbar,
+  EmptyAdminList,
+  WorkflowSelect,
+  type AdminCardFeedback,
+} from "../../../features/admin/components/AdminUi";
+import {
   adminConstructionUpdates,
   adminInquiries,
   adminLandOffers,
@@ -54,6 +61,31 @@ import type {
   AdminUnitStatus,
   AdminWorkflowStatus,
 } from "../../../features/admin/types/admin.types";
+import {
+  createUnitContentDraft,
+  filterWorkflowItems,
+  formatDate,
+  formatPlanVariant,
+  formatUnitType,
+  getApartmentPublicPath,
+  getErrorMessage,
+  getFileExtension,
+  getMediaFileAccept,
+  getMediaFileTypeError,
+  getMediaKindLabel,
+  getMediaUsageLabel,
+  getSafeAdminSourceHref,
+  getSortNumber,
+  getUploadTitle,
+  hasMissingImageAltText,
+  isAllowedMediaFile,
+  isImageMedia,
+  isImageMediaDraft,
+  isImagePath,
+  isPdfMediaType,
+  maxStandardUploadSizeBytes,
+  type AdminUnitContentDraft,
+} from "../../../features/admin/utils/adminDisplay";
 import { createPhoneHref } from "../../../features/projects/data/herojaPinkija13.data";
 import { PageMeta } from "../../../shared/components/PageMeta";
 import { isSupabaseConfigured } from "../../../shared/supabase/client";
@@ -66,11 +98,6 @@ type AdminDashboardPageProps = {
 
 type AdminPersistResult = {
   status: "saved" | "local" | "failed";
-  message: string;
-};
-
-type AdminCardFeedback = {
-  tone: "pending" | "success" | "error";
   message: string;
 };
 
@@ -97,13 +124,6 @@ type AdminMediaDeletePersistResult = AdminPersistResult & {
   deletedId?: string;
 };
 
-type AdminUnitContentDraft = {
-  fullDescription: string;
-  seoTitle: string;
-  seoDescription: string;
-};
-
-const workflowStatuses: AdminWorkflowStatus[] = ["new", "contacted", "closed"];
 const unitStatuses: AdminUnitStatus[] = ["available", "reserved", "sold"];
 
 const inquiryTypeLabels: Record<AdminInquiry["inquiryType"], string> = {
@@ -1161,86 +1181,6 @@ const LandOfferPanel = ({
         })}
       </div>
     </section>
-  );
-};
-
-type EmptyAdminListProps = {
-  title: string;
-  text: string;
-};
-
-const EmptyAdminList = ({ title, text }: EmptyAdminListProps) => {
-  return (
-    <div className="admin-empty-state">
-      <strong>{title}</strong>
-      <p>{text}</p>
-    </div>
-  );
-};
-
-type AdminToolbarProps = {
-  query: string;
-  statusFilter: "all" | AdminWorkflowStatus;
-  onQueryChange: (query: string) => void;
-  onStatusFilterChange: (status: "all" | AdminWorkflowStatus) => void;
-};
-
-const AdminToolbar = ({
-  query,
-  statusFilter,
-  onQueryChange,
-  onStatusFilterChange,
-}: AdminToolbarProps) => {
-  return (
-    <div className="admin-toolbar">
-      <label className="admin-search">
-        <Search />
-        <span className="sr-only">Pretraga</span>
-        <input
-          value={query}
-          onChange={(event) => onQueryChange(event.target.value)}
-          placeholder="Pretraga po imenu, telefonu, emailu ili poruci"
-        />
-      </label>
-
-      <label className="admin-filter">
-        <Filter />
-        <span>Status</span>
-        <select
-          value={statusFilter}
-          onChange={(event) =>
-            onStatusFilterChange(event.target.value as "all" | AdminWorkflowStatus)
-          }
-        >
-          <option value="all">Svi statusi</option>
-          {workflowStatuses.map((status) => (
-            <option key={status} value={status}>
-              {adminStatusLabels[status]}
-            </option>
-          ))}
-        </select>
-      </label>
-    </div>
-  );
-};
-
-type WorkflowSelectProps = {
-  value: AdminWorkflowStatus;
-  onChange: (status: AdminWorkflowStatus) => void;
-};
-
-const WorkflowSelect = ({ value, onChange }: WorkflowSelectProps) => {
-  return (
-    <label className="admin-inline-select">
-      <span>Status</span>
-      <select value={value} onChange={(event) => onChange(event.target.value as AdminWorkflowStatus)}>
-        {workflowStatuses.map((status) => (
-          <option key={status} value={status}>
-            {adminStatusLabels[status]}
-          </option>
-        ))}
-      </select>
-    </label>
   );
 };
 
@@ -2879,22 +2819,6 @@ const MediaPanel = ({
   );
 };
 
-const AdminCardFeedbackMessage = ({ feedback }: { feedback?: AdminCardFeedback }) => {
-  if (!feedback) {
-    return null;
-  }
-
-  return (
-    <p
-      className={`admin-card-feedback admin-card-feedback--${feedback.tone}`}
-      role={feedback.tone === "error" ? "alert" : "status"}
-      aria-live={feedback.tone === "error" ? "assertive" : "polite"}
-    >
-      {feedback.message}
-    </p>
-  );
-};
-
 function createCardPersistFeedback(
   result: AdminPersistResult,
   savedMessage: string,
@@ -2914,198 +2838,4 @@ function withAdminRecoveryHint(message: string) {
   const recoveryHint = "Proverite vezu/Supabase pristup i pokusajte ponovo.";
 
   return message.includes(recoveryHint) ? message : `${message} ${recoveryHint}`;
-}
-
-function filterWorkflowItems<T extends { fullName: string; phone: string; email: string; adminStatus: AdminWorkflowStatus }>(
-  items: T[],
-  query: string,
-  statusFilter: "all" | AdminWorkflowStatus,
-) {
-  const normalizedQuery = query.trim().toLowerCase();
-
-  return items.filter((item) => {
-    const matchesStatus = statusFilter === "all" || item.adminStatus === statusFilter;
-    const searchable = Object.values(item).join(" ").toLowerCase();
-    const matchesQuery = !normalizedQuery || searchable.includes(normalizedQuery);
-
-    return matchesStatus && matchesQuery;
-  });
-}
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("sr-RS", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(value));
-}
-
-function getApartmentPublicPath(unitCode: string) {
-  const apartmentNumber = unitCode.match(/\d+/)?.[0];
-
-  return apartmentNumber
-    ? `/projekti/heroja-pinkija-13/ponuda-stanova/${apartmentNumber}`
-    : "/projekti/heroja-pinkija-13/ponuda-stanova";
-}
-
-function getSafeAdminSourceHref(sourcePage: string) {
-  const trimmedSource = sourcePage.trim();
-
-  if (!trimmedSource || !trimmedSource.startsWith("/") || trimmedSource.startsWith("//")) {
-    return null;
-  }
-
-  return trimmedSource;
-}
-
-function getSortNumber(value: string) {
-  const match = value.match(/\d+/);
-  return match ? Number(match[0]) : 0;
-}
-
-function formatUnitType(unitType: AdminUnit["unitType"]) {
-  switch (unitType) {
-    case "apartment":
-      return "Stan";
-    case "business_apartment":
-      return "Apartman za poslovanje";
-    case "commercial_space":
-      return "Lokal";
-    default:
-      return "Jedinica";
-  }
-}
-
-function createUnitContentDraft(unit: AdminUnit): AdminUnitContentDraft {
-  return {
-    fullDescription: unit.fullDescription,
-    seoTitle: unit.seoTitle,
-    seoDescription: unit.seoDescription,
-  };
-}
-
-function formatPlanVariant(planVariant: string) {
-  return planVariant
-    .replace("stack-", "Vertikala ")
-    .replace(/-/g, " / ");
-}
-
-function isImagePath(filePath: string) {
-  return /\.(png|jpe?g|webp|avif|gif|svg)(\?.*)?$/i.test(filePath);
-}
-
-function isImageMedia(item: AdminMediaItem) {
-  return (
-    item.mediaType === "project_image" ||
-    item.mediaType === "unit_image" ||
-    item.mediaType === "construction_update_image" ||
-    isImagePath(item.filePath)
-  );
-}
-
-function hasMissingImageAltText(item: AdminMediaItem) {
-  return isImageMedia(item) && !item.altText.trim();
-}
-
-const maxStandardUploadSizeBytes = 6 * 1024 * 1024;
-
-function getMediaFileAccept(item: Pick<AdminMediaItem, "mediaType">) {
-  if (isPdfMediaType(item.mediaType)) {
-    return "application/pdf,.pdf";
-  }
-
-  return "image/png,image/jpeg,image/webp,image/avif,.png,.jpg,.jpeg,.webp,.avif";
-}
-
-function isAllowedMediaFile(item: Pick<AdminMediaItem, "mediaType">, file: File) {
-  const fileName = file.name.toLowerCase();
-
-  if (isPdfMediaType(item.mediaType)) {
-    return file.type === "application/pdf" || fileName.endsWith(".pdf");
-  }
-
-  return (
-    file.type.startsWith("image/") ||
-    /\.(png|jpe?g|webp|avif)$/i.test(fileName)
-  );
-}
-
-function isPdfMediaType(mediaType: AdminMediaItem["mediaType"]) {
-  return mediaType.endsWith("_pdf");
-}
-
-function getMediaFileTypeError(item: Pick<AdminMediaItem, "mediaType">) {
-  return isPdfMediaType(item.mediaType)
-    ? "Za ovaj tip medija uploadujte PDF fajl."
-    : "Za ovaj tip medija uploadujte sliku: PNG, JPG, WebP ili AVIF.";
-}
-
-function isImageMediaDraft(item: Pick<AdminMediaItem, "mediaType">) {
-  return (
-    item.mediaType === "project_image" ||
-    item.mediaType === "unit_image" ||
-    item.mediaType === "construction_update_image"
-  );
-}
-
-function getFileExtension(filePath: string) {
-  const fileName = filePath.split("?")[0] ?? "";
-  const extension = fileName.match(/\.([a-z0-9]+)$/i)?.[1];
-
-  return extension ? extension.toUpperCase() : "FAJL";
-}
-
-function getMediaKindLabel(item: AdminMediaItem) {
-  if (isImageMedia(item)) {
-    return "Slika";
-  }
-
-  if (/\.pdf(\?.*)?$/i.test(item.filePath) || item.mediaType.includes("_pdf")) {
-    return "PDF dokument";
-  }
-
-  return "Fajl";
-}
-
-function getMediaUsageLabel(item: AdminMediaItem) {
-  switch (item.mediaType) {
-    case "project_image":
-      return "Javna stranica projekta";
-    case "unit_image":
-      return "Tlocrt/prikaz stana";
-    case "apartment_floor_plan_pdf":
-      return "PDF tlocrt stana";
-    case "building_floor_plan_pdf":
-      return "PDF osnova objekta";
-    case "garage_plan_pdf":
-      return "PDF garaznih mesta";
-    case "storage_plan_pdf":
-      return "PDF ostava";
-    case "general_brochure_pdf":
-      return "Opsta prodajna brosura";
-    case "construction_update_image":
-      return "Status radova";
-    default:
-      return "Javni media fajl";
-  }
-}
-
-function getUploadTitle(fileName: string) {
-  const cleanName = fileName.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim();
-
-  return cleanName || "Uploadovan fajl";
-}
-
-function getErrorMessage(error: unknown) {
-  if (error instanceof Error) {
-    return error.message;
-  }
-
-  if (typeof error === "object" && error && "message" in error) {
-    return String(error.message);
-  }
-
-  return "Doslo je do greske pri komunikaciji sa Supabase bazom.";
 }

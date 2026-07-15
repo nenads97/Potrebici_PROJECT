@@ -370,7 +370,7 @@ function auditSitemapAndRobots() {
   const indexHtmlHasNoScriptFallback =
     indexHtml.includes("<noscript>") &&
     indexHtml.includes("<h1>M & M Gradnja | Heroja Pinkija 13</h1>") &&
-    indexHtml.includes("omogućite JavaScript") &&
+    indexHtml.includes("omogucite JavaScript") &&
     indexHtml.includes("https://mimgradnja.rs/projekti/heroja-pinkija-13/ponuda-stanova") &&
     indexHtml.includes("https://mimgradnja.rs/kontakt") &&
     indexHtml.includes("mailto:prodaja@mimgradnja.rs");
@@ -800,6 +800,8 @@ function auditPackageManifest() {
 function auditUxGuardrails() {
   const adminLoginPath = path.join(srcRoot, "views", "pages", "admin", "AdminLoginPage.tsx");
   const adminDashboardPath = path.join(srcRoot, "views", "pages", "admin", "AdminDashboardPage.tsx");
+  const adminUiComponentsPath = path.join(srcRoot, "features", "admin", "components", "AdminUi.tsx");
+  const adminDisplayUtilsPath = path.join(srcRoot, "features", "admin", "utils", "adminDisplay.ts");
   const mainLayoutPath = path.join(srcRoot, "views", "layout", "MainLayout.tsx");
   const adminLayoutPath = path.join(srcRoot, "views", "layout", "AdminLayout.tsx");
   const siteConfigPath = path.join(srcRoot, "shared", "config", "site.ts");
@@ -838,6 +840,8 @@ function auditUxGuardrails() {
   if (
     !fs.existsSync(adminLoginPath) ||
     !fs.existsSync(adminDashboardPath) ||
+    !fs.existsSync(adminUiComponentsPath) ||
+    !fs.existsSync(adminDisplayUtilsPath) ||
     !fs.existsSync(mainLayoutPath) ||
     !fs.existsSync(adminLayoutPath) ||
     !fs.existsSync(siteConfigPath) ||
@@ -858,6 +862,8 @@ function auditUxGuardrails() {
 
   const adminLogin = readText(adminLoginPath);
   const adminDashboard = readText(adminDashboardPath);
+  const adminUiComponents = readText(adminUiComponentsPath);
+  const adminDisplayUtils = readText(adminDisplayUtilsPath);
   const mainLayout = readText(mainLayoutPath);
   const adminLayout = readText(adminLayoutPath);
   const siteConfig = readText(siteConfigPath);
@@ -890,6 +896,23 @@ function auditUxGuardrails() {
       adminDashboard.includes('result.status === "failed"') &&
       adminDashboard.includes('"adminStatus" in changes') &&
       adminDashboard.includes("withAdminRecoveryHint"),
+    adminDashboardUsesSharedDisplayHelpers:
+      adminDashboard.includes("../../../features/admin/utils/adminDisplay") &&
+      !adminDashboard.includes("function filterWorkflowItems") &&
+      !adminDashboard.includes("function getMediaUsageLabel") &&
+      adminDisplayUtils.includes("export function filterWorkflowItems") &&
+      adminDisplayUtils.includes("export function getMediaUsageLabel") &&
+      adminDisplayUtils.includes("export function getErrorMessage"),
+    adminDashboardUsesSharedUiComponents:
+      adminDashboard.includes("../../../features/admin/components/AdminUi") &&
+      !adminDashboard.includes("const AdminToolbar") &&
+      !adminDashboard.includes("const WorkflowSelect") &&
+      !adminDashboard.includes("const EmptyAdminList") &&
+      !adminDashboard.includes("const AdminCardFeedbackMessage") &&
+      adminUiComponents.includes("export const AdminToolbar") &&
+      adminUiComponents.includes("export const WorkflowSelect") &&
+      adminUiComponents.includes("export const EmptyAdminList") &&
+      adminUiComponents.includes("export const AdminCardFeedbackMessage"),
     publicLayoutSkipTarget:
       mainLayout.includes('href="#main-content"') &&
       mainLayout.includes('id="main-content"') &&

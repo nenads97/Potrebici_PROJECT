@@ -259,6 +259,15 @@ Uradjeno:
 
 Preostalo za kasnije:
 
+- Prvi admin maintainability koraci su uradjeni: zajednicki display/source/media
+  helper-i su izdvojeni u `src/features/admin/utils/adminDisplay.ts`, a mali
+  ponovljivi UI elementi (`AdminToolbar`, `WorkflowSelect`, `EmptyAdminList`,
+  `AdminCardFeedbackMessage`) u `src/features/admin/components/AdminUi.tsx`.
+  Surface audit proverava da se ne vrate neprimetno u `AdminDashboardPage.tsx`.
+- Pre novih admin v2 funkcija razbiti preostali veliki `AdminDashboardPage.tsx`
+  po panelima (`overview`, `inquiries`, `land`, `units`, `project`, `media`).
+  Trenutni jedan page fajl je prihvatljiv za v1, ali bi dalje dodavanje
+  CRM/analytics/media-crop funkcija u isti fajl brzo otezalo odrzavanje.
 - `availability_note` po stanu ako prodaja zeli preciznu poruku za rezervisane/prodate stanove.
 - Istorija promena statusa ako bude potrebna odgovornost po korisniku/vremenu.
 
@@ -375,7 +384,8 @@ Do sada prolazi:
 - `npm.cmd run quality` i `git diff --check` su ponovo provereni 2026-07-15 posle lead-form, admin rollback, hygiene i phone-link polish izmena;
 - `npm.cmd run quality`, `git diff --check`, `npm.cmd run smoke:supabase:readonly`, `npm.cmd run smoke:supabase:launch` i `npm.cmd run smoke:supabase:admin` su ponovo provereni 2026-07-15 posle Supabase advisor remediation plana;
 - `npm.cmd run quality` je ponovo proverio 2026-07-15 staticki `index.html` canonical/OG/Twitter fallback, CSV public URL export guardrail i lokalne Home/Kontakt hero slike;
-- `npm.cmd run quality` je ponovo proverio 2026-07-15 i minimalni `noscript` fallback u `index.html`; build output ostaje mali (`dist/index.html` oko 2.88KB, gzip oko 0.94KB);
+- `npm.cmd run quality` je ponovo proverio 2026-07-15 i minimalni `noscript` fallback u `index.html`; build output ostaje mali (`dist/index.html` oko 3.06KB, gzip oko 0.94KB);
+- `npm.cmd run quality` je ponovo proverio 2026-07-15 admin helper/UI refactor; `AdminDashboardPage` i dalje build-uje kao ista admin ruta, a surface audit sada eksplicitno proverava `adminDashboardUsesSharedDisplayHelpers` i `adminDashboardUsesSharedUiComponents`;
 - import graf: svi TS/JS fajlovi iz aplikacionog entry-ja su reachable
 - public asset scan: svi public fajlovi imaju referencu u kodu, dokumentaciji, `index.html` ili Supabase seed-u
 - dependency sanity scan: nema ocigledno neiskoriscenih runtime/dev paketa
@@ -395,6 +405,7 @@ Do sada prolazi:
 - surface audit proverava i da env template-i postoje i sadrze ocekivane javne/server-only kljuceve
 - surface audit proverava package manifest sanity: runtime dependency mora imati source import, build-only `sass` mora biti u `devDependencies`, paket ne sme biti dupliran u obe dependency grupe, a read-only/launch/admin Supabase smoke scriptovi moraju ostati u `package.json`
 - surface audit proverava i UX guardrail-e: skip link/main targete, admin login `noindex,nofollow`, admin login label/id veze, mobilni Escape za hamburger meni i 44px consent touch target
+- surface audit proverava i da zajednicki admin display/source/media helper-i ostanu u `src/features/admin/utils/adminDisplay.ts`, a mali admin UI elementi u `src/features/admin/components/AdminUi.tsx`, umesto da se ponovo gomilaju u `AdminDashboardPage.tsx`
 - surface audit proverava i da lead forme zadrzavaju `autocomplete`/`inputMode` hintove za brze popunjavanje na desktopu i mobilnom
 - surface audit proverava i da lead forme zadrzavaju lokalnu inline validaciju, `aria-invalid`/`aria-describedby` veze i fokus na prvo neispravno polje pre network submit-a
 - surface audit proverava i da admin status leadova ima rollback/recovery guardrail ako Supabase persist ne uspe
