@@ -56,4 +56,19 @@ cd mim-invest-frontend
 npm.cmd run smoke:supabase:launch
 ```
 
+Optional admin smoke, only with local/ignored admin credentials:
+
+```powershell
+cd mim-invest-frontend
+$env:SUPABASE_ADMIN_EMAIL="admin@example.com"
+$env:SUPABASE_ADMIN_PASSWORD="..."
+npm.cmd run smoke:supabase:admin
+```
+
+This is read-only by default. For controlled launch cleanup, the same smoke can
+close matching test leads only when explicit test selectors and
+`SUPABASE_ADMIN_SMOKE_PROCESS_TEST_LEADS="true"` are set in the local shell.
+Never commit admin credentials, production lead identifiers or any admin value
+under a `VITE_` variable.
+
 For the final launch sequence, follow [docs/pre-production-runbook.md](docs/pre-production-runbook.md).

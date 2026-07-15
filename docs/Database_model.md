@@ -34,7 +34,7 @@ Global settings: site name, SEO defaults, phone, email, company name/address, fo
 Essential columns:
 
 ```txt
-id uuid pk
+id boolean pk default true
 site_name text
 default_seo_title text
 default_seo_description text
@@ -44,6 +44,7 @@ company_name text
 company_address text
 footer_text text
 social_links jsonb
+created_at timestamptz
 updated_at timestamptz
 ```
 
@@ -77,6 +78,7 @@ total_storage_units int
 total_garage_parking_spaces int
 total_yard_parking_spaces int
 hero_image_url text
+gallery_images jsonb
 seo_title text
 seo_description text
 sort_order int
@@ -120,6 +122,7 @@ short_description text
 full_description text
 features jsonb
 main_image_url text
+gallery_images jsonb
 floor_plan_pdf_url text
 price_display_mode text -- default on_request
 sort_order int
@@ -184,6 +187,11 @@ is_published boolean
 created_at timestamptz
 ```
 
+`project_media` mora imati bar jednog vlasnika: `project_id` ili `unit_id`.
+U v1 se razlicite namene slike razlikuju kroz `unit_id`, `sort_order`, `title`
+i `description`; eksplicitno `usage`/`variant` polje je namerno ostavljeno za
+kasniji napredniji media model.
+
 `media_type` values:
 
 ```txt
@@ -240,8 +248,33 @@ image_path text
 items jsonb
 sort_order int
 is_published boolean
+created_at timestamptz
 updated_at timestamptz
 unique(page_key, section_key)
+```
+
+### land_acquisition_page
+
+Jedan editable blok za javnu stranicu `/kupujemo-placeve`. Trenutni frontend
+jos koristi kod/fallback za vecinu land copy-ja, ali SQL model vec predvidja
+posebnu tabelu za kasniju kontrolu ove stranice bez uvodjenja odvojenog CMS-a.
+
+Essential columns:
+
+```txt
+id boolean pk default true
+title text
+slug text unique
+hero_image_url text
+intro_text text
+criteria_items jsonb
+process_steps jsonb
+contact_cta_text text
+seo_title text
+seo_description text
+is_published boolean
+created_at timestamptz
+updated_at timestamptz
 ```
 
 ## Operational tables
@@ -252,8 +285,6 @@ Buyer/contact/apartment inquiries.
 
 ```txt
 id uuid pk
-project_id uuid nullable fk
-unit_id uuid nullable fk
 project_slug text
 unit_code text
 inquiry_type text -- general|unit|viewing|availability
@@ -297,6 +328,7 @@ Audit log for outgoing emails.
 id uuid pk
 related_entity_type text
 related_entity_id uuid
+delivery_kind text -- user_confirmation|sales_notification
 recipient_email text
 subject text
 provider text -- brevo default
@@ -304,6 +336,7 @@ provider_message_id text
 status text -- pending|sent|failed
 error_message text
 created_at timestamptz
+sent_at timestamptz
 ```
 
 ### form_rate_limit_events

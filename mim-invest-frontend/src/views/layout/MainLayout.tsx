@@ -66,6 +66,21 @@ export const MainLayout = () => {
     navigate(backFallbackPath);
   };
 
+  const handleNavKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key !== "Escape" || !isNavOpen) {
+      return;
+    }
+
+    event.preventDefault();
+    setIsNavOpen(false);
+
+    if (event.currentTarget instanceof HTMLButtonElement) {
+      event.currentTarget.focus();
+    } else {
+      document.querySelector<HTMLButtonElement>(".site-header__menu-toggle")?.focus();
+    }
+  };
+
   return (
     <div className="site-shell">
       <a className="skip-link" href="#main-content">
@@ -85,6 +100,7 @@ export const MainLayout = () => {
             aria-expanded={isNavOpen}
             aria-controls="site-navigation"
             onClick={() => setIsNavOpen((isOpen) => !isOpen)}
+            onKeyDown={handleNavKeyDown}
           >
             {isNavOpen ? <X /> : <Menu />}
           </button>
@@ -98,6 +114,7 @@ export const MainLayout = () => {
                 setIsNavOpen(false);
               }
             }}
+            onKeyDown={handleNavKeyDown}
           >
             <HeaderDropdown
               currentPathname={location.pathname}

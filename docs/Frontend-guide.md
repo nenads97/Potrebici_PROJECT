@@ -135,6 +135,25 @@ npm.cmd run smoke:supabase:launch
 
 It fails if `project_media` has no published rows.
 
+For admin-auth and protected admin data regression checks, run the optional
+admin smoke only when a real test/admin account is available through local,
+ignored environment values:
+
+```powershell
+$env:SUPABASE_ADMIN_EMAIL="admin@example.com"
+$env:SUPABASE_ADMIN_PASSWORD="..."
+npm.cmd run smoke:supabase:admin
+```
+
+The same values can live in ignored `.env.admin.local`. Never commit admin
+credentials or add them to public `VITE_` variables. This check is intentionally
+not part of `quality`, because it signs into Supabase Auth and reads protected
+admin tables.
+
+By default this admin smoke is read-only. It can process controlled test leads
+only when local/ignored test selectors and
+`SUPABASE_ADMIN_SMOKE_PROCESS_TEST_LEADS="true"` are set explicitly.
+
 For the full launch checklist, use `docs/pre-production-runbook.md`.
 
 `audit:surface` checks the public/admin surface for common regressions:
@@ -146,13 +165,20 @@ For the full launch checklist, use `docs/pre-production-runbook.md`.
 - missing image alt text;
 - temporary debug markers;
 - suspicious encoding/mojibake artifacts;
-- sitemap/robots canonical rules;
+- exact sitemap canonical URL set, robots canonical rules and PageMeta coverage for active page files;
+- route contract consistency between `Project-spec.md`, `AppRouter.tsx`,
+  project canonical metadata and legacy apartment redirects;
 - shared Supabase form rate-limit wiring.
 - Supabase schema hardening for default Data API grants and public media read access.
+- Database documentation drift for important schema fields/tables such as
+  `land_acquisition_page`, email delivery kind/sent timestamp and text-based
+  inquiry context.
+- Project content model consistency: local apartment stacks must remain five
+  stacks / 15 canonical apartment numbers, aligned with `Project-spec.md`.
 - UX guardrails for skip links/main targets, header dropdown Escape handling,
   admin login `noindex,nofollow`, explicit admin login labels and 44px consent
-  touch targets, autofill/input hints on lead forms, and `prefers-reduced-motion`
-  support on animated public pages.
+  touch targets, autofill/input hints on lead forms, contact modal busy-state
+  announcements, and `prefers-reduced-motion` support on animated public pages.
 - JSX guardrails: every native `<button>` must explicitly set `type`, and every
   native `<form>` must handle `onSubmit`.
 - icon-only native buttons must expose an accessible name through visible text,
@@ -163,7 +189,7 @@ For the full launch checklist, use `docs/pre-production-runbook.md`.
 - package manifest sanity: runtime dependencies must be imported, build-only
   packages such as `sass` stay in `devDependencies`, and packages are not
   duplicated across dependency groups.
-- presence of the optional read-only Supabase smoke script.
+- presence of the optional read-only, launch and admin Supabase smoke scripts.
 
 ## Current visual tokens
 

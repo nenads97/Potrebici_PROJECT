@@ -1,6 +1,6 @@
 # Pre-production runbook
 
-Datum: 2026-07-10
+Datum: 2026-07-14
 
 Ovaj runbook je praktican redosled provera pre objave sajta. Namenjen je za poslednji prolaz kroz klijentski deo, admin panel i Supabase okruzenje bez ponovnog trazenja konteksta po audit dokumentima.
 
@@ -37,9 +37,15 @@ Sta ova provera pokriva:
 - alt tekst;
 - privremene razvojne markere;
 - sitemap/robots pravila;
+- tacan kanonski sitemap URL set i `PageMeta` pokrivenost aktivnih stranica;
+- route contract izmedju specifikacije, router-a, kanonskog projekta i legacy `/apartmani` redirect-a;
 - Supabase form rate-limit wiring;
 - env template-e;
+- uskladjenost lokalnog modela ponude: 5 stack-ova / 15 stanova;
 - package manifest sanity;
+- prisustvo read-only, launch i admin Supabase smoke scriptova;
+- Supabase schema hardening: RLS na svim `public` tabelama, bez `auth.role()`
+  policy-ja i bez `SECURITY DEFINER` funkcija u `public`;
 - UX guardrail-e za skip linkove, admin login i consent touch target.
 
 ## 2. Read-only Supabase smoke
@@ -61,7 +67,7 @@ Ocekivani dokaz:
 
 Trenutni poznati nalaz:
 
-- cloud `project_media` je dostupan, ali vraca 0 redova. Pre produkcije treba uneti/seed-ovati media podatke ili potvrditi da javni sajt namerno koristi lokalne fallback slike za v1.
+- cloud `project_media` je popunjen za Heroja Pinkija 13 i strozi launch smoke prolazi. Ako se media metadata kasnije brise ili menja, ponovo pokrenuti `npm.cmd run smoke:supabase:launch`.
 
 Kada ocekujemo da cloud baza ima objavljene media redove, pokrenuti strozi read-only launch smoke:
 
@@ -120,11 +126,26 @@ Proveriti:
 - Escape zatvara modal i vraca fokus na CTA;
 - greske i success poruke imaju live-region ponasanje;
 - consent checkbox moze da se aktivira klikom na tekst;
-- admin login ima povezane label-e, skip link i brz timeout za sporu auth proveru.
+- admin login ima povezane label-e, skip link i ogranicen timeout za sporu auth proveru; zasticeni admin guard proverava Supabase user-a i `admin_profiles` bez duplog kratkog session precheck-a.
 
-Poslednji read-only runtime smoke iz browsera je uradjen 2026-07-10. Desktop i 390px mobilni prolaz nisu nasli broken slike, missing alt, horizontal overflow, error boundary, blokirajuci loading tekst ili console error-e. Ovo ne zamenjuje zavrsni rucni keyboard QA pre objave.
+Poslednji automatizovani runtime smoke iz browsera je uradjen 2026-07-14. Desktop prolaz kroz 30 ruta, ukljucujuci svih 15 detalja stanova, legacy `/apartmani/1`, 404, `/admin` i `/admin/prijava`, nije nasao broken slike, missing alt, horizontal overflow, error boundary ili blokirajuci loading tekst. Mobilni 390px prolaz kroz 13 kljucnih ruta, ukljucujuci detalje stanova `/1`, `/8`, `/15` i `/admin/prijava`, takodje nije nasao iste probleme. Ovo ne zamenjuje zavrsni rucni keyboard QA pre objave.
 
 Interakcioni QA 2026-07-10 je dodatno proverio da javni dropdown `Projekti` zatvara Escape i vraca `aria-expanded=false`, kontakt modal fokusira ime i vraca fokus na CTA posle zatvaranja, tabelarni filter sprata smanjuje prikaz sa 15 na 5 redova i `Ponisti filtere` vraca sve filtere na `all`, a admin login ima ispravne email/lozinka labele i `aria-busy=false` u idle stanju.
+
+Admin runtime QA 2026-07-14 je proverio da `/admin` neulogovanog korisnika brzo prebacuje na `/admin/prijava`, da login forma nije zaglavljena na `Provera sesije`, da kontrolisani submit sa test/admin nalogom otvara admin panel i da dashboard javlja `Podaci su ucitani iz Supabase baze.` Opcioni `smoke:supabase:admin` je istog dana prosao sa aktivnim admin nalogom: Auth, `admin_profiles` i citanje zasticenih admin tabela prolaze za manje od 1s po fazi.
+
+Keyboard/interakcioni QA 2026-07-14 je dodatno proverio:
+
+- desktop dropdown `Projekti` otvaranje/zatvaranje na Escape i povratak fokusa;
+- kontakt modal otvaranje bez submit-a, fokus na ime, `aria-modal=true`, scroll lock,
+  `aria-busy=false` i Escape close sa povratkom fokusa;
+- spisak stanova: 15 redova, filter sprata daje 5 redova, `Ponisti filtere`
+  vraca 15 redova i sve filtere na `all`;
+- mobilni hamburger na 390px prikazuje projektne linkove, Escape ga zatvara,
+  `aria-expanded` se vraca na `false`, fokus ostaje na toggle dugmetu i nema
+  horizontal overflow-a;
+- admin login submit sa test/admin nalogom otvara protected admin shell, a `/admin`
+  dashboard prikazuje metrike i Supabase loaded feedback.
 
 ## 5. Admin content readiness
 
@@ -137,9 +158,51 @@ U admin panelu proveriti:
 - `project_media` u cloudu nije prazan ako se ocekuje da javni sajt cita slike iz Supabase-a;
 - PDF/media brisanje ostaje dvokorak i ne brise Storage fajl slucajno.
 
+Kada postoji admin nalog za test, pre rucnog prolaza pokrenuti opcioni admin
+smoke iz `mim-invest-frontend`:
+
+```powershell
+$env:SUPABASE_ADMIN_EMAIL="admin@example.com"
+$env:SUPABASE_ADMIN_PASSWORD="..."
+npm.cmd run smoke:supabase:admin
+```
+
+Ocekivani dokaz:
+
+- Supabase Auth login uspeva;
+- isti user postoji u `public.admin_profiles`;
+- admin RLS dozvoljava citanje `contact_inquiries`, `land_offers`, `units`,
+  `projects`, `construction_updates` i `project_media`;
+- `units`, aktuelni projekat i `project_media` imaju bar jedan red.
+- u browseru `/admin` ne sme ostati na `Provera sesije`, vec neulogovanog korisnika brzo salje na login, a ulogovanog u admin panel.
+
+Ovaj smoke ne sme biti deo javnog env template-a i ne sme koristiti `VITE_`
+promenljive za admin kredencijale. Ako treba lokalni fajl, koristiti ignorisani
+`.env.admin.local`.
+
+Ako je potrebno dokazati i obradu kontrolisanih test leadova, admin smoke ostaje
+read-only dok se eksplicitno ne prosledi processing flag. Primer preko test
+e-maila iz ovog runbook-a:
+
+```powershell
+$env:SUPABASE_ADMIN_SMOKE_TEST_EMAIL="test+launch@mimgradnja.rs"
+$env:SUPABASE_ADMIN_SMOKE_PROCESS_TEST_LEADS="true"
+npm.cmd run smoke:supabase:admin
+```
+
+Ako su test leadovi vec poznati po ID-jevima, koristiti lokalne/ignorisanе
+vrednosti `SUPABASE_ADMIN_SMOKE_TEST_CONTACT_IDS` i
+`SUPABASE_ADMIN_SMOKE_TEST_LAND_IDS`. Ne commitovati realne lead ID-jeve.
+
+Napomena 2026-07-14: admin processing smoke je prosao sa eksplicitnim test ID
+selektorima. Zatvorena su 4 test kontakt upita i 1 test ponuda placa kroz admin
+RLS, bez menjanja realnih klijentskih upita.
+
 ## 6. Controlled POST testovi sa posledicama
 
 Ovo ne raditi automatski. Potrebna je odluka da se naprave realni test upisi i potencijalno posalju emailovi.
+
+Napomena 2026-07-14: kontrolisani POST test kontakt forme i land forme je uradjen uz odobrenje. Oba API odgovora su vratila `ok`, oba lead reda su upisana, a sva cetiri email delivery loga su imala status `sent`.
 
 Pre testa potvrditi:
 
@@ -292,18 +355,21 @@ Ako projekat koristi Supabase MCP/advisors, proveriti:
 
 Launch je realno spreman tek kada su sva sledeca polja potvrdjena:
 
-- [ ] `npm.cmd run quality` prolazi.
-- [ ] `git diff --check` nema stvarne greske.
-- [ ] `npm.cmd run smoke:supabase:readonly` prolazi.
-- [ ] `npm.cmd run smoke:supabase:launch` prolazi kada se ocekuju cloud media podaci.
-- [ ] `project_media` je popunjen ili je fallback-only v1 svesno prihvacen.
+- [x] `npm.cmd run quality` prolazi. Poslednja provera: 2026-07-14.
+- [x] `git diff --check` nema stvarne greske, osim Windows LF -> CRLF upozorenja. Poslednja provera: 2026-07-14.
+- [x] `npm.cmd run smoke:supabase:readonly` prolazi. Pokriveno i kroz `smoke:supabase:launch`, poslednja provera: 2026-07-14.
+- [x] `npm.cmd run smoke:supabase:launch` prolazi kada se ocekuju cloud media podaci. Poslednja provera: 2026-07-14.
+- [x] `project_media` je popunjen za Heroja Pinkija 13.
 - [ ] finalni domen je potvrdjen za sitemap/robots/canonical.
-- [ ] manual browser QA je prosao desktop + mobile.
-- [ ] keyboard QA je prosao javne i admin tokove.
-- [ ] kontrolisani POST test kontakt forme je prosao.
-- [ ] kontrolisani POST test land forme je prosao.
-- [ ] email delivery je potvrdjen u Brevo/logovima.
-- [ ] admin vidi i obradjuje test leadove.
+- [x] automatizovani browser runtime smoke desktop + mobile je prosao. Poslednja provera: 2026-07-14.
+- [x] manual/browser smoke QA je prosao desktop + mobile za kljucne rute i tokove. Poslednja provera: 2026-07-14.
+- [x] keyboard/interakcioni QA je prosao glavne javne i admin tokove. Poslednja provera: 2026-07-14.
+- [x] `npm.cmd run smoke:supabase:admin` prolazi sa test/admin nalogom. Poslednja provera: 2026-07-14.
+- [x] kontrolisani POST test kontakt forme je prosao 2026-07-14.
+- [x] kontrolisani POST test land forme je prosao 2026-07-14.
+- [x] email delivery je potvrdjen u `email_delivery_log` sa statusom `sent` 2026-07-14.
+- [x] admin vidi i obradjuje test leadove. Poslednja provera: 2026-07-14, 4 test kontakt upita i 1 test ponuda placa zatvoreni kroz admin RLS.
+- [x] lokalni schema security guardrail prolazi kroz `audit:surface`: RLS na svim `public` tabelama, bez `auth.role()` policy-ja i bez `SECURITY DEFINER` funkcija u `public`.
 - [ ] RLS/advisor/security provera nema otvorenih critical/high nalaza.
 
 Ako bilo koja stavka ostaje otvorena, to nije razlog za paniku, ali treba je eksplicitno ostaviti kao pre-production rizik umesto da se podrazumeva da je pokrivena build-om.

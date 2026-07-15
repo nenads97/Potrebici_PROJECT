@@ -1,23 +1,6 @@
 import { supabase } from "../../../shared/supabase/client";
 
-const adminAuthTimeoutMs = 500;
-const localSessionTimeoutMs = 120;
-
-export async function hasCurrentAuthSession() {
-  if (!supabase) {
-    return false;
-  }
-
-  try {
-    const {
-      data: { session },
-    } = await withTimeout(supabase.auth.getSession(), localSessionTimeoutMs);
-
-    return Boolean(session);
-  } catch {
-    return false;
-  }
-}
+const adminAuthTimeoutMs = 2500;
 
 export async function isCurrentUserAdmin() {
   if (!supabase) {
@@ -25,13 +8,16 @@ export async function isCurrentUserAdmin() {
   }
 
   try {
-    const { data: claimsData, error: claimsError } = await withTimeout(
-      supabase.auth.getClaims(),
+    const {
+      data: { user },
+      error: userError,
+    } = await withTimeout(
+      supabase.auth.getUser(),
       adminAuthTimeoutMs,
     );
-    const userId = claimsData?.claims.sub;
+    const userId = user?.id;
 
-    if (claimsError || !userId) {
+    if (userError || !userId) {
       return false;
     }
 

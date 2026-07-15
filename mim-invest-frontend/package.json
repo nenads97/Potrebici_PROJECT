@@ -11,6 +11,7 @@
     "audit:deps": "npm audit --audit-level=low",
     "smoke:supabase:readonly": "node scripts/smoke-supabase-readonly.mjs",
     "smoke:supabase:launch": "node scripts/smoke-supabase-readonly.mjs --require-project-media",
+    "smoke:supabase:admin": "node scripts/smoke-supabase-admin.mjs",
     "quality": "npm run audit:surface && npm run lint && npm run build && npm run audit:deps",
     "preview": "vite preview"
   },

@@ -220,6 +220,20 @@ function auditSourceHygiene() {
 function auditSitemapAndRobots() {
   const sitemapPath = path.join(publicRoot, "sitemap.xml");
   const robotsPath = path.join(publicRoot, "robots.txt");
+  const pagesRoot = path.join(srcRoot, "views", "pages");
+  const canonicalOrigin = "https://mimgradnja.rs";
+  const expectedSitemapUrls = [
+    "/",
+    "/projekti/heroja-pinkija-13/o-projektu",
+    "/projekti/heroja-pinkija-13/ponuda-stanova",
+    "/projekti/heroja-pinkija-13/spisak-stanova",
+    "/kupujemo-placeve",
+    "/lokacija",
+    "/o-nama",
+    "/kontakt",
+    "/politika-privatnosti",
+    ...Array.from({ length: 15 }, (_, index) => `/projekti/heroja-pinkija-13/ponuda-stanova/${index + 1}`),
+  ].map((urlPath) => `${canonicalOrigin}${urlPath}`);
 
   if (!fs.existsSync(sitemapPath)) {
     fail("Missing public/sitemap.xml");
@@ -239,6 +253,8 @@ function auditSitemapAndRobots() {
   const nonCanonicalLocs = locs.filter(
     (loc) => loc.includes("/admin") || loc.includes("/apartmani/") || loc.endsWith("/projekti/heroja-pinkija-13"),
   );
+  const missingExpectedLocs = expectedSitemapUrls.filter((loc) => !locs.includes(loc));
+  const unexpectedLocs = locs.filter((loc) => !expectedSitemapUrls.includes(loc));
   const invalidLastmods = lastmods.filter((lastmod) => !/^\d{4}-\d{2}-\d{2}$/.test(lastmod));
 
   if (!sitemap.trimStart().startsWith("<?xml")) {
@@ -257,6 +273,14 @@ function auditSitemapAndRobots() {
     fail(`Non-canonical/admin URLs in sitemap:\n${nonCanonicalLocs.join("\n")}`);
   }
 
+  if (missingExpectedLocs.length > 0) {
+    fail(`Expected canonical sitemap URLs are missing:\n${missingExpectedLocs.join("\n")}`);
+  }
+
+  if (unexpectedLocs.length > 0) {
+    fail(`Unexpected sitemap URLs:\n${unexpectedLocs.join("\n")}`);
+  }
+
   if (invalidLastmods.length > 0) {
     fail(`Invalid sitemap lastmod values:\n${invalidLastmods.join("\n")}`);
   }
@@ -273,7 +297,93 @@ function auditSitemapAndRobots() {
     fail("robots.txt should reference the canonical sitemap.");
   }
 
-  return { sitemapUrls: locs.length, sitemapLastmods: lastmods.length };
+  const pageFiles = walk(pagesRoot).filter((filePath) => path.extname(filePath) === ".tsx");
+  const pageFilesWithoutMeta = pageFiles.filter((filePath) => !readText(filePath).includes("PageMeta"));
+
+  if (pageFilesWithoutMeta.length > 0) {
+    fail(`Page files without PageMeta:\n${pageFilesWithoutMeta.map(toRelative).join("\n")}`);
+  }
+
+  return {
+    sitemapUrls: locs.length,
+    sitemapLastmods: lastmods.length,
+    expectedSitemapUrls: expectedSitemapUrls.length - missingExpectedLocs.length,
+    pageMetaFiles: pageFiles.length - pageFilesWithoutMeta.length,
+  };
+}
+
+function auditRouteContract() {
+  const routerPath = path.join(srcRoot, "app", "router", "AppRouter.tsx");
+  const projectSpecPath = path.join(docsRoot, "Project-spec.md");
+  const projectPagePath = path.join(
+    srcRoot,
+    "views",
+    "pages",
+    "projects",
+    "HerojaPinkija13",
+    "HerojaPinkija13Page.tsx",
+  );
+
+  if (!fs.existsSync(routerPath) || !fs.existsSync(projectSpecPath) || !fs.existsSync(projectPagePath)) {
+    fail("Missing router, project spec or project page for route contract audit.");
+    return {};
+  }
+
+  const router = readText(routerPath);
+  const projectSpec = readText(projectSpecPath);
+  const projectPage = readText(projectPagePath);
+  const documentedPublicRoutes = [
+    "/",
+    "/projekti",
+    "/projekti/heroja-pinkija-13",
+    "/projekti/heroja-pinkija-13/o-projektu",
+    "/projekti/heroja-pinkija-13/ponuda-stanova",
+    "/projekti/heroja-pinkija-13/ponuda-stanova/:apartmentNumber",
+    "/projekti/heroja-pinkija-13/spisak-stanova",
+    "/o-nama",
+    "/politika-privatnosti",
+    "/lokacija",
+    "/kupujemo-placeve",
+    "/kontakt",
+  ];
+  const legacyRedirectRoute = "/apartmani/:apartmentNumber";
+  const missingFromSpec = documentedPublicRoutes.filter((routePath) => !projectSpec.includes(`\`${routePath}\``));
+  const missingFromRouter = [...documentedPublicRoutes, legacyRedirectRoute].filter(
+    (routePath) => !router.includes(`path="${routePath}"`),
+  );
+  const checks = {
+    projectSpecDocumentsPublicRoutes: missingFromSpec.length === 0,
+    routerImplementsPublicRoutes: missingFromRouter.length === 0,
+    projectIndexRedirectsToCanonical:
+      router.includes('path="/projekti"') &&
+      router.includes('to="/projekti/heroja-pinkija-13/o-projektu"'),
+    legacyApartmentRedirectsToCanonical:
+      router.includes('path="/apartmani/:apartmentNumber"') &&
+      router.includes("to={`/projekti/heroja-pinkija-13/ponuda-stanova/${apartmentNumber ?? \"\"}`"),
+    projectAliasUsesCanonicalMeta:
+      router.includes('path="/projekti/heroja-pinkija-13"') &&
+      projectPage.includes('canonicalPath="/projekti/heroja-pinkija-13/o-projektu"'),
+    projectSpecDocumentsLegacyRedirect:
+      projectSpec.includes(
+        "legacy redirect: `/apartmani/:apartmentNumber` -> `/projekti/heroja-pinkija-13/ponuda-stanova/:apartmentNumber`",
+      ),
+  };
+
+  for (const [name, ok] of Object.entries(checks)) {
+    if (!ok) {
+      fail(
+        `Route contract check failed: ${name}\n` +
+          `missingFromSpec=${missingFromSpec.join(",")}\n` +
+          `missingFromRouter=${missingFromRouter.join(",")}`,
+      );
+    }
+  }
+
+  return {
+    documentedPublicRoutes: documentedPublicRoutes.length,
+    routerPublicRoutes: documentedPublicRoutes.length + 1 - missingFromRouter.length,
+    ...checks,
+  };
 }
 
 function auditSupabaseFunctionHardening() {
@@ -300,7 +410,15 @@ function auditSupabaseFunctionHardening() {
   const land = readText(landPath);
   const smokeScript = readText(smokeScriptPath);
   const requiredHeaders = ["cf-connecting-ip", "x-real-ip", "x-forwarded-for", "forwarded"];
+  const publicTables = Array.from(schema.matchAll(/create table public\.([a-z_]+)/g)).map(
+    (match) => match[1],
+  );
+  const publicFunctionBlocks =
+    schema.match(/create\s+(?:or\s+replace\s+)?function\s+public\.[\s\S]*?\$\$;/gi) ?? [];
   const checks = {
+    schemaEnablesRlsForAllPublicTables: publicTables.every((tableName) =>
+      schema.includes(`alter table public.${tableName} enable row level security;`),
+    ),
     schemaRevokesDefaultTableGrants:
       schema.includes("alter default privileges for role postgres in schema public") &&
       schema.includes("revoke select, insert, update, delete on tables from anon, authenticated, service_role"),
@@ -308,6 +426,14 @@ function auditSupabaseFunctionHardening() {
       schema.includes("revoke execute on functions from anon, authenticated, service_role") &&
       schema.includes("revoke execute on functions from public"),
     schemaGrantsPublicMediaRead: schema.includes("grant select on public.project_media to anon, authenticated"),
+    schemaAvoidsAuthRolePolicies: !schema.includes("auth.role("),
+    schemaAvoidsPublicSecurityDefiner: publicFunctionBlocks.every(
+      (functionBlock) => !/security\s+definer/i.test(functionBlock),
+    ),
+    schemaKeepsAdminDefinerPrivate:
+      schema.includes("create or replace function app_private.is_admin()") &&
+      schema.includes("grant execute on function app_private.is_admin() to authenticated") &&
+      !schema.includes("grant execute on function app_private.is_admin() to anon"),
     helperHashesEmail: helper.includes("sha256(`email:${email.toLowerCase()}`)"),
     helperHashesIp: helper.includes("sha256(`ip:${clientIp}`)"),
     helperReadsForwardedHeaders: requiredHeaders.every((header) => helper.includes(header)),
@@ -381,6 +507,90 @@ function auditEnvironmentTemplates() {
   };
 }
 
+function auditDocumentationModelDrift() {
+  const databaseModelPath = path.join(docsRoot, "Database_model.md");
+  const schemaPath = path.join(supabaseRoot, "schema.sql");
+
+  if (!fs.existsSync(databaseModelPath) || !fs.existsSync(schemaPath)) {
+    fail("Missing Database_model.md or supabase/schema.sql for documentation drift audit.");
+    return {};
+  }
+
+  const databaseModel = readText(databaseModelPath);
+  const schema = readText(schemaPath);
+  const contactBlock = databaseModel.match(/### contact_inquiries[\s\S]*?### land_offers/)?.[0] ?? "";
+  const checks = {
+    databaseModelTracksLandAcquisitionPage:
+      !schema.includes("create table public.land_acquisition_page") ||
+      databaseModel.includes("### land_acquisition_page"),
+    databaseModelTracksEmailDeliveryKind:
+      !schema.includes("delivery_kind public.email_delivery_kind") ||
+      databaseModel.includes("delivery_kind text -- user_confirmation|sales_notification"),
+    databaseModelTracksEmailSentAt:
+      !schema.includes("sent_at timestamptz") || databaseModel.includes("sent_at timestamptz"),
+    databaseModelUsesTextInquiryContext:
+      !contactBlock.includes("project_id uuid") && !contactBlock.includes("unit_id uuid"),
+  };
+
+  for (const [name, ok] of Object.entries(checks)) {
+    if (!ok) {
+      fail(`Database documentation drift check failed: ${name}`);
+    }
+  }
+
+  return checks;
+}
+
+function auditProjectContentModel() {
+  const projectDataPath = path.join(srcRoot, "features", "projects", "data", "herojaPinkija13.data.ts");
+  const projectSpecPath = path.join(docsRoot, "Project-spec.md");
+
+  if (!fs.existsSync(projectDataPath) || !fs.existsSync(projectSpecPath)) {
+    fail("Missing project data or Project-spec.md for project content model audit.");
+    return {};
+  }
+
+  const projectData = readText(projectDataPath);
+  const projectSpec = readText(projectSpecPath);
+  const stackNumberMatches = [...projectData.matchAll(/numbers:\s*\[([^\]]+)\]/g)];
+  const apartmentNumbers = stackNumberMatches.flatMap((match) =>
+    [...match[1].matchAll(/["'](\d+)["']/g)].map((numberMatch) => numberMatch[1]),
+  );
+  const expectedApartmentNumbers = Array.from({ length: 15 }, (_, index) => String(index + 1));
+  const duplicateApartmentNumbers = apartmentNumbers.filter(
+    (number, index) => apartmentNumbers.indexOf(number) !== index,
+  );
+  const missingApartmentNumbers = expectedApartmentNumbers.filter((number) => !apartmentNumbers.includes(number));
+  const unexpectedApartmentNumbers = apartmentNumbers.filter((number) => !expectedApartmentNumbers.includes(number));
+  const checks = {
+    projectSpecResidentialTotal15: projectSpec.includes("Residential total: 15 apartments"),
+    projectDataHasFiveApartmentStacks: stackNumberMatches.length === 5,
+    projectDataHasFifteenApartmentNumbers: apartmentNumbers.length === 15,
+    projectDataApartmentNumbersAreCanonical:
+      missingApartmentNumbers.length === 0 &&
+      unexpectedApartmentNumbers.length === 0 &&
+      duplicateApartmentNumbers.length === 0,
+  };
+
+  for (const [name, ok] of Object.entries(checks)) {
+    if (!ok) {
+      fail(
+        `Project content model check failed: ${name}\n` +
+          `apartmentNumbers=${apartmentNumbers.join(",")}\n` +
+          `missing=${missingApartmentNumbers.join(",")}\n` +
+          `unexpected=${unexpectedApartmentNumbers.join(",")}\n` +
+          `duplicates=${duplicateApartmentNumbers.join(",")}`,
+      );
+    }
+  }
+
+  return {
+    apartmentStacks: stackNumberMatches.length,
+    apartmentNumbers: apartmentNumbers.length,
+    ...checks,
+  };
+}
+
 function auditPackageManifest() {
   if (!fs.existsSync(packageJsonPath)) {
     fail("Missing mim-invest-frontend/package.json");
@@ -425,6 +635,8 @@ function auditPackageManifest() {
     hasSupabaseLaunchSmokeScript:
       scripts["smoke:supabase:launch"] ===
       "node scripts/smoke-supabase-readonly.mjs --require-project-media",
+    hasSupabaseAdminSmokeScript:
+      scripts["smoke:supabase:admin"] === "node scripts/smoke-supabase-admin.mjs",
     qualityRunsSurfaceAudit: qualityScript.includes("npm run audit:surface"),
     qualityRunsLint: qualityScript.includes("npm run lint"),
     qualityRunsBuild: qualityScript.includes("npm run build"),
@@ -462,6 +674,7 @@ function auditPackageManifest() {
     hasDependencyAuditScript: checks.hasDependencyAuditScript,
     hasSupabaseReadonlySmokeScript: checks.hasSupabaseReadonlySmokeScript,
     hasSupabaseLaunchSmokeScript: checks.hasSupabaseLaunchSmokeScript,
+    hasSupabaseAdminSmokeScript: checks.hasSupabaseAdminSmokeScript,
     qualityChecks: Object.values(checks).filter(Boolean).length,
   };
 }
@@ -516,6 +729,11 @@ function auditUxGuardrails() {
       mainLayout.includes('event.key !== "Escape"') &&
       mainLayout.includes("triggerRef.current?.focus()") &&
       mainLayout.includes("onKeyDown={handleKeyDown}"),
+    mobileNavEscape:
+      mainLayout.includes("const handleNavKeyDown") &&
+      mainLayout.includes("!isNavOpen") &&
+      mainLayout.includes('document.querySelector<HTMLButtonElement>(".site-header__menu-toggle")?.focus()') &&
+      (mainLayout.match(/onKeyDown=\{handleNavKeyDown\}/g)?.length ?? 0) >= 2,
     adminLayoutSkipTarget:
       adminLayout.includes('href="#admin-main-content"') &&
       adminLayout.includes('id="admin-main-content"') &&
@@ -531,6 +749,9 @@ function auditUxGuardrails() {
       contactModal.includes('name="website"') &&
       contactModal.includes("tabIndex={-1}") &&
       contactModal.includes("element.tabIndex < 0"),
+    contactModalFormAnnouncesBusyState:
+      contactModal.includes('className="contact-modal__form"') &&
+      contactModal.includes('aria-busy={formStatus === "sending"}'),
     leadFormsExposeAutofillHints:
       adminLogin.includes('autoComplete="email"') &&
       adminLogin.includes('autoComplete="current-password"') &&
@@ -904,8 +1125,11 @@ const summary = {
   publicAssets: auditPublicAssets(),
   sourceHygiene: auditSourceHygiene(),
   seoFiles: auditSitemapAndRobots(),
+  routeContract: auditRouteContract(),
   supabaseForms: auditSupabaseFunctionHardening(),
   envTemplates: auditEnvironmentTemplates(),
+  documentation: auditDocumentationModelDrift(),
+  projectContent: auditProjectContentModel(),
   packageManifest: auditPackageManifest(),
   uxGuardrails: auditUxGuardrails(),
   jsxGuardrails: auditJsxGuardrails(),

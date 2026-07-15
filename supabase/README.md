@@ -12,7 +12,7 @@ https://kamwovkvhkurjvabbfks.supabase.co
 ## Files
 
 - `schema.sql` - database schema, enums, tables, indexes, triggers, grants and RLS policies
-- `seed.sql` - initial content for Heroja Pinkija 13, apartments and the land acquisition page
+- `seed.sql` - initial content for Heroja Pinkija 13, apartments, construction timeline, media metadata and the land acquisition page
 
 ## Current access model
 
@@ -87,7 +87,7 @@ submit-contact-inquiry
 submit-land-offer
 ```
 
-Each function validates the payload, checks the honeypot field, rate-limits repeated submissions by hashed e-mail, inserts the record into the relevant table, sends Brevo confirmation/notification e-mails and writes `email_delivery_log`.
+Each function validates the payload, checks the honeypot field, rate-limits repeated submissions by hashed e-mail and hashed IP/network bucket, inserts the record into the relevant table, sends Brevo confirmation/notification e-mails and writes `email_delivery_log` with `delivery_kind`.
 
 Deploy after setting secrets in the Supabase project:
 
@@ -129,6 +129,25 @@ npm.cmd run smoke:supabase:launch
 
 This is also read-only, but it fails if `project_media` has no published rows.
 Use it after applying `seed.sql` or entering media metadata through admin.
+
+For admin Auth/RLS regression checks, use an ignored local admin environment
+instead of committing credentials:
+
+```powershell
+cd ..\mim-invest-frontend
+$env:SUPABASE_ADMIN_EMAIL="admin@example.com"
+$env:SUPABASE_ADMIN_PASSWORD="..."
+npm.cmd run smoke:supabase:admin
+```
+
+This signs into Supabase Auth, confirms the user exists in `admin_profiles` and
+reads protected admin tables through RLS. It intentionally stays outside
+`npm.cmd run quality` because it needs real admin credentials.
+
+The admin smoke is read-only unless controlled test lead selectors are provided
+through local/ignored environment values and
+`SUPABASE_ADMIN_SMOKE_PROCESS_TEST_LEADS="true"` is set. Use this only for
+launch cleanup of known test rows, never for broad production lead updates.
 
 Use `../docs/pre-production-runbook.md` for the complete launch order, including
 the controlled POST tests that intentionally create rows and can trigger email.

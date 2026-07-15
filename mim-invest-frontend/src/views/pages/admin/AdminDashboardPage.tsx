@@ -54,6 +54,7 @@ import type {
   AdminUnitStatus,
   AdminWorkflowStatus,
 } from "../../../features/admin/types/admin.types";
+import { PageMeta } from "../../../shared/components/PageMeta";
 import { isSupabaseConfigured } from "../../../shared/supabase/client";
 
 type AdminSection = "overview" | "inquiries" | "land" | "units" | "project" | "media";
@@ -153,6 +154,15 @@ const sectionCopy: Record<AdminSection, { eyebrow: string; title: string; body: 
     title: "Slike i PDF fajlovi",
     body: "Metadata za slike, planove i prodajne PDF fajlove u Supabase Storage-u.",
   },
+};
+
+const sectionCanonicalPaths: Record<AdminSection, string> = {
+  overview: "/admin",
+  inquiries: "/admin/upiti-stanovi",
+  land: "/admin/upiti-placevi",
+  units: "/admin/stanovi",
+  project: "/admin/projekat",
+  media: "/admin/fajlovi",
 };
 
 export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
@@ -358,7 +368,15 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
   }, [inquiries, landOffers, mediaItems, section, units]);
 
   return (
-    <main className="admin-page">
+    <>
+      <PageMeta
+        title={`${currentCopy.title} | Admin | M & M Gradnja`}
+        description={currentCopy.body}
+        canonicalPath={sectionCanonicalPaths[section]}
+        robots="noindex,nofollow"
+      />
+
+      <main className="admin-page">
       <section className="admin-page__hero">
         <div>
           <p className="section-eyebrow">{currentCopy.eyebrow}</p>
@@ -576,7 +594,8 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
           }}
         />
       ) : null}
-    </main>
+      </main>
+    </>
   );
 };
 

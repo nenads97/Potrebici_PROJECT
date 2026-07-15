@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
-import { hasCurrentAuthSession, isCurrentUserAdmin } from "../data/adminAuth.api";
+import { isCurrentUserAdmin } from "../data/adminAuth.api";
 import { isSupabaseConfigured, supabase } from "../../../shared/supabase/client";
 
 type AuthState = "checking" | "allowed" | "denied";
@@ -19,22 +19,13 @@ export const RequireAdminAuth = () => {
         return;
       }
 
-      const hasSession = await hasCurrentAuthSession();
+      const canAccessAdmin = await isCurrentUserAdmin();
 
       if (!isMounted) {
         return;
       }
 
-      if (!hasSession) {
-        setAuthState("denied");
-        return;
-      }
-
-      const canAccessAdmin = await isCurrentUserAdmin();
-
-      if (isMounted) {
-        setAuthState(canAccessAdmin ? "allowed" : "denied");
-      }
+      setAuthState(canAccessAdmin ? "allowed" : "denied");
     }
 
     verifySession();

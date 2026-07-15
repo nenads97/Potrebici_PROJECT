@@ -12,7 +12,7 @@ import type {
 
 const projectSlug = "heroja-pinkija-13";
 const publicAssetsBucket = "public-assets";
-const adminFetchTimeoutMs = 1500;
+const adminFetchTimeoutMs = 5000;
 const apartmentLookup = new Map(apartments.map((apartment) => [apartment.number, apartment]));
 
 export type AdminSupabaseState = {

@@ -290,7 +290,11 @@ const ContactModal = ({ isOpen, options, onClose }: ContactModalProps) => {
           </div>
         </aside>
 
-        <form className="contact-modal__form" onSubmit={handleSubmit}>
+        <form
+          className="contact-modal__form"
+          onSubmit={handleSubmit}
+          aria-busy={formStatus === "sending"}
+        >
           <div className="contact-modal__form-head">
             <FileText />
             <div>

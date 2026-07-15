@@ -13,6 +13,7 @@ npm run audit:surface
 npm run quality
 npm run smoke:supabase:readonly
 npm run smoke:supabase:launch
+npm run smoke:supabase:admin
 ```
 
 Run all commands from this `mim-invest-frontend` directory.
@@ -62,6 +63,32 @@ npm.cmd run smoke:supabase:launch
 ```
 
 This is still read-only, but it fails if `project_media` has no published rows.
+
+When testing the protected admin flow, provide credentials only through your
+shell or an ignored `.env.admin.local` file:
+
+```powershell
+$env:SUPABASE_ADMIN_EMAIL="admin@example.com"
+$env:SUPABASE_ADMIN_PASSWORD="..."
+npm.cmd run smoke:supabase:admin
+```
+
+This signs into Supabase Auth, verifies `admin_profiles`, and confirms protected
+admin tables are readable. Never commit admin credentials.
+
+If you need to prove that the admin flow can process existing controlled test
+leads, use explicit test selectors and an explicit processing flag. This changes
+only the matching test lead rows by setting their `admin_status` to `closed`:
+
+```powershell
+$env:SUPABASE_ADMIN_SMOKE_TEST_EMAIL="test+launch@mimgradnja.rs"
+$env:SUPABASE_ADMIN_SMOKE_PROCESS_TEST_LEADS="true"
+npm.cmd run smoke:supabase:admin
+```
+
+Alternatively, use ignored/local `SUPABASE_ADMIN_SMOKE_TEST_CONTACT_IDS` and
+`SUPABASE_ADMIN_SMOKE_TEST_LAND_IDS` values when you want to target exact test
+records. Do not commit credentials or real production lead identifiers.
 
 ## Structure
 
