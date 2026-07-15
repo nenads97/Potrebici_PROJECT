@@ -414,15 +414,17 @@ function auditSupabaseFunctionHardening() {
   const contactPath = path.join(supabaseRoot, "functions", "submit-contact-inquiry", "index.ts");
   const landPath = path.join(supabaseRoot, "functions", "submit-land-offer", "index.ts");
   const smokeScriptPath = path.join(frontendRoot, "scripts", "smoke-supabase-readonly.mjs");
+  const advisorRemediationPath = path.join(supabaseRoot, "advisor-remediation.sql");
 
   if (
     !fs.existsSync(schemaPath) ||
     !fs.existsSync(helperPath) ||
     !fs.existsSync(contactPath) ||
     !fs.existsSync(landPath) ||
-    !fs.existsSync(smokeScriptPath)
+    !fs.existsSync(smokeScriptPath) ||
+    !fs.existsSync(advisorRemediationPath)
   ) {
-    fail("Missing one or more Supabase form function files.");
+    fail("Missing one or more Supabase form function/advisor files.");
     return {};
   }
 
@@ -431,10 +433,13 @@ function auditSupabaseFunctionHardening() {
   const contact = readText(contactPath);
   const land = readText(landPath);
   const smokeScript = readText(smokeScriptPath);
+  const advisorRemediation = readText(advisorRemediationPath);
   const requiredHeaders = ["cf-connecting-ip", "x-real-ip", "x-forwarded-for", "forwarded"];
   const publicTables = Array.from(schema.matchAll(/create table public\.([a-z_]+)/g)).map(
     (match) => match[1],
   );
+  const setUpdatedAtBlock =
+    schema.match(/create\s+or\s+replace\s+function\s+public\.set_updated_at\(\)[\s\S]*?\$\$;/i)?.[0] ?? "";
   const publicFunctionBlocks =
     schema.match(/create\s+(?:or\s+replace\s+)?function\s+public\.[\s\S]*?\$\$;/gi) ?? [];
   const checks = {
@@ -452,10 +457,27 @@ function auditSupabaseFunctionHardening() {
     schemaAvoidsPublicSecurityDefiner: publicFunctionBlocks.every(
       (functionBlock) => !/security\s+definer/i.test(functionBlock),
     ),
+    schemaSetUpdatedAtHasStableSearchPath: /set\s+search_path\s*=\s*public,\s*pg_temp/i.test(setUpdatedAtBlock),
     schemaKeepsAdminDefinerPrivate:
       schema.includes("create or replace function app_private.is_admin()") &&
       schema.includes("grant execute on function app_private.is_admin() to authenticated") &&
       !schema.includes("grant execute on function app_private.is_admin() to anon"),
+    schemaDefinesServiceOnlyEmailSettings:
+      schema.includes("create table public.email_service_settings") &&
+      schema.includes("alter table public.email_service_settings enable row level security;") &&
+      schema.includes("revoke all on public.email_service_settings from anon, authenticated;") &&
+      schema.includes("grant all on public.email_service_settings to service_role;") &&
+      !/grant\s+(?:select|all)\s+on\s+public\.email_service_settings\s+to\s+[^;]*(?:anon|authenticated)/i.test(schema) &&
+      !/create\s+policy[\s\S]*?on\s+public\.email_service_settings/i.test(schema),
+    schemaAvoidsPublicStorageObjectListing:
+      !schema.includes('create policy "Public can read public assets"') &&
+      !/on\s+storage\.objects\s+for\s+select\s+to\s+[^;]*(?:anon|authenticated)/i.test(schema),
+    advisorRemediationDocumentsCloudFollowup:
+      advisorRemediation.includes("create or replace function public.set_updated_at()") &&
+      advisorRemediation.includes("drop policy if exists \"Public can read public assets\" on storage.objects") &&
+      advisorRemediation.includes("alter table public.email_service_settings enable row level security") &&
+      advisorRemediation.includes("leaked password protection") &&
+      advisorRemediation.includes("citext"),
     helperHashesEmail: helper.includes("sha256(`email:${email.toLowerCase()}`)"),
     helperHashesIp: helper.includes("sha256(`ip:${clientIp}`)"),
     helperReadsForwardedHeaders: requiredHeaders.every((header) => helper.includes(header)),
@@ -482,7 +504,7 @@ function auditSupabaseFunctionHardening() {
 function auditEnvironmentTemplates() {
   const frontendEnvPath = path.join(frontendRoot, ".env.example");
   const supabaseEnvPath = path.join(supabaseRoot, ".env.example");
-  const frontendRequiredKeys = ["VITE_SUPABASE_URL", "VITE_SUPABASE_ANON_KEY"];
+  const frontendRequiredKeys = ["VITE_SUPABASE_URL", "VITE_SUPABASE_ANON_KEY", "VITE_PUBLIC_SITE_URL"];
   const supabaseRequiredKeys = [
     "SUPABASE_URL",
     "SUPABASE_SERVICE_ROLE_KEY",
@@ -532,19 +554,31 @@ function auditEnvironmentTemplates() {
 function auditDocumentationModelDrift() {
   const databaseModelPath = path.join(docsRoot, "Database_model.md");
   const schemaPath = path.join(supabaseRoot, "schema.sql");
+  const databaseTypesPath = path.join(srcRoot, "shared", "supabase", "database.types.ts");
 
-  if (!fs.existsSync(databaseModelPath) || !fs.existsSync(schemaPath)) {
-    fail("Missing Database_model.md or supabase/schema.sql for documentation drift audit.");
+  if (!fs.existsSync(databaseModelPath) || !fs.existsSync(schemaPath) || !fs.existsSync(databaseTypesPath)) {
+    fail("Missing Database_model.md, supabase/schema.sql or database.types.ts for documentation drift audit.");
     return {};
   }
 
   const databaseModel = readText(databaseModelPath);
   const schema = readText(schemaPath);
+  const databaseTypes = readText(databaseTypesPath);
+  const mailHelperPath = path.join(supabaseRoot, "functions", "_shared", "mail.ts");
+  const mailHelper = fs.existsSync(mailHelperPath) ? readText(mailHelperPath) : "";
   const contactBlock = databaseModel.match(/### contact_inquiries[\s\S]*?### land_offers/)?.[0] ?? "";
   const checks = {
     databaseModelTracksLandAcquisitionPage:
       !schema.includes("create table public.land_acquisition_page") ||
       databaseModel.includes("### land_acquisition_page"),
+    databaseModelTracksEmailServiceSettings:
+      !mailHelper.includes('from("email_service_settings")') ||
+      (schema.includes("create table public.email_service_settings") &&
+        databaseModel.includes("### email_service_settings")),
+    databaseTypesTrackServiceAndLogTables:
+      ["email_service_settings", "email_delivery_log", "form_rate_limit_events"].every((tableName) =>
+        databaseTypes.includes(`${tableName}: TableDefinition`),
+      ),
     databaseModelTracksEmailDeliveryKind:
       !schema.includes("delivery_kind public.email_delivery_kind") ||
       databaseModel.includes("delivery_kind text -- user_confirmation|sales_notification"),
@@ -706,6 +740,8 @@ function auditUxGuardrails() {
   const adminDashboardPath = path.join(srcRoot, "views", "pages", "admin", "AdminDashboardPage.tsx");
   const mainLayoutPath = path.join(srcRoot, "views", "layout", "MainLayout.tsx");
   const adminLayoutPath = path.join(srcRoot, "views", "layout", "AdminLayout.tsx");
+  const siteConfigPath = path.join(srcRoot, "shared", "config", "site.ts");
+  const pageMetaPath = path.join(srcRoot, "shared", "components", "PageMeta.tsx");
   const homePath = path.join(srcRoot, "views", "pages", "HomePage.tsx");
   const contactModalPath = path.join(srcRoot, "features", "inquiries", "components", "ContactModal.tsx");
   const formValidationPath = path.join(srcRoot, "features", "inquiries", "utils", "formValidation.ts");
@@ -717,6 +753,8 @@ function auditUxGuardrails() {
     !fs.existsSync(adminDashboardPath) ||
     !fs.existsSync(mainLayoutPath) ||
     !fs.existsSync(adminLayoutPath) ||
+    !fs.existsSync(siteConfigPath) ||
+    !fs.existsSync(pageMetaPath) ||
     !fs.existsSync(homePath) ||
     !fs.existsSync(contactModalPath) ||
     !fs.existsSync(formValidationPath) ||
@@ -731,6 +769,8 @@ function auditUxGuardrails() {
   const adminDashboard = readText(adminDashboardPath);
   const mainLayout = readText(mainLayoutPath);
   const adminLayout = readText(adminLayoutPath);
+  const siteConfig = readText(siteConfigPath);
+  const pageMeta = readText(pageMetaPath);
   const home = readText(homePath);
   const contactModal = readText(contactModalPath);
   const formValidation = readText(formValidationPath);
@@ -772,6 +812,12 @@ function auditUxGuardrails() {
       adminLayout.includes('href="#admin-main-content"') &&
       adminLayout.includes('id="admin-main-content"') &&
       adminLayout.includes("tabIndex={-1}"),
+    pageMetaUsesConfiguredPublicOrigin:
+      siteConfig.includes("VITE_PUBLIC_SITE_URL") &&
+      siteConfig.includes('const fallbackSiteUrl = "https://mimgradnja.rs"') &&
+      siteConfig.includes("export function createPublicUrl") &&
+      pageMeta.includes("createPublicUrl(canonicalPath ?? window.location.pathname)") &&
+      pageMeta.includes("origin: publicSiteUrl"),
     consentHasTouchTarget:
       /min-height:\s*44px/.test(formConsentBlock) &&
       /cursor:\s*pointer/.test(formConsentBlock),

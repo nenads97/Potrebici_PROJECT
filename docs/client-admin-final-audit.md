@@ -18,7 +18,7 @@ Ovaj dokument je ociscena verzija ranijih audit beleznica: uklonjeno je ponavlja
 
 Za sam launch koristiti i `docs/pre-production-runbook.md`, jer tamo postoji operativni redosled provera i jasna granica izmedju read-only provera i testova koji prave realne upise/emailove.
 
-Dopuna 2026-07-15: posle zavrsnog polish prolaza dodati su inline validation guardrail za lead forme, rollback za neuspesno cuvanje statusa leadova u adminu, hygiene provere za mixed Latin/Cyrillic tekst i normalizovani `tel:` helper za sve telefonske CTA linkove.
+Dopuna 2026-07-15: posle zavrsnog polish prolaza dodati su inline validation guardrail za lead forme, rollback za neuspesno cuvanje statusa leadova u adminu, hygiene provere za mixed Latin/Cyrillic tekst, normalizovani `tel:` helper za sve telefonske CTA linkove i Supabase advisor hardening belezenje za `set_updated_at`, service-only email podesavanja i public bucket listing.
 
 ## Kratak zakljucak
 
@@ -27,7 +27,7 @@ Klijentski deo je vrlo blizu dobrog v1 stanja. Sajt sada ima jasnu premium real-
 Najvaznije launch tacke vise nisu novi veliki redesign, vec zavrsne provere i nekoliko odluka:
 
 1. rucni vizuelni prolaz kroz sve javne i admin rute u browseru;
-2. produkciona Supabase/Edge Function provera sa realnim env vrednostima je uradjena 2026-07-14;
+2. produkciona Supabase/Edge Function provera sa realnim env vrednostima je uradjena: kontrolisani POST testovi 2026-07-14, read-only/launch/admin smoke ponovo 2026-07-15;
 3. odluka da li se uvodi prerender/SSR za bolji SEO/share preview;
 4. kasnije cepanje velikog `global.scss` fajla i napredniji media model.
 
@@ -136,6 +136,7 @@ Tok za prodavce placeva/starih kuca je odvojen:
 Uradjeno:
 
 - `PageMeta` postavlja title, description, robots, canonical, Open Graph, Twitter card i JSON-LD.
+- `PageMeta` koristi `VITE_PUBLIC_SITE_URL` / `shared/config/site.ts` za javni canonical/share origin, uz fallback `https://mimgradnja.rs`, tako da staging/localhost origin ne mora da procuri u canonical/OG URL-ove.
 - Javne rute imaju ciljane meta vrednosti.
 - Detalj stana koristi tlocrt kao share image.
 - `kupujemo-placeve` koristi svoju optimizovanu hero sliku.
@@ -150,7 +151,7 @@ Uradjeno:
 Rizik:
 
 - Meta/JSON-LD su client-side. Za pouzdanije social share preview-e i crawler pokrivanje, sledeci arhitektonski korak je prerender/SSR.
-- `robots.txt` i `sitemap.xml` koriste `https://mimgradnja.rs`; pre produkcije potvrditi da je to finalni domen.
+- `robots.txt`, `sitemap.xml` i `VITE_PUBLIC_SITE_URL` koriste/treba da koriste isti finalni domen; pre produkcije potvrditi da `https://mimgradnja.rs` ostaje finalni domen.
 
 ## Performanse
 
@@ -302,13 +303,17 @@ Uskladjeno sa `Database_model.md`:
 - `sourcePage` je tretiran kao interna putanja;
 - browser Supabase client koristi `createClient<Database>(...)`.
 - `schema.sql` eksplicitno revoke-uje default privilegije za buduce `public` tabele, funkcije i sekvence, pa nove Data API tabele moraju imati svesno dodate grantove i RLS politike.
+- `email_service_settings` je dokumentovan i dodat u kanonsku lokalnu semu kao service-only fallback za Edge Functions, bez `anon`/`authenticated` policy-ja.
+- Lokalna sema sada priprema `public.set_updated_at()` sa stabilnim `search_path = public, pg_temp` i ne dodaje broad anonimni `storage.objects` SELECT policy za public bucket listing.
 
 Rizik:
 
 - `database.types.ts` je rucno odrzavan lokalno. Pri svakoj sematskoj promeni SQL modela treba regenerisati ili azurirati tipove u istom PR-u.
 - Produkciona RLS, Edge Function env vrednosti, Brevo kljucevi i rate-limit ponasanje moraju se proveriti u stvarnom Supabase okruzenju.
+- Supabase advisors 2026-07-15 nemaju critical/high nalaze u dostupnom izlazu, ali imaju WARN/INFO triage: `set_updated_at` search_path, `citext` u public schema-i, broad public bucket listing, leaked password protection disabled, service-only `email_service_settings` bez policy-ja, unused index-e i multiple permissive SELECT policy-je. Repo-safe SQL stavke su pripremljene u lokalnoj semi i operator planu; cloud DB migraciju raditi kontrolisano.
+- `supabase/advisor-remediation.sql` je dodat kao operator-run plan za SQL deo advisor cleanup-a: `set_updated_at`, service-only `email_service_settings` i uklanjanje broad public bucket listing policy-ja. Ne pokretati ga kao automatski build/test korak i ne koristiti ga umesto prave migracije kada Supabase CLI bude dostupan.
 
-Produkcioni Supabase smoke, poslednja provera 2026-07-14:
+Produkcione Supabase provere:
 
 - lokalni frontend `.env.local` ima `VITE_SUPABASE_URL` i `VITE_SUPABASE_ANON_KEY`;
 - dodat je `mim-invest-frontend/.env.example` za javne Vite/Supabase vrednosti;
@@ -324,6 +329,9 @@ Produkcioni Supabase smoke, poslednja provera 2026-07-14:
 - UI smoke u browseru 2026-07-14: `/admin` neulogovanog korisnika prebacuje na login formu za oko 1.2s, `/admin/prijava` prikazuje formu bez blokirajuce provere sesije, a kompletan submit sa lokalnim test/admin nalogom otvara admin shell za oko 4.9s i zatim ucitava dashboard iz Supabase baze; detalj stana `/projekti/heroja-pinkija-13/ponuda-stanova/2` renderuje bez blokirajuceg `Ucitavanje stana...`.
 - `npm.cmd run smoke:supabase:admin` prolazi 2026-07-14 sa aktivnim admin nalogom: Supabase Auth ~649ms, `admin_profiles` provera ~386ms, citanje zasticenih admin tabela ~277ms; pokriveno je citanje `contact_inquiries`, `land_offers`, `units`, `projects`, `construction_updates` i `project_media`.
 - Kontrolisana admin obrada test leadova je proverena 2026-07-14 kroz eksplicitne test ID selektore: 4 test kontakt upita i 1 test ponuda placa su procitani kroz admin RLS, azurirani na `closed` i verifikovani kao zatvoreni.
+- Supabase smoke 2026-07-15: read-only i launch smoke prolaze; admin smoke je read-only i prolazi sa Auth ~698ms, `admin_profiles` ~152ms, admin data ~229ms, uz procitanih 10 kontakt upita, 1 ponudu placa, 15 stanova, 1 projekat, 3 construction update-a i 26 media redova.
+- Supabase smoke posle advisor remediation plana 2026-07-15: read-only i launch smoke ponovo prolaze, a admin smoke prolazi sa Auth ~355ms, `admin_profiles` ~177ms i admin data ~164ms.
+- Supabase advisor 2026-07-15: dostupni security/performance advisors ne vracaju critical/high nalaze, ali vracaju WARN/INFO stavke koje su zabelezene u runbook-u; cloud migracije za njih ne pokretati bez odvojene potvrde.
 
 ## Obrisano / ocisceno
 
@@ -357,6 +365,7 @@ Do sada prolazi:
 - `git diff --check` bez stvarnih whitespace gresaka; postoje samo Windows LF -> CRLF upozorenja
 - `npm.cmd run quality`, `git diff --check`, `npm.cmd run smoke:supabase:readonly` i `npm.cmd run smoke:supabase:launch` su ponovo provereni 2026-07-14;
 - `npm.cmd run quality` i `git diff --check` su ponovo provereni 2026-07-15 posle lead-form, admin rollback, hygiene i phone-link polish izmena;
+- `npm.cmd run quality`, `git diff --check`, `npm.cmd run smoke:supabase:readonly`, `npm.cmd run smoke:supabase:launch` i `npm.cmd run smoke:supabase:admin` su ponovo provereni 2026-07-15 posle Supabase advisor remediation plana;
 - import graf: svi TS/JS fajlovi iz aplikacionog entry-ja su reachable
 - public asset scan: svi public fajlovi imaju referencu u kodu, dokumentaciji, `index.html` ili Supabase seed-u
 - dependency sanity scan: nema ocigledno neiskoriscenih runtime/dev paketa
@@ -417,6 +426,10 @@ Do sada prolazi:
   - `/projekti` i legacy `/apartmani/1` redirectuju na kanonske rute, a `/admin` bez sesije zavrsava na `/admin/prijava`;
   - mobile 390px prolaz kroz 13 kljucnih ruta, ukljucujuci detalje stanova `/1`, `/8`, `/15` i `/admin/prijava`, nema broken slike, missing alt, horizontal overflow, error boundary ili blokirajuci loading tekst;
   - posle mobilnog smoke-a viewport override je resetovan na normalno browser stanje.
+- browser runtime smoke 2026-07-15:
+  - smart desktop/mobile prolaz kroz 43 route provere nema failova: nema stvarno broken slika, missing alt-a, horizontal overflow-a, error boundary-ja, blokirajuceg loading-a ili sirovih `tel:` href vrednosti;
+  - lazy slike daleko ispod viewport-a su potvrdene kao false-positive za osnovni naturalWidth smoke, ne kao broken asseti;
+  - `/projekti`, `/apartmani/1` i `/admin` redirecti ostaju ispravni.
 - keyboard/interakcioni QA 2026-07-10:
   - javni dropdown `Projekti` se otvara, Escape ga zatvara, `aria-expanded` se vraca na `false`, a fokus ostaje na trigger-u;
   - kontakt modal se otvara iz header CTA-a, fokusira polje `Ime i prezime`, zakljucava body scroll, close dugme zatvara modal i vraca fokus na CTA `Pisite nam`;
@@ -430,18 +443,37 @@ Do sada prolazi:
   - spisak stanova ima 15 redova, filter sprata smanjuje prikaz na 5 redova, a `Ponisti filtere` vraca 15 redova i sve filtere na `all`;
   - mobilni hamburger na 390px prikazuje projektne linkove, Escape zatvara meni, `aria-expanded` se vraca na `false`, label se vraca na `Otvori navigaciju`, fokus ostaje na toggle dugmetu i nema horizontal overflow-a;
   - admin login prikazuje `Admin prijava`, formu sa `aria-busy=false` i submit dugmetom; prijava otvara protected admin shell sa Supabase feedback-om, a `/admin` dashboard prikazuje `Pregled prodaje i sadrzaja`, metrike i nema horizontal overflow/error boundary.
+- keyboard/interakcioni QA 2026-07-15:
+  - header kontakt modal se otvara, prazan opsti submit ostaje lokalno, fokusira `name`, prikazuje inline greske za ime/e-mail/saglasnost i ne ulazi u busy/network stanje;
+  - upit za konkretan stan na detalju stana dodatno zahteva telefon i nosi kontekst `Stan`, `Sprat`, `Povrsina`, `Struktura`, `Status`;
+  - `/kupujemo-placeve` forma na prazan submit fokusira `name`, prikazuje inline greske za ime/telefon/e-mail/saglasnost i ostaje `aria-busy=false`;
+  - mobilni hamburger na 390px prikazuje projektne linkove, Escape ga zatvara, fokus ostaje na toggle dugmetu i nema horizontal overflow-a.
 
 ## Preostali rizici i sledeci najkorisniji batch
+
+### Completion audit prema originalnom cilju
+
+| Zahtev | Dokaz | Status |
+| --- | --- | --- |
+| Proci kroz sve javne stranice | Browser smoke pokriva home, projekat, ponudu, spisak, 15 detalja stanova, kontakt, lokaciju, O nama, kupujemo placeve, politiku privatnosti, legacy redirect i 404. | Dokazano za automatizovani/runtime QA. |
+| Procitati i uskladiti dokumentaciju | Azurirani su `Project-spec.md` pravac kroz audit, `Frontend-guide.md`, `Database_model.md`, `pre-production-runbook.md`, `client-admin-final-audit.md`, `supabase/README.md` i Figma/design brief je ukljucen kao izvor. | Dokazano za repo dokumentaciju. |
+| Predloziti i primeniti premium/conversion dorade | Kontakt modal umesto redirekcije, inline validacija, normalizovani `tel:` linkovi, uklonjeni duplirani CTA tokovi, ocuvani detalji stanova i browser QA za desktop/mobile. | Implementirano i verifikovano. |
+| Izbaciti visak/neaktivni kod | Surface audit proverava import graf i public asset reference; raniji prototip fajlovi i neaktivni project komponentni sloj su uklonjeni. | Implementirano i pod guardrail-om. |
+| Razmisliti unapred za admin panel | Admin sada pokriva pregled, upite, placeve, stanove/status, projekat i fajlove; audit opisuje sledece kasnije korake: media usage/variant, crop/focal point, status history i page_sections CMS. | Implementirano za v1, roadmap dokumentovan. |
+| Proveriti Supabase/admin spremnost | Read-only, launch i admin smoke prolaze; controlled POST testovi i admin processing testovi su dokumentovani; advisor nalaz ima operator-run remediation plan. | Dokazano uz pre-production odluke. |
+| Stabilizovati canonical/share domen | `PageMeta` vise ne koristi implicitni browser origin vec `VITE_PUBLIC_SITE_URL` kroz centralni site config; sitemap/robots ostaju vezani za isti finalni domen. | Implementirano; finalni domen jos treba poslovno potvrditi. |
+| Zavrsiti bezbedno pred launch | Ostaju samo odluke koje zahtevaju eksternu potvrdu ili produkcioni zahvat: finalni domen, Supabase advisor WARN/INFO primena/prihvatanje, eventualni SSR/prerender. | Nije automatski zatvoreno; svesno ostavljeno kao launch odluka. |
 
 ### Pre produkcije
 
 0. Proci `docs/pre-production-runbook.md` kao launch checklist.
 1. Rucni keyboard QA celog tab redosleda kroz sve javne rute i admin sekcije.
-2. Potvrditi finalni domen za sitemap/robots.
+2. Potvrditi finalni domen za sitemap/robots/canonical i `VITE_PUBLIC_SITE_URL`.
 3. Ponoviti Supabase Auth, RLS, Edge Functions i email slanje samo ako se menjaju Supabase secrets, RLS politike ili Edge Functions.
 4. Proveriti kontakt modal na mobilnom viewport-u i na dugim porukama.
 5. Proveriti da status stana promenjen u adminu brzo stize do javne ponude u realnom Supabase okruzenju.
 6. Pokretati `smoke:supabase:admin` kao regression gate kada se menjaju admin auth, RLS, env ili admin data fetch.
+7. Odvojeno odluciti kada se primenjuju Supabase advisor WARN/INFO migracije: `set_updated_at` search_path, uklanjanje broad public bucket listing policy-ja, eventualno premestanje `citext` extension-a i ukljucivanje leaked password protection u Dashboard-u.
 
 ### Kasnije, ako klijent zeli jos vise kontrole
 

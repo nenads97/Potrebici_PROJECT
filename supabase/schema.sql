@@ -98,6 +98,15 @@ create table public.site_settings (
   updated_at timestamptz not null default now()
 );
 
+create table public.email_service_settings (
+  id boolean primary key default true check (id),
+  brevo_api_key text not null,
+  sender_email text not null default 'prodaja@mimgradnja.rs',
+  sender_name text not null default 'M & M Gradnja',
+  sales_email text not null default 'prodaja@mimgradnja.rs',
+  updated_at timestamptz not null default now()
+);
+
 create table public.projects (
   id uuid primary key default gen_random_uuid(),
   slug text not null unique,
@@ -335,6 +344,7 @@ create index form_rate_limit_events_lookup_idx
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
+set search_path = public, pg_temp
 as $$
 begin
   new.updated_at = now();
@@ -344,6 +354,10 @@ $$;
 
 create trigger site_settings_set_updated_at
 before update on public.site_settings
+for each row execute function public.set_updated_at();
+
+create trigger email_service_settings_set_updated_at
+before update on public.email_service_settings
 for each row execute function public.set_updated_at();
 
 create trigger projects_set_updated_at
@@ -412,6 +426,7 @@ alter default privileges for role postgres in schema public
 
 alter table public.admin_profiles enable row level security;
 alter table public.site_settings enable row level security;
+alter table public.email_service_settings enable row level security;
 alter table public.projects enable row level security;
 alter table public.units enable row level security;
 alter table public.project_pdfs enable row level security;
@@ -426,6 +441,7 @@ alter table public.form_rate_limit_events enable row level security;
 
 revoke all on public.admin_profiles from anon, authenticated;
 revoke all on public.site_settings from anon, authenticated;
+revoke all on public.email_service_settings from anon, authenticated;
 revoke all on public.projects from anon, authenticated;
 revoke all on public.units from anon, authenticated;
 revoke all on public.project_pdfs from anon, authenticated;
@@ -449,6 +465,7 @@ grant select on public.land_acquisition_page to anon, authenticated;
 
 grant all on public.admin_profiles to authenticated, service_role;
 grant all on public.site_settings to authenticated, service_role;
+grant all on public.email_service_settings to service_role;
 grant all on public.projects to authenticated, service_role;
 grant all on public.units to authenticated, service_role;
 grant all on public.project_pdfs to authenticated, service_role;
@@ -624,10 +641,9 @@ insert into storage.buckets (id, name, public)
 values ('public-assets', 'public-assets', true)
 on conflict (id) do update set public = excluded.public;
 
-create policy "Public can read public assets"
-on storage.objects for select
-to anon, authenticated
-using (bucket_id = 'public-assets');
+-- Public buckets serve object URLs without a broad storage.objects SELECT
+-- policy. Avoid exposing a listable object catalogue to anonymous clients;
+-- published file metadata is controlled through public.project_media.
 
 create policy "Admins can upload public assets"
 on storage.objects for insert

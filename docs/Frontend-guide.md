@@ -28,9 +28,14 @@ Required frontend environment:
 
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
+- `VITE_PUBLIC_SITE_URL`
 
 Keep these documented in `mim-invest-frontend/.env.example`. Server-only values
 belong in Supabase secrets and `supabase/.env.example`, not in Vite.
+
+`VITE_PUBLIC_SITE_URL` is the canonical public origin used by `PageMeta` for
+canonical, Open Graph, Twitter and JSON-LD URLs. It should match
+`robots.txt`/`sitemap.xml`; default/fallback is `https://mimgradnja.rs`.
 
 Direct public reads:
 

@@ -12,6 +12,9 @@ export type ProjectPdfType =
 export type TimelineState = "done" | "active" | "upcoming";
 export type ContactInquiryType = "general" | "unit" | "viewing" | "availability";
 export type AdminItemStatus = "new" | "contacted" | "closed";
+export type EmailRelatedEntityType = "contact_inquiry" | "land_offer";
+export type EmailDeliveryKind = "user_confirmation" | "sales_notification";
+export type EmailDeliveryStatus = "pending" | "sent" | "failed";
 export type ProjectMediaType =
   | "project_image"
   | "unit_image"
@@ -44,6 +47,14 @@ export type Database = {
         footer_text: string | null;
         social_links: Json;
         created_at: string;
+        updated_at: string;
+      }>;
+      email_service_settings: TableDefinition<{
+        id: boolean;
+        brevo_api_key: string;
+        sender_email: string;
+        sender_name: string;
+        sales_email: string;
         updated_at: string;
       }>;
       projects: TableDefinition<{
@@ -206,6 +217,27 @@ export type Database = {
         admin_note: string | null;
         created_at: string;
         updated_at: string;
+      }>;
+      email_delivery_log: TableDefinition<{
+        id: string;
+        related_entity_type: EmailRelatedEntityType;
+        related_entity_id: string | null;
+        delivery_kind: EmailDeliveryKind;
+        recipient_email: string;
+        subject: string;
+        provider: string;
+        provider_message_id: string | null;
+        status: EmailDeliveryStatus;
+        error_message: string | null;
+        created_at: string;
+        sent_at: string | null;
+      }>;
+      form_rate_limit_events: TableDefinition<{
+        id: string;
+        action: string;
+        identifier_hash: string;
+        source_page: string | null;
+        created_at: string;
       }>;
     };
     Views: Record<string, never>;

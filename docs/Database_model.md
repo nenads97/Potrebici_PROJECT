@@ -48,6 +48,31 @@ created_at timestamptz
 updated_at timestamptz
 ```
 
+### email_service_settings
+
+Server-only fallback settings for outgoing email. Edge Functions should prefer
+Supabase secrets (`BREVO_API_KEY`, sender values and `SALES_EMAIL`), but this
+table exists as an operational fallback when email configuration is stored in
+the database.
+
+This table contains secret material and must stay service-only:
+
+- RLS enabled;
+- no `anon` or `authenticated` grants;
+- no public/admin RLS policies in v1;
+- service-role Edge Functions may read it.
+
+Essential columns:
+
+```txt
+id boolean pk default true
+brevo_api_key text
+sender_email text
+sender_name text
+sales_email text
+updated_at timestamptz
+```
+
 ### projects
 
 One row per project. First project is `heroja-pinkija-13`.

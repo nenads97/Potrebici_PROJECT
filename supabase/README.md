@@ -13,6 +13,8 @@ https://kamwovkvhkurjvabbfks.supabase.co
 
 - `schema.sql` - database schema, enums, tables, indexes, triggers, grants and RLS policies
 - `seed.sql` - initial content for Heroja Pinkija 13, apartments, construction timeline, media metadata and the land acquisition page
+- `advisor-remediation.sql` - manual, reviewed SQL plan for current Supabase
+  advisor WARN/INFO cleanup; not a generated migration file
 
 ## Current access model
 
@@ -77,6 +79,13 @@ environment provides `SUPABASE_SECRET_KEYS`, the shared mail helper can read the
 
 `SUPABASE_DB_URL` is only useful for manual SQL/CLI database operations. It is
 not read by the Edge Functions in this repository.
+
+Edge Functions first read Brevo/sales settings from Supabase secrets. The
+schema also defines `public.email_service_settings` as a service-role fallback
+for deployments that store email settings in the database. That table contains
+secret material, so it intentionally has RLS enabled with no `anon` or
+`authenticated` policies in v1. Do not grant browser/admin access to it unless a
+separate admin secret-management flow is explicitly designed.
 
 ## Edge Functions and email
 
@@ -161,6 +170,28 @@ public tables, and then grants the minimum browser/admin access required by v1.
 It also revokes default privileges for future `public` tables, functions and
 sequences. When adding a new public table, include explicit `GRANT` statements
 and matching RLS policies in the same change.
+
+The `public-assets` bucket is public for direct object URLs, but `schema.sql`
+does not add a broad anonymous `storage.objects` SELECT policy. Published file
+metadata should flow through `public.project_media`; anonymous clients should
+not be able to list the whole bucket catalogue.
+
+Advisor follow-up from 2026-07-15:
+
+- `public.set_updated_at()` should keep a stable `search_path = public, pg_temp`.
+- `public.email_service_settings` is expected to show as RLS-enabled with no
+  policies; this is intentional while the table is service-only.
+- If the cloud project still has a broad `Public can read public assets`
+  storage policy, remove it in a controlled migration after confirming admin
+  uploads still use direct object URLs and `project_media` metadata.
+- The `citext` extension currently exists in `public`; moving extensions to a
+  dedicated schema should be planned as a separate migration because several
+  columns use `citext`.
+
+Use `advisor-remediation.sql` only as a reviewed operator script. It addresses
+the low-risk SQL follow-up for `set_updated_at`, service-only email settings and
+anonymous bucket listing. It intentionally does not move `citext` or change Auth
+settings; leaked-password protection must be enabled in the Supabase Dashboard.
 
 ## Verification SQL
 

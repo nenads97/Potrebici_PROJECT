@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 
+import { createPublicUrl, publicSiteUrl, siteName } from "../config/site";
+
 type PageMetaProps = {
   title: string;
   description: string;
@@ -35,7 +37,6 @@ type StructuredDataInput =
   | ((context: StructuredDataContext) => StructuredDataObject | StructuredDataObject[]);
 
 const defaultShareImage = "/images/heroja-pinkija-13/gradilisna-tabla.jpg";
-const siteName = "M & M Gradnja";
 const structuredDataScriptId = "page-structured-data";
 
 export const PageMeta = ({
@@ -48,8 +49,8 @@ export const PageMeta = ({
   type = "website",
 }: PageMetaProps) => {
   useEffect(() => {
-    const canonicalUrl = createAbsoluteUrl(canonicalPath ?? window.location.pathname);
-    const imageUrl = createAbsoluteUrl(image);
+    const canonicalUrl = createPublicUrl(canonicalPath ?? window.location.pathname);
+    const imageUrl = createPublicUrl(image);
 
     document.title = title;
     setMetaTag("name", "description", description);
@@ -69,7 +70,7 @@ export const PageMeta = ({
       resolveStructuredData(structuredData, {
         canonicalUrl,
         imageUrl,
-        origin: window.location.origin,
+        origin: publicSiteUrl,
         siteName,
       }),
     );
@@ -105,16 +106,6 @@ function setCanonicalLink(href: string) {
   linkElement.setAttribute("rel", "canonical");
   linkElement.setAttribute("href", href);
   document.head.append(linkElement);
-}
-
-function createAbsoluteUrl(pathOrUrl: string) {
-  if (/^https?:\/\//i.test(pathOrUrl)) {
-    return pathOrUrl;
-  }
-
-  const normalizedPath = pathOrUrl.startsWith("/") ? pathOrUrl : `/${pathOrUrl}`;
-
-  return `${window.location.origin}${normalizedPath}`;
 }
 
 function resolveStructuredData(
