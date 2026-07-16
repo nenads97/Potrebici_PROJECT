@@ -54,6 +54,8 @@ npm.cmd run smoke:supabase:readonly
 
 It checks public REST reads, private lead/log table blocking and Edge Function
 CORS preflight only. It does not submit forms, create database rows or send email.
+For public tables, it reports exact REST counts separately from the 5-row sample
+and fails if the published `units` inventory does not expose all 15 apartments.
 
 Use the stricter launch variant when the cloud database should already contain
 published media rows:

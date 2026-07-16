@@ -187,8 +187,6 @@ export async function fetchProjectInfo(): Promise<ProjectInfo> {
     description: data.full_description ?? data.description ?? fallbackProjectInfo.description,
     locationDescription: data.location_description ?? fallbackProjectInfo.locationDescription,
     floorStructure: data.floor_structure ?? fallbackProjectInfo.floorStructure,
-    constructionstart:
-      formatProjectDateLong(data.construction_start_date) || fallbackProjectInfo.constructionstart,
     plannedCompletion:
       formatProjectDateLong(data.construction_end_date) || fallbackProjectInfo.plannedCompletion,
     constructionStartDate: data.construction_start_date ?? fallbackProjectInfo.constructionStartDate,

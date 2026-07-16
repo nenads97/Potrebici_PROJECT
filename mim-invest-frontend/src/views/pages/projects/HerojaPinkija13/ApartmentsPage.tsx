@@ -205,7 +205,7 @@ const ApartmentsListingContent = ({ viewMode }: ApartmentsListingContentProps) =
 const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
   const [floorFilter, setFloorFilter] = useState("all");
   const [roomFilter, setRoomFilter] = useState("all");
-  const [statusFilter, setstatusFilter] = useState<"all" | Apartment["status"]>("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | Apartment["status"]>("all");
 
   const floorOptions = useMemo(
     () =>
@@ -240,7 +240,7 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
   const clearFilters = () => {
     setFloorFilter("all");
     setRoomFilter("all");
-    setstatusFilter("all");
+    setStatusFilter("all");
   };
 
   const printFilteredList = () => {
@@ -297,7 +297,7 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
             <select
               value={statusFilter}
               onChange={(event) =>
-                setstatusFilter(event.target.value as "all" | Apartment["status"])
+                setStatusFilter(event.target.value as "all" | Apartment["status"])
               }
             >
               <option value="all">Svi statusi</option>

@@ -43,14 +43,16 @@ The tone should remain professional, modern, and trustworthy.
 - TypeScript
 - SCSS
 - React Router
+- Supabase JS client
 
-Potential future integrations:
+Current v1 backend decision:
 
-- Umbraco CMS
-- .NET backend
-- PostgreSQL
-- Docker
-- Railway hosting
+- Supabase is the only backend platform in v1.
+- Supabase Auth protects `/admin`.
+- Supabase PostgreSQL stores project/unit content, inquiries, land offers and media metadata.
+- Supabase Storage stores public project media/PDF files.
+- Supabase Edge Functions handle public form submissions, validation, spam/rate limiting and email delivery.
+- Do not add Umbraco, a separate .NET backend, a separate CMS layer or another database in v1 unless the user explicitly changes the architecture.
 
 ---
 
@@ -80,12 +82,18 @@ src/
     layout/
 
   features/
-    projects/
+    admin/
       components/
       data/
       types/
+      utils/
 
-    land-acquisition/
+    inquiries/
+      api/
+      components/
+      utils/
+
+    projects/
       components/
       data/
       types/
@@ -178,16 +186,9 @@ Example:
 
 # Providers
 
-Use a simple AppProviders pattern for future scalability.
-
-Example future usage:
-
-- ThemeProvider
-- React Query Provider
-- Auth Provider
-- Toast Provider
-
-Do not overengineer providers initially.
+Keep providers minimal. The current app uses the router plus the contact modal
+provider. Do not introduce a global state/query/provider layer unless there is a
+clear product need.
 
 ---
 
@@ -293,9 +294,12 @@ Suggested messaging examples:
 
 ---
 
-# Dummy data
+# Data and Supabase fallback
 
-Until backend integration is ready, use dummy data.
+Local TypeScript data is not dummy content anymore; it is the public fallback
+that keeps project and apartment pages instant if Supabase is missing or slow.
+Do not remove local fallback data unless an equivalent non-blocking server
+render/prerender path exists.
 
 Apartment object example:
 
@@ -312,6 +316,26 @@ Statuses:
 - available
 - reserved
 - sold
+
+Public apartment/project pages should render local fallback data immediately and
+then refresh from Supabase when it responds in time. Protected admin reads and
+writes must go through Supabase Auth/RLS. Public form submissions must go through
+Edge Functions, not direct browser inserts into lead tables.
+
+Before handoff, run from `mim-invest-frontend`:
+
+```powershell
+npm.cmd run quality
+git diff --check
+```
+
+When `.env.local` points to the real Supabase project, also run the read-only
+smoke checks:
+
+```powershell
+npm.cmd run smoke:supabase:readonly
+npm.cmd run smoke:supabase:launch
+```
 
 ---
 

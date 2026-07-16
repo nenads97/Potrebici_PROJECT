@@ -77,9 +77,11 @@ Trenutni poznati nalaz:
 
 - cloud `project_media` je popunjen za Heroja Pinkija 13 i strozi launch smoke prolazi. Ako se media metadata kasnije brise ili menja, ponovo pokrenuti `npm.cmd run smoke:supabase:launch`.
 - read-only i launch smoke su ponovo prosli 2026-07-15: `projects` 1 red,
-  `units` 5 redova, `project_media` 5 redova, `construction_updates` 3 reda,
-  privatne lead/log tabele vracaju 401 za anon key, a obe Edge Function
-  `OPTIONS` provere vracaju 200.
+  `units` 15 redova, `project_media` 25 objavljenih redova,
+  `construction_updates` 3 reda, privatne lead/log tabele vracaju 401 za anon
+  key, a obe Edge Function `OPTIONS` provere vracaju 200. Smoke sada prijavljuje
+  stvaran REST count uz sample od 5 redova i pada ako javna ponuda nema svih 15
+  objavljenih stanova.
 
 Kada ocekujemo da cloud baza ima objavljene media redove, pokrenuti strozi read-only launch smoke:
 

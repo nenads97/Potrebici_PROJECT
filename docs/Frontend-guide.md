@@ -147,6 +147,10 @@ This is intentionally not part of `quality`, because it needs network access and
 real Supabase env values. It performs only read/preflight checks and must not
 submit public forms.
 
+The read-only smoke reports exact REST counts separately from the 5-row sample
+it downloads for each public table. It must fail if the public `units` inventory
+does not expose all 15 published apartments for Heroja Pinkija 13.
+
 When production media metadata should already be in Supabase, run the stricter
 read-only launch check:
 
@@ -185,7 +189,7 @@ For the full launch checklist, use `docs/pre-production-runbook.md`.
 - internal hard-reload `<a href="/...">` links in React source;
 - missing image alt text;
 - temporary debug markers;
-- suspicious encoding/mojibake artifacts, mixed Latin/Cyrillic text in the same line, and raw `tel:` href values;
+- suspicious encoding/mojibake artifacts, common casing/merge artifacts, mixed Latin/Cyrillic text in the same line, and raw `tel:` href values;
 - exact sitemap canonical URL set, robots canonical rules and PageMeta coverage for active page files;
 - route contract consistency between `Project-spec.md`, `AppRouter.tsx`,
   project canonical metadata and legacy apartment redirects;
@@ -211,6 +215,8 @@ For the full launch checklist, use `docs/pre-production-runbook.md`.
   packages such as `sass` stay in `devDependencies`, and packages are not
   duplicated across dependency groups.
 - presence of the optional read-only, launch and admin Supabase smoke scripts.
+- exact public Supabase count reporting in the read-only smoke, including the
+  full 15-apartment published `units` inventory.
 
 ## Current visual tokens
 

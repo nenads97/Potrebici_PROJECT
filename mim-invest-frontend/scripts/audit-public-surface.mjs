@@ -163,6 +163,7 @@ function auditSourceHygiene() {
   const hardReloadLinks = [];
   const debugTokens = [];
   const suspiciousEncoding = [];
+  const casingArtifacts = [];
   const mixedScriptLines = [];
   const rawTelHrefLines = [];
   const imgWithoutAlt = [];
@@ -170,6 +171,8 @@ function auditSourceHygiene() {
   const stockImageUsages = [];
   const mojibakePattern =
     /[\uFFFD]|\u00C2(?=[\u00A0-\u00BF])|\u00C3(?=[\u0080-\u00BF])|\u00E2(?=\u20AC|\u0080)/;
+  const casingArtifactPattern =
+    /\b(?:fetchAdminstate|AdminSupabasestate|adminUnitstatusLabels|unitstatusMap|onstatusFilterChange|matchesstatus|unitstatusFilter|unitstatuses|maxstandardUploadSizeBytes|getstatusFromQuery|setstatusFilter|nextstatus|Projectstat|projectstats|constructionstart|Apartmentstack|apartmentstacks|dragstate|stackPlanConfig)\b/;
   const latinLetterPattern = /\p{Script=Latin}/u;
   const cyrillicLetterPattern = /\p{Script=Cyrillic}/u;
 
@@ -188,6 +191,10 @@ function auditSourceHygiene() {
 
       if (mojibakePattern.test(line)) {
         suspiciousEncoding.push(`${relative}:${index + 1}`);
+      }
+
+      if (casingArtifactPattern.test(line)) {
+        casingArtifacts.push(`${relative}:${index + 1}`);
       }
 
       if (latinLetterPattern.test(line) && cyrillicLetterPattern.test(line)) {
@@ -226,6 +233,10 @@ function auditSourceHygiene() {
     fail(`Suspicious encoding artifacts found:\n${suspiciousEncoding.join("\n")}`);
   }
 
+  if (casingArtifacts.length > 0) {
+    fail(`Suspicious casing/merge artifacts found:\n${casingArtifacts.join("\n")}`);
+  }
+
   if (mixedScriptLines.length > 0) {
     fail(`Mixed Latin/Cyrillic text found:\n${mixedScriptLines.join("\n")}`);
   }
@@ -251,6 +262,7 @@ function auditSourceHygiene() {
     hardReloadLinks: hardReloadLinks.length,
     debugTokens: debugTokens.length,
     suspiciousEncoding: suspiciousEncoding.length,
+    casingArtifacts: casingArtifacts.length,
     mixedScriptLines: mixedScriptLines.length,
     rawTelHrefLines: rawTelHrefLines.length,
     localOriginUsages: localOriginUsages.length,
@@ -552,6 +564,12 @@ function auditSupabaseFunctionHardening() {
       smokeScript.includes("REQUIRE_PROJECT_MEDIA") &&
       smokeScript.includes("--require-project-media") &&
       smokeScript.includes("minRows: requireProjectMedia ? 1 : 0"),
+    smokeReportsExactPublicCounts:
+      smokeScript.includes('Prefer: "count=exact"') &&
+      smokeScript.includes("getExactCount(response)") &&
+      smokeScript.includes("sampleRows"),
+    smokeRequiresFullPublishedUnitInventory:
+      smokeScript.includes('units: await expectPublicRows("units", "code,area_m2,status", "is_published=eq.true", { minRows: 15 })'),
   };
 
   for (const [name, ok] of Object.entries(checks)) {
@@ -959,11 +977,11 @@ function auditUxGuardrails() {
       apartmentsListing.includes("createPublicUrl(`/projekti/heroja-pinkija-13/ponuda-stanova/${apartment.number}`)"),
     localHeroImagesExposeDimensions:
       home.includes('src={images.hero}') &&
-      home.includes('width="818"') &&
-      home.includes('height="783"') &&
+      home.includes('width="1672"') &&
+      home.includes('height="941"') &&
       contactPage.includes("contactHeroImage") &&
-      contactPage.includes('width="560"') &&
-      contactPage.includes('height="676"'),
+      contactPage.includes('width="1672"') &&
+      contactPage.includes('height="941"'),
     consentHasTouchTarget:
       /min-height:\s*44px/.test(formConsentBlock) &&
       /cursor:\s*pointer/.test(formConsentBlock),

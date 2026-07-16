@@ -14,12 +14,12 @@ type ApartmentAvailabilityProps = {
   compactHeading?: boolean;
 };
 
-type statusFilter = "All" | ApartmentStatus;
+type StatusFilter = "All" | ApartmentStatus;
 type StructureFilter = "All" | "Garsonjera" | "Dvosoban" | "Trosoban";
 
 const apartmentsPerPage = 6;
 
-const statusTabs: Array<{ label: string; value: statusFilter }> = [
+const statusTabs: Array<{ label: string; value: StatusFilter }> = [
   { label: "Svi stanovi", value: "All" },
   { label: "Slobodni", value: "Available" },
   { label: "Rezervisani", value: "Reserved" },
@@ -41,7 +41,7 @@ const matchesStructureFilter = (apartment: Apartment, structure: StructureFilter
   return apartment.rooms === structure;
 };
 
-const statusQueryMap: Record<Exclude<statusFilter, "All">, string> = {
+const statusQueryMap: Record<Exclude<StatusFilter, "All">, string> = {
   Available: "available",
   Reserved: "reserved",
   Sold: "sold",
@@ -53,9 +53,9 @@ const structureQueryMap: Record<Exclude<StructureFilter, "All">, string> = {
   Trosoban: "trosoban",
 };
 
-const getstatusFromQuery = (value: string | null): statusFilter => {
+const getStatusFromQuery = (value: string | null): StatusFilter => {
   const match = Object.entries(statusQueryMap).find(([, queryValue]) => queryValue === value);
-  return (match?.[0] as statusFilter | undefined) ?? "All";
+  return (match?.[0] as StatusFilter | undefined) ?? "All";
 };
 
 const getStructureFromQuery = (value: string | null): StructureFilter => {
@@ -69,16 +69,16 @@ export const ApartmentAvailability = ({
 }: ApartmentAvailabilityProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
-  const status = getstatusFromQuery(searchParams.get("status"));
+  const status = getStatusFromQuery(searchParams.get("status"));
   const structure = getStructureFromQuery(searchParams.get("structure"));
 
   const filteredApartments = useMemo(() => {
     return apartments
       .filter((apartment) => {
-        const matchesstatus = status === "All" || apartment.status === status;
+        const matchesStatus = status === "All" || apartment.status === status;
         const matchesStructure = matchesStructureFilter(apartment, structure);
 
-        return matchesstatus && matchesStructure;
+        return matchesStatus && matchesStructure;
       })
       .sort((firstApartment, secondApartment) => Number(firstApartment.number) - Number(secondApartment.number));
   }, [apartments, status, structure]);
@@ -101,18 +101,18 @@ export const ApartmentAvailability = ({
   const hasActiveFilters = status !== "All" || structure !== "All";
 
   const updateSearchParams = ({
-    nextstatus = status,
+    nextStatus = status,
     nextStructure = structure,
     nextPage = 1,
   }: {
-    nextstatus?: statusFilter;
+    nextStatus?: StatusFilter;
     nextStructure?: StructureFilter;
     nextPage?: number;
   }) => {
     const nextParams = new URLSearchParams();
 
-    if (nextstatus !== "All") {
-      nextParams.set("status", statusQueryMap[nextstatus]);
+    if (nextStatus !== "All") {
+      nextParams.set("status", statusQueryMap[nextStatus]);
     }
 
     if (nextStructure !== "All") {
@@ -175,7 +175,7 @@ export const ApartmentAvailability = ({
                   aria-pressed={status === tab.value}
                   className={status === tab.value ? "is-active" : ""}
                   key={tab.value}
-                  onClick={() => updateSearchParams({ nextstatus: tab.value })}
+                  onClick={() => updateSearchParams({ nextStatus: tab.value })}
                   type="button"
                 >
                   {tab.label}

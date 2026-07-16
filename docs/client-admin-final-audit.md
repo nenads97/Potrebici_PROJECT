@@ -341,13 +341,13 @@ Produkcione Supabase provere:
 - Edge Function `OPTIONS` preflight za `submit-contact-inquiry` i `submit-land-offer` vraca 200;
 - Edge Functions sada dele helper za form rate-limit i proveravaju dva bucket-a: e-mail hash i IP/network hash;
 - kontrolisani POST test kontakt forme i forme za placeve je uradjen uz odobrenje; oba testa su vratila `ok`, upisala leadove i napravila `email_delivery_log` redove sa statusom `sent`;
-- `npm.cmd run smoke:supabase:readonly` prolazi: `projects` vraca 1 red, `units` 5 redova, `project_media` 5 redova, `construction_updates` 3 reda, privatne lead/log tabele vracaju 401 za anon key, a obe public Edge Function preflight provere vracaju 200 sa CORS origin-om `*`;
+- `npm.cmd run smoke:supabase:readonly` prolazi: `projects` vraca 1 red, `units` 15 redova, `project_media` 25 objavljenih redova, `construction_updates` 3 reda, privatne lead/log tabele vracaju 401 za anon key, a obe public Edge Function preflight provere vracaju 200 sa CORS origin-om `*`; smoke prijavljuje stvaran REST count uz sample od 5 redova i pada ako javna ponuda nema svih 15 objavljenih stanova;
 - `npm.cmd run smoke:supabase:launch` prolazi kada se zahteva bar jedan objavljen `project_media` red.
 - UI smoke u browseru 2026-07-14: `/admin` neulogovanog korisnika prebacuje na login formu za oko 1.2s, `/admin/prijava` prikazuje formu bez blokirajuce provere sesije, a kompletan submit sa lokalnim test/admin nalogom otvara admin shell za oko 4.9s i zatim ucitava dashboard iz Supabase baze; detalj stana `/projekti/heroja-pinkija-13/ponuda-stanova/2` renderuje bez blokirajuceg `Ucitavanje stana...`.
 - `npm.cmd run smoke:supabase:admin` prolazi 2026-07-14 sa aktivnim admin nalogom: Supabase Auth ~649ms, `admin_profiles` provera ~386ms, citanje zasticenih admin tabela ~277ms; pokriveno je citanje `contact_inquiries`, `land_offers`, `units`, `projects`, `construction_updates` i `project_media`.
 - Kontrolisana admin obrada test leadova je proverena 2026-07-14 kroz eksplicitne test ID selektore: 4 test kontakt upita i 1 test ponuda placa su procitani kroz admin RLS, azurirani na `closed` i verifikovani kao zatvoreni.
 - Supabase smoke 2026-07-15: read-only i launch smoke prolaze; admin smoke je read-only i prolazi sa Auth ~698ms, `admin_profiles` ~152ms, admin data ~229ms, uz procitanih 10 kontakt upita, 1 ponudu placa, 15 stanova, 1 projekat, 3 construction update-a i 26 media redova.
-- Supabase smoke posle advisor remediation plana 2026-07-15: read-only i launch smoke ponovo prolaze, a admin smoke prolazi sa Auth ~355ms, `admin_profiles` ~177ms i admin data ~164ms.
+- Supabase smoke posle advisor remediation plana 2026-07-15: read-only i launch smoke ponovo prolaze sa exact REST count proverom za javne tabele, a admin smoke prolazi sa Auth ~355ms, `admin_profiles` ~177ms i admin data ~164ms.
 - Supabase advisor 2026-07-15: dostupni security/performance advisors ne vracaju critical/high nalaze, ali vracaju WARN/INFO stavke koje su zabelezene u runbook-u; cloud migracije za njih ne pokretati bez odvojene potvrde.
 
 ## Obrisano / ocisceno
@@ -364,6 +364,11 @@ Uklonjeni su neaktivni pre-redesign/prototip fajlovi koji nisu bili importovani 
 - `src/core/validators/contextValidator.ts`
 - `src/app/providers/AppProviders.tsx`
 - stari veliki `public/images/kupovina-placeva-hero.png`, zamenjen JPG varijantom
+- neaktivni public project data export-i za stare stats/progress/gallery/building-level
+  blokove, zajedno sa pratecim neupotrebljenim tipovima
+- neaktivna hero slika `public/images/heroja-pinkija-13/hero-generated-with-adjacent-building.png`
+- zastareli frontend agents vodič koji je pominjao Umbraco/.NET kao buduci smer
+  uskladjen je sa v1 odlukom da Supabase ostaje jedini backend/CMS sloj
 
 Napomena: `variables.scss` je ostao jer ga `global.scss` koristi kroz `@use`.
 
@@ -389,7 +394,7 @@ Do sada prolazi:
 - import graf: svi TS/JS fajlovi iz aplikacionog entry-ja su reachable
 - public asset scan: svi public fajlovi imaju referencu u kodu, dokumentaciji, `index.html` ili Supabase seed-u
 - dependency sanity scan: nema ocigledno neiskoriscenih runtime/dev paketa
-- surface audit proverava import graf, public assete, interni hard-reload link regression, alt tekst, debug tokene, encoding/mojibake artefakte, mixed Latin/Cyrillic tekst, sirove `tel:` href vrednosti, tacan kanonski sitemap URL set, robots pravila, `PageMeta` pokrivenost aktivnih page fajlova i Supabase form rate-limit wiring
+- surface audit proverava import graf, public assete, interni hard-reload link regression, alt tekst, debug tokene, encoding/mojibake artefakte, ceste casing/merge artefakte, mixed Latin/Cyrillic tekst, sirove `tel:` href vrednosti, tacan kanonski sitemap URL set, robots pravila, `PageMeta` pokrivenost aktivnih page fajlova i Supabase form rate-limit wiring
 - surface audit proverava i da `index.html` zadrzi staticki canonical/OG/Twitter fallback za home/projekat pre React `PageMeta` izvrsavanja
 - surface audit proverava i da staticki fallback zadrzi `lang="sr-Latn"`, uskladjen home description/title i `og:locale=sr_RS`
 - surface audit proverava i da `index.html` zadrzi minimalan `noscript` fallback sa ponudom stanova, kontaktom i email linkom
@@ -413,7 +418,7 @@ Do sada prolazi:
 - surface audit proverava i da animirane javne stranice zadrze `prefers-reduced-motion` fallback
 - surface audit proverava i javni dropdown Escape guardrail, da se globalna navigacija ne zaglavi u otvorenom `aria-expanded` stanju
 - surface audit proverava i JSX guardrail-e: svaki native `<button>` mora eksplicitno imati `type`, icon-only native dugmad moraju imati dostupno ime, svaki native `<form>` mora imati `onSubmit`, svaka native form kontrola mora imati dostupno ime, a svaki native `<a target="_blank">` mora imati `rel="noopener noreferrer"`
-- surface audit proverava i da postoji read-only Supabase smoke script za REST/preflight proveru bez slanja formi
+- surface audit proverava i da postoji read-only Supabase smoke script za REST/preflight proveru bez slanja formi, da smoke prijavljuje exact REST count i da javni `units` inventar ima svih 15 objavljenih stanova
 - surface audit je uhvatio i uklonjen je preostali interni `href="/..."` u admin projektu; akcije sada koriste React Router `Link`
 - `sass` je premesten iz runtime `dependencies` u `devDependencies`, jer je potreban za Vite/SCSS build, ne za runtime aplikacije
 - dodat je `npm.cmd run quality` kao jedinstven lokalni gate koji pokrece surface audit, lint, build i dependency audit
@@ -457,9 +462,9 @@ Do sada prolazi:
   - posle mobilnog smoke-a viewport override je resetovan na normalno browser stanje.
 - browser runtime smoke 2026-07-15:
   - smart desktop/mobile prolaz kroz 43 route provere nema failova: nema stvarno broken slika, missing alt-a, horizontal overflow-a, error boundary-ja, blokirajuceg loading-a ili sirovih `tel:` href vrednosti;
-  - posle zamene stock hero slika, `/` ucitava lokalni `/images/heroja-pinkija-13/gradilisna-tabla.jpg` hero sa `naturalWidth=818`, produkcionim canonical URL-om i bez horizontalnog overflow-a;
+  - posle zamene stock hero slika, `/` ucitava lokalni `/images/heroja-pinkija-13/hero-generated.png` hero sa `naturalWidth=1672`, produkcionim canonical URL-om i bez horizontalnog overflow-a;
   - `/kontakt` ucitava lokalni `/images/heroja-pinkija-13/gradilisna-tabla-slika.jpg` hero sa `naturalWidth=1672`, produkcionim canonical URL-om i bez horizontalnog overflow-a;
-  - dopunska provera potvrdjuje da Home hero ima `width=818 height=783`, Kontakt hero `width=1672 height=941`, da se atributi poklapaju sa natural dimenzijama i da nema console error-a;
+  - dopunska provera potvrdjuje da Home hero ima `width=1672 height=941`, Kontakt hero `width=1672 height=941`, da se atributi poklapaju sa natural dimenzijama i da nema console error-a;
   - runtime meta provera potvrdjuje da `/` ima `og:image` `/images/heroja-pinkija-13/gradilisna-tabla.jpg` sa `og:image:width=818` i `og:image:height=783`, dok detalj `/projekti/heroja-pinkija-13/ponuda-stanova/1` prebacuje `og:image` na `/images/apartment-plans/stan-1-6-11.png` sa `2105x1488`;
   - runtime provera potvrdjuje da `/` ima `og:image:alt` / `twitter:image:alt` = `Gradilisna tabla projekta Heroja Pinkija 13`, a detalj stana 1 = `Projektni tlocrt stanova 1, 6 i 11`;
   - runtime provera potvrdjuje `document.documentElement.lang="sr-Latn"`, `og:locale=sr_RS` i isti home description kroz `meta[name=description]`, `og:description` i `twitter:description`;
@@ -494,7 +499,7 @@ Do sada prolazi:
 | Proci kroz sve javne stranice | Browser smoke pokriva home, projekat, ponudu, spisak, 15 detalja stanova, kontakt, lokaciju, O nama, kupujemo placeve, politiku privatnosti, legacy redirect i 404. | Dokazano za automatizovani/runtime QA. |
 | Procitati i uskladiti dokumentaciju | Azurirani su `Project-spec.md` pravac kroz audit, `Frontend-guide.md`, `Database_model.md`, `pre-production-runbook.md`, `client-admin-final-audit.md`, `supabase/README.md` i Figma/design brief je ukljucen kao izvor. | Dokazano za repo dokumentaciju. |
 | Predloziti i primeniti premium/conversion dorade | Kontakt modal umesto redirekcije, inline validacija, normalizovani `tel:` linkovi, uklonjeni duplirani CTA tokovi, ocuvani detalji stanova i browser QA za desktop/mobile. | Implementirano i verifikovano. |
-| Izbaciti visak/neaktivni kod | Surface audit proverava import graf i public asset reference; raniji prototip fajlovi i neaktivni project komponentni sloj su uklonjeni. | Implementirano i pod guardrail-om. |
+| Izbaciti visak/neaktivni kod | Surface audit proverava import graf i public asset reference; raniji prototip fajlovi, neaktivni project komponentni sloj, neupotrebljeni public project data export-i i neaktivna hero slika su uklonjeni. | Implementirano i pod guardrail-om. |
 | Razmisliti unapred za admin panel | Admin sada pokriva pregled, upite, placeve, stanove/status, projekat i fajlove; audit opisuje sledece kasnije korake: media usage/variant, crop/focal point, status history i page_sections CMS. | Implementirano za v1, roadmap dokumentovan. |
 | Proveriti Supabase/admin spremnost | Read-only, launch i admin smoke prolaze; controlled POST testovi i admin processing testovi su dokumentovani; advisor nalaz ima operator-run remediation plan. | Dokazano uz pre-production odluke. |
 | Stabilizovati canonical/share domen | `PageMeta` vise ne koristi implicitni browser origin vec `VITE_PUBLIC_SITE_URL` kroz centralni site config; sitemap/robots ostaju vezani za isti finalni domen. | Implementirano; finalni domen jos treba poslovno potvrditi. |

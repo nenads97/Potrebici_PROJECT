@@ -1,5 +1,5 @@
 import type { CSSProperties, PointerEvent, WheelEvent } from "react";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -146,7 +146,7 @@ export const ApartmentDetailsPage = () => {
     scrollTop: number;
   } | null>(null);
 
-  const updateHeroPlanZoom = (
+  const updateHeroPlanZoom = useCallback((
     getNextZoom: (currentZoom: number) => number,
     focalPoint?: { clientX: number; clientY: number },
   ) => {
@@ -170,28 +170,28 @@ export const ApartmentDetailsPage = () => {
 
       return nextZoom;
     });
-  };
+  }, []);
 
-  const changeHeroPlanZoom = (
+  const changeHeroPlanZoom = useCallback((
     change: number,
     focalPoint?: { clientX: number; clientY: number },
   ) => {
     updateHeroPlanZoom((currentZoom) => currentZoom + change, focalPoint);
-  };
+  }, [updateHeroPlanZoom]);
 
-  const resetHeroPlanZoom = () => {
+  const resetHeroPlanZoom = useCallback(() => {
     updateHeroPlanZoom(() => heroPlanZoomMin);
-  };
+  }, [updateHeroPlanZoom]);
 
   const openHeroPlan = () => {
     setHeroPlanZoom(heroPlanZoomMin);
     setIsHeroPlanOpen(true);
   };
 
-  const closeHeroPlan = () => {
+  const closeHeroPlan = useCallback(() => {
     heroPlanDragRef.current = null;
     setIsHeroPlanOpen(false);
-  };
+  }, []);
 
   const handleHeroPlanWheel = (event: WheelEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -220,21 +220,21 @@ export const ApartmentDetailsPage = () => {
   };
 
   const handleHeroPlanPointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    const dragstate = heroPlanDragRef.current;
+    const dragState = heroPlanDragRef.current;
 
-    if (!dragstate || dragstate.pointerId !== event.pointerId) {
+    if (!dragState || dragState.pointerId !== event.pointerId) {
       return;
     }
 
     event.preventDefault();
-    event.currentTarget.scrollLeft = dragstate.scrollLeft - (event.clientX - dragstate.startX);
-    event.currentTarget.scrollTop = dragstate.scrollTop - (event.clientY - dragstate.startY);
+    event.currentTarget.scrollLeft = dragState.scrollLeft - (event.clientX - dragState.startX);
+    event.currentTarget.scrollTop = dragState.scrollTop - (event.clientY - dragState.startY);
   };
 
   const endHeroPlanDrag = (event: PointerEvent<HTMLDivElement>) => {
-    const dragstate = heroPlanDragRef.current;
+    const dragState = heroPlanDragRef.current;
 
-    if (!dragstate || dragstate.pointerId !== event.pointerId) {
+    if (!dragState || dragState.pointerId !== event.pointerId) {
       return;
     }
 
@@ -308,7 +308,7 @@ export const ApartmentDetailsPage = () => {
       document.body.classList.remove("is-apartment-plan-lightbox-open");
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isHeroPlanOpen]);
+  }, [changeHeroPlanZoom, closeHeroPlan, isHeroPlanOpen, resetHeroPlanZoom]);
 
   if (!apartment) {
     return (
@@ -511,9 +511,9 @@ export const ApartmentDetailsPage = () => {
             onPointerCancel={endHeroPlanDrag}
           >
             <img
+              alt={apartment.heroFloorPlan.alt}
               className={heroPlanZoom > heroPlanZoomMin ? "is-zoomed" : undefined}
               src={apartment.heroFloorPlan.src}
-              alt={apartment.heroFloorPlan.alt}
               draggable={false}
               style={
                 heroPlanZoom > heroPlanZoomMin
@@ -725,7 +725,7 @@ const ApartmentPlanDrawing = ({
 }: { apartment: Apartment } & ActiveRoomProps) => {
   if (apartment.planVariant && apartment.planVariant in stackPlanSpacesByVariant) {
     return (
-      <ApartmentstackPlan
+      <ApartmentStackPlan
         ariaLabel={`Raspored prostorija za stan ${apartment.number}`}
         rooms={apartment.roomAreas}
         plan={stackPlanSpacesByVariant[apartment.planVariant]}
@@ -738,7 +738,7 @@ const ApartmentPlanDrawing = ({
   return null;
 };
 
-const ApartmentstackPlan = ({
+const ApartmentStackPlan = ({
   ariaLabel,
   rooms,
   plan,
@@ -747,7 +747,7 @@ const ApartmentstackPlan = ({
 }: {
   ariaLabel: string;
   rooms: ApartmentRoomArea[];
-  plan: stackPlanConfig;
+  plan: StackPlanConfig;
 } & ActiveRoomProps) => {
   const titleId = useId();
   const roomById = new Map(rooms.map((room) => [room.id, room]));
@@ -996,12 +996,12 @@ type PlanSpace = {
   height: number;
 };
 
-type stackPlanConfig = {
+type StackPlanConfig = {
   spaces: PlanSpace[];
   viewBox: string;
 };
 
-const stackPlanSpacesByVariant: Record<string, stackPlanConfig> = {
+const stackPlanSpacesByVariant: Record<string, StackPlanConfig> = {
   "stack-1-6-11": {
     viewBox: "-14 -14 448 588",
     spaces: [

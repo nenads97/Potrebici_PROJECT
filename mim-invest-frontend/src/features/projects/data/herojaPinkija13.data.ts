@@ -3,11 +3,7 @@ import type {
   ApartmentImage,
   ApartmentRoomArea,
   ApartmentStatus,
-  BuildingLevel,
-  ConstructionUpdate,
-  GalleryItem,
   ProjectInfo,
-  Projectstat,
   TimelineItem,
 } from "../types/project.types";
 
@@ -41,7 +37,6 @@ export const projectInfo: ProjectInfo = {
   locationDescription:
     "Objekat se nalazi na adresi Heroja Pinkija 13 u Novom Sadu, u delu Telepa sa linijom 12 ka centru i svakodnevnim sadržajima u blizini.",
   floorStructure: "PO + PR + 3",
-  constructionstart: "16. mart 2026.",
   plannedCompletion: "15. novembar 2027.",
   constructionStartDate: "2026-03-16",
   constructionEndDate: "2027-11-15",
@@ -50,101 +45,6 @@ export const projectInfo: ProjectInfo = {
   seoDescription:
     "Pregled projekta Heroja Pinkija 13 u Novom Sadu: stanovi, lokacija, rokovi, status radova i direktan upit prodaji.",
 };
-
-export const projectstats: Projectstat[] = [
-  {
-    value: "15",
-    label: "stanova",
-    detail: "po 5 stanova na svakom stambenom spratu",
-  },
-  {
-    value: "5",
-    label: "stanova po etaži",
-    detail: "ponavljajuci raspored kroz tri stambena nivoa",
-  },
-  {
-    value: "12",
-    label: "linija do centra",
-    detail: "brza veza sa ostatkom Novog Sada",
-  },
-  {
-    value: "2027",
-    label: "planirani završetak",
-    detail: "15. novembar 2027.",
-  },
-];
-
-export const constructionUpdates: ConstructionUpdate[] = [
-  {
-    id: "status-gradnje",
-    date: "Aktuelno",
-    tag: "Gradilište",
-    title: "Objekat je u fazi izgradnje",
-    body:
-      "Pregled projekta je pripremljen za redovno objavljivanje novih informacija, fotografija i statusa radova.",
-  },
-  {
-    id: "prodaja-stanova",
-    date: "Prodaja",
-    tag: "stanovi",
-    title: "Prodaja stanova je počela",
-    body:
-      "U ponudi je 15 stanova sa ponavljajućim rasporedima po etažama i jasnim kontaktom za svaki upit.",
-  },
-  {
-    id: "rok-zavrsetka",
-    date: "Rok",
-    tag: "Plan",
-    title: "Planirani završetak je 15. novembar 2027.",
-    body:
-      "Timeline prikazuje najvažnije faze gradnje i daje kupcima jednostavan pregled razvoja projekta.",
-  },
-];
-
-export const galleryItems: GalleryItem[] = [
-  {
-    id: "render-fasade",
-    title: "Render fasade",
-    tag: "Vizuelni identitet",
-    meta: "Prikaz zgrade i ulicnog fronta",
-    variant: "facade",
-  },
-  {
-    id: "gradiliste",
-    title: "Gradilište",
-    tag: "Napredak radova",
-    meta: "Mesto za najnovije fotografije sa terena",
-    variant: "site",
-  },
-  {
-    id: "spratne-osnove",
-    title: "Spratne osnove",
-    tag: "Planovi",
-    meta: "Raspored stanova po spratovima",
-    variant: "plan",
-  },
-  {
-    id: "lokacija",
-    title: "Lokacija",
-    tag: "Telep",
-    meta: "Heroja Pinkija 13, Novi Sad",
-    variant: "location",
-  },
-  {
-    id: "enterijer",
-    title: "Enterijer",
-    tag: "Materijali",
-    meta: "Prostor za buduće prikaze opreme",
-    variant: "interior",
-  },
-  {
-    id: "parking",
-    title: "Parking i ostave",
-    tag: "Dodatne jedinice",
-    meta: "Garažna mesta, dvorišna mesta i ostave kupuju se odvojeno",
-    variant: "parking",
-  },
-];
 
 const apartmentPlanImages = {
   stackOne: "/images/apartment-plans/stan-1-6-11.png",
@@ -155,7 +55,7 @@ const apartmentPlanImages = {
   stackFive: "/images/apartment-plans/stan-5-10-15.png",
 };
 
-type Apartmentstack = {
+type ApartmentStack = {
   numbers: string[];
   sizes: string[];
   rooms: string;
@@ -177,7 +77,7 @@ const commonFeatures = [
   "Ostava dostupna za odvojenu kupovinu",
 ];
 
-const apartmentstacks: Apartmentstack[] = [
+const apartmentStacks: ApartmentStack[] = [
   {
     numbers: ["1", "6", "11"],
     sizes: ["62.15 m2", "60.29 m2", "60.29 m2"],
@@ -375,7 +275,7 @@ function getFloorNumber(number: string) {
   return 3;
 }
 
-export const apartments: Apartment[] = apartmentstacks.flatMap((stack) =>
+export const apartments: Apartment[] = apartmentStacks.flatMap((stack) =>
   stack.numbers.map((number, index) => ({
     number,
     floor: getFloor(number),
@@ -407,29 +307,6 @@ export const apartments: Apartment[] = apartmentstacks.flatMap((stack) =>
     features: stack.features,
   })),
 );
-
-export const buildingLevels: BuildingLevel[] = [
-  {
-    level: "PO",
-    title: "Podrum",
-    items: ["15 ostava - odvojena kupovina", "13 garažnih parking mesta - odvojena kupovina"],
-  },
-  {
-    level: "PR",
-    title: "Prizemlje",
-    items: ["2 poslovna prostora", "3 poslovna apartmana"],
-  },
-  {
-    level: "1-3",
-    title: "stambeni spratovi",
-    items: ["5 stanova po spratu", "garsonjere, dvosobni i trosobni stanovi"],
-  },
-  {
-    level: "Dv.",
-    title: "Dvoriste",
-    items: ["10 spoljasnjih parking mesta", "mirniji pristup objektu"],
-  },
-];
 
 export const locationAdvantages = [
   "početak Telepa",

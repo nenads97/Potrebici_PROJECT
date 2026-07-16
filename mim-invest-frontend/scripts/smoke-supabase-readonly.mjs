@@ -37,7 +37,7 @@ console.log(JSON.stringify(results, null, 2));
 async function runReadOnlySmoke() {
   results.rest = {
     projects: await expectPublicRows("projects", "slug,name", "is_published=eq.true", { minRows: 1 }),
-    units: await expectPublicRows("units", "code,area_m2,status", "is_published=eq.true", { minRows: 1 }),
+    units: await expectPublicRows("units", "code,area_m2,status", "is_published=eq.true", { minRows: 15 }),
     projectMedia: await expectPublicRows(
       "project_media",
       "id,title,file_path",
@@ -66,14 +66,19 @@ async function runReadOnlySmoke() {
 }
 
 async function expectPublicRows(table, select, filter, { minRows, warnIfEmpty = false }) {
-  const query = new URLSearchParams({ select, limit: "5" });
+  const sampleLimit = 5;
+  const query = new URLSearchParams({ select, limit: String(sampleLimit) });
 
   if (filter) {
     const [key, value] = filter.split("=");
     query.set(key, value);
   }
 
-  const response = await supabaseFetch(`/rest/v1/${table}?${query.toString()}`);
+  const response = await supabaseFetch(`/rest/v1/${table}?${query.toString()}`, {
+    headers: {
+      Prefer: "count=exact",
+    },
+  });
   const body = await readJson(response);
 
   if (!response.ok) {
@@ -81,7 +86,8 @@ async function expectPublicRows(table, select, filter, { minRows, warnIfEmpty = 
     return { ok: false, status: response.status, rows: 0 };
   }
 
-  const rows = Array.isArray(body) ? body.length : 0;
+  const sampleRows = Array.isArray(body) ? body.length : 0;
+  const rows = getExactCount(response) ?? sampleRows;
 
   if (rows < minRows) {
     fail(`Public table ${table} returned ${rows} rows, expected at least ${minRows}.`);
@@ -91,7 +97,7 @@ async function expectPublicRows(table, select, filter, { minRows, warnIfEmpty = 
     warnings.push(`Public table ${table} is reachable but currently returns 0 rows.`);
   }
 
-  return { ok: true, status: response.status, rows };
+  return { ok: true, status: response.status, rows, sampleRows, sampleLimit };
 }
 
 async function expectPrivateTableBlocked(table) {
@@ -137,13 +143,27 @@ async function expectFunctionPreflight(functionName) {
   };
 }
 
-async function supabaseFetch(restPath) {
+async function supabaseFetch(restPath, options = {}) {
   return fetch(`${supabaseUrl}${restPath}`, {
     headers: {
       apikey: supabaseAnonKey,
       Authorization: `Bearer ${supabaseAnonKey}`,
+      ...(options.headers ?? {}),
     },
   });
+}
+
+function getExactCount(response) {
+  const contentRange = response.headers.get("content-range");
+  const total = contentRange?.split("/")[1];
+
+  if (!total || total === "*") {
+    return undefined;
+  }
+
+  const parsedTotal = Number(total);
+
+  return Number.isFinite(parsedTotal) ? parsedTotal : undefined;
 }
 
 async function readJson(response) {

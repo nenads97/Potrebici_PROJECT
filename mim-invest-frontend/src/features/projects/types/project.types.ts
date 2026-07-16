@@ -54,35 +54,12 @@ export type ProjectInfo = {
   description: string;
   locationDescription?: string;
   floorStructure: string;
-  constructionstart: string;
   plannedCompletion: string;
   constructionStartDate?: string;
   constructionEndDate?: string;
   heroImage?: string;
   seoTitle?: string;
   seoDescription?: string;
-};
-
-export type Projectstat = {
-  value: string;
-  label: string;
-  detail: string;
-};
-
-export type ConstructionUpdate = {
-  id: string;
-  date: string;
-  tag: string;
-  title: string;
-  body: string;
-};
-
-export type GalleryItem = {
-  id: string;
-  title: string;
-  tag: string;
-  meta: string;
-  variant: "facade" | "site" | "plan" | "location" | "interior" | "parking";
 };
 
 export type TimelineItem = {
@@ -102,10 +79,4 @@ export type ProjectMediaItem = {
   altText?: string;
   description?: string;
   sortOrder: number;
-};
-
-export type BuildingLevel = {
-  level: string;
-  title: string;
-  items: string[];
 };

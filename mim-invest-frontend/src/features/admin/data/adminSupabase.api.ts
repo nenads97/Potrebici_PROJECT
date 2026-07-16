@@ -15,7 +15,7 @@ const publicAssetsBucket = "public-assets";
 const adminFetchTimeoutMs = 5000;
 const apartmentLookup = new Map(apartments.map((apartment) => [apartment.number, apartment]));
 
-export type AdminSupabasestate = {
+export type AdminSupabaseState = {
   inquiries: AdminInquiry[];
   landOffers: AdminLandOffer[];
   units: AdminUnit[];
@@ -41,7 +41,7 @@ export type AdminMediaCreateInput = {
   sortOrder?: number;
 };
 
-export async function fetchAdminstate(): Promise<AdminSupabasestate | null> {
+export async function fetchAdminState(): Promise<AdminSupabaseState | null> {
   if (!isSupabaseConfigured || !supabase) {
     return null;
   }

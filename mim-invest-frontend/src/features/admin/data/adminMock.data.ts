@@ -9,7 +9,7 @@ import type {
   AdminUnitStatus,
 } from "../types/admin.types";
 
-const unitstatusMap = {
+const unitStatusMap = {
   Available: "available",
   Reserved: "reserved",
   Sold: "sold",
@@ -21,7 +21,7 @@ export const adminStatusLabels = {
   closed: "Zatvoreno",
 } as const;
 
-export const adminUnitstatusLabels = {
+export const adminUnitStatusLabels = {
   available: "Slobodan",
   reserved: "Rezervisan",
   sold: "Prodat",
@@ -108,7 +108,7 @@ export const adminUnits: AdminUnit[] = apartments.map((apartment) => ({
   floorLabel: apartment.floor,
   areaM2: apartment.size,
   roomStructure: apartment.rooms,
-  status: unitstatusMap[apartment.status],
+  status: unitStatusMap[apartment.status],
   shortDescription: apartment.highlight,
   fullDescription: apartment.description,
   seoTitle: `stan ${apartment.number} | Heroja Pinkija 13`,

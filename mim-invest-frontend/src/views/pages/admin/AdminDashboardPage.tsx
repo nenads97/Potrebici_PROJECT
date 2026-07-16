@@ -36,13 +36,13 @@ import {
   adminMediaItems,
   adminProjectDraft,
   adminStatusLabels,
-  adminUnitstatusLabels,
+  adminUnitStatusLabels,
   adminUnits,
 } from "../../../features/admin/data/adminMock.data";
 import {
   createMediaItem as persistNewMediaItem,
   deleteMediaItem as persistDeleteMediaItem,
-  fetchAdminstate,
+  fetchAdminState,
   updateConstructionUpdate as persistConstructionUpdate,
   updateInquiry as persistInquiry,
   updateLandOffer as persistLandOffer,
@@ -221,7 +221,7 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
 
     async function loadAdminData() {
       try {
-        const data = await fetchAdminstate();
+        const data = await fetchAdminState();
 
         if (!isMounted || !data) {
           return;
@@ -958,7 +958,7 @@ type InquiryPanelProps = {
   query: string;
   statusFilter: "all" | AdminWorkflowStatus;
   onQueryChange: (query: string) => void;
-  onstatusFilterChange: (status: "all" | AdminWorkflowStatus) => void;
+  onStatusFilterChange: (status: "all" | AdminWorkflowStatus) => void;
   onUpdate: (items: AdminInquiry[]) => void;
   onPersist: (
     id: string,
@@ -971,7 +971,7 @@ const InquiryPanel = ({
   query,
   statusFilter,
   onQueryChange,
-  onstatusFilterChange,
+  onStatusFilterChange,
   onUpdate,
   onPersist,
 }: InquiryPanelProps) => {
@@ -1021,7 +1021,7 @@ const InquiryPanel = ({
         query={query}
         statusFilter={statusFilter}
         onQueryChange={onQueryChange}
-        onstatusFilterChange={onstatusFilterChange}
+        onStatusFilterChange={onStatusFilterChange}
       />
 
       <div className="admin-list">
@@ -1152,7 +1152,7 @@ type LandOfferPanelProps = {
   query: string;
   statusFilter: "all" | AdminWorkflowStatus;
   onQueryChange: (query: string) => void;
-  onstatusFilterChange: (status: "all" | AdminWorkflowStatus) => void;
+  onStatusFilterChange: (status: "all" | AdminWorkflowStatus) => void;
   onUpdate: (items: AdminLandOffer[]) => void;
   onPersist: (
     id: string,
@@ -1165,7 +1165,7 @@ const LandOfferPanel = ({
   query,
   statusFilter,
   onQueryChange,
-  onstatusFilterChange,
+  onStatusFilterChange,
   onUpdate,
   onPersist,
 }: LandOfferPanelProps) => {
@@ -1213,7 +1213,7 @@ const LandOfferPanel = ({
         query={query}
         statusFilter={statusFilter}
         onQueryChange={onQueryChange}
-        onstatusFilterChange={onstatusFilterChange}
+        onStatusFilterChange={onStatusFilterChange}
       />
 
       <div className="admin-list">
@@ -1386,9 +1386,9 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
             ? unit.isPublished
             : !unit.isPublished);
 
-        return matchesQuery && matchesstatus && matchesFloor && matchesPublish;
+        return matchesQuery && matchesStatus && matchesFloor && matchesPublish;
       }),
-    [floorFilter, publishFilter, unitQuery, unitstatusFilter, units],
+    [floorFilter, publishFilter, unitQuery, unitStatusFilter, units],
   );
 
   const persistUnitChange = async (
@@ -1533,9 +1533,9 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
             }
           >
             <option value="all">Svi statusi</option>
-            {unitstatuses.map((status) => (
+            {unitStatuses.map((status) => (
               <option key={status} value={status}>
-                {adminUnitstatusLabels[status]}
+                {adminUnitStatusLabels[status]}
               </option>
             ))}
           </select>
@@ -2677,7 +2677,7 @@ const MediaPanel = ({
       return;
     }
 
-    if (file.size > maxstandardUploadSizeBytes) {
+    if (file.size > maxStandardUploadSizeBytes) {
       showCardFeedback(item.id, {
         tone: "error",
         message:
@@ -2781,7 +2781,7 @@ const MediaPanel = ({
       return;
     }
 
-    if (createFile && createFile.size > maxstandardUploadSizeBytes) {
+    if (createFile && createFile.size > maxStandardUploadSizeBytes) {
       setCreateFeedback({
         tone: "error",
         message:
