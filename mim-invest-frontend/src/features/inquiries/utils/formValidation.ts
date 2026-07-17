@@ -1,5 +1,9 @@
 export type FieldErrors<TField extends string> = Partial<Record<TField, string>>;
 
+export const maxInquiryAttachmentSizeBytes = 4 * 1024 * 1024;
+export const inquiryAttachmentAccept =
+  ".pdf,.doc,.docx,.jpg,.jpeg,.png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/jpeg,image/png";
+
 export const hasFieldErrors = <TField extends string>(errors: FieldErrors<TField>) =>
   Object.values(errors).some(Boolean);
 
@@ -112,4 +116,22 @@ export function validatePositiveNumber(value: string, label: string) {
 
 export function validateConsent(value: FormDataEntryValue | null) {
   return value === "on" ? "" : "Potrebna je saglasnost za obradu podataka.";
+}
+
+export function validateInquiryAttachment(value: FormDataEntryValue | null) {
+  if (!(value instanceof File) || value.size === 0) {
+    return "";
+  }
+
+  if (value.size > maxInquiryAttachmentSizeBytes) {
+    return "Dokument može imati najviše 4 MB.";
+  }
+
+  const fileName = value.name.toLowerCase();
+
+  if (!/\.(pdf|doc|docx|jpe?g|png)$/i.test(fileName)) {
+    return "Dozvoljeni formati su PDF, DOC, DOCX, JPG i PNG.";
+  }
+
+  return "";
 }

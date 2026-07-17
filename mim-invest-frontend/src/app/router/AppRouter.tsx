@@ -57,11 +57,15 @@ const HerojaPinkija13Page = lazyNamed(
 );
 
 const ScrollToTop = () => {
-  const { pathname } = useLocation();
+  const { hash, pathname } = useLocation();
 
   useEffect(() => {
+    if (hash) {
+      return;
+    }
+
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-  }, [pathname]);
+  }, [hash, pathname]);
 
   return null;
 };

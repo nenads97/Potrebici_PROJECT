@@ -16,6 +16,15 @@ type SendEmailInput = {
   subject: string;
   html: string;
   text: string;
+  attachments?: Array<{
+    name: string;
+    content: string;
+  }>;
+};
+
+export type EmailDetailRow = {
+  label: string;
+  value: string;
 };
 
 export function createServiceClient() {
@@ -62,6 +71,9 @@ export async function sendBrevoEmail(input: SendEmailInput) {
       subject: input.subject,
       htmlContent: input.html,
       textContent: input.text,
+      ...(input.attachments?.length
+        ? { attachment: input.attachments }
+        : {}),
     }),
   });
 
@@ -112,6 +124,96 @@ export function escapeHtml(value: string) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+export function formatEmailTextRows(rows: EmailDetailRow[]) {
+  return rows.map(({ label, value }) => `${label}: ${value}`);
+}
+
+export function renderEmailRows(rows: EmailDetailRow[]) {
+  const rowsHtml = rows
+    .map(
+      ({ label, value }) => `
+        <tr>
+          <td style="width:38%;padding:11px 12px;border-bottom:1px solid #e7e0d8;color:#756e66;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;vertical-align:top;">
+            ${escapeHtml(label)}
+          </td>
+          <td style="padding:11px 12px;border-bottom:1px solid #e7e0d8;color:#343a43;font-size:15px;line-height:1.45;vertical-align:top;">
+            ${escapeHtml(value)}
+          </td>
+        </tr>`,
+    )
+    .join("");
+
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">${rowsHtml}</table>`;
+}
+
+export function renderEmailMessage(message: string) {
+  return `<div style="padding:16px 18px;border-left:4px solid #c9b59c;border-radius:4px;background:#f3efe9;color:#343a43;font-size:16px;line-height:1.65;white-space:normal;">${escapeHtml(message).replace(/\r?\n/g, "<br />")}</div>`;
+}
+
+export function buildBrandedEmail(input: {
+  preheader: string;
+  eyebrow: string;
+  title: string;
+  intro: string;
+  sections: Array<{ title: string; content: string }>;
+}) {
+  const sectionsHtml = input.sections
+    .map(
+      ({ title, content }) => `
+        <div style="margin-top:24px;">
+          <p style="margin:0 0 10px;color:#7a6c5e;font-size:12px;font-weight:700;letter-spacing:.12em;line-height:1.4;text-transform:uppercase;">
+            ${escapeHtml(title)}
+          </p>
+          ${content}
+        </div>`,
+    )
+    .join("");
+
+  return `<!doctype html>
+<html lang="sr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${escapeHtml(input.title)}</title>
+  </head>
+  <body style="margin:0;padding:0;background:#f3efe9;color:#343a43;font-family:Arial,Helvetica,sans-serif;">
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;">
+      ${escapeHtml(input.preheader)}
+    </div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3efe9;">
+      <tr>
+        <td align="center" style="padding:24px 12px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:680px;background:#ffffff;border:1px solid #e2dcd4;border-radius:8px;">
+            <tr>
+              <td style="padding:32px 34px;">
+                <p style="margin:0 0 28px;color:#343a43;font-size:13px;font-weight:700;letter-spacing:.18em;line-height:1.4;text-transform:uppercase;">
+                  M &amp; M Gradnja
+                </p>
+                <p style="margin:0 0 10px;color:#a08464;font-size:12px;font-weight:700;letter-spacing:.14em;line-height:1.4;text-transform:uppercase;">
+                  ${escapeHtml(input.eyebrow)}
+                </p>
+                <h1 style="margin:0;color:#343a43;font-size:30px;font-weight:700;line-height:1.18;">
+                  ${escapeHtml(input.title)}
+                </h1>
+                <p style="margin:18px 0 0;color:#716960;font-size:16px;line-height:1.65;">
+                  ${escapeHtml(input.intro)}
+                </p>
+                ${sectionsHtml}
+                <div style="margin-top:30px;padding-top:18px;border-top:1px solid #e2dcd4;color:#716960;font-size:13px;line-height:1.6;">
+                  Srdačan pozdrav,<br />
+                  <strong style="color:#343a43;">M &amp; M Gradnja</strong><br />
+                  Prodajni tim
+                </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
 }
 
 function getServiceKey() {

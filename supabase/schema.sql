@@ -262,6 +262,24 @@ create table public.contact_inquiries (
   consent_accepted boolean not null default false,
   admin_status public.admin_item_status not null default 'new',
   admin_note text,
+  attachment_path text,
+  attachment_name text,
+  attachment_mime_type text,
+  attachment_size_bytes bigint,
+  constraint contact_inquiries_attachment_fields_check check (
+    (
+      attachment_path is null
+      and attachment_name is null
+      and attachment_mime_type is null
+      and attachment_size_bytes is null
+    )
+    or (
+      attachment_path is not null
+      and attachment_name is not null
+      and attachment_mime_type is not null
+      and attachment_size_bytes between 1 and 4194304
+    )
+  ),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -278,6 +296,24 @@ create table public.land_offers (
   consent_accepted boolean not null default false,
   admin_status public.admin_item_status not null default 'new',
   admin_note text,
+  attachment_path text,
+  attachment_name text,
+  attachment_mime_type text,
+  attachment_size_bytes bigint,
+  constraint land_offers_attachment_fields_check check (
+    (
+      attachment_path is null
+      and attachment_name is null
+      and attachment_mime_type is null
+      and attachment_size_bytes is null
+    )
+    or (
+      attachment_path is not null
+      and attachment_name is not null
+      and attachment_mime_type is not null
+      and attachment_size_bytes between 1 and 4194304
+    )
+  ),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -660,3 +696,37 @@ create policy "Admins can delete public assets"
 on storage.objects for delete
 to authenticated
 using (bucket_id = 'public-assets' and app_private.is_admin());
+
+insert into storage.buckets (
+  id,
+  name,
+  public,
+  file_size_limit,
+  allowed_mime_types
+)
+values (
+  'inquiry-attachments',
+  'inquiry-attachments',
+  false,
+  4194304,
+  array[
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'image/jpeg',
+    'image/png'
+  ]::text[]
+)
+on conflict (id) do update set
+  name = excluded.name,
+  public = false,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+
+create policy "Admins can read inquiry attachments"
+on storage.objects for select
+to authenticated
+using (
+  bucket_id = 'inquiry-attachments'
+  and app_private.is_admin()
+);

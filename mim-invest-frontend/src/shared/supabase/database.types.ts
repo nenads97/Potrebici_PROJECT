@@ -198,6 +198,10 @@ export type Database = {
         message: string | null;
         source_page: string | null;
         consent_accepted: boolean;
+        attachment_path: string | null;
+        attachment_name: string | null;
+        attachment_mime_type: string | null;
+        attachment_size_bytes: number | null;
         admin_status: AdminItemStatus;
         admin_note: string | null;
         created_at: string;
@@ -213,6 +217,10 @@ export type Database = {
         details: string | null;
         source_page: string | null;
         consent_accepted: boolean;
+        attachment_path: string | null;
+        attachment_name: string | null;
+        attachment_mime_type: string | null;
+        attachment_size_bytes: number | null;
         admin_status: AdminItemStatus;
         admin_note: string | null;
         created_at: string;

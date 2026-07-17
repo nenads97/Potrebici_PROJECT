@@ -1,0 +1,243 @@
+- generic [ref=f6e2]:
+  - generic [ref=f6e3]:
+    - link "Preskocite na glavni sadržaj":
+      - /url: "#main-content"
+    - banner [ref=f6e4]:
+      - generic [ref=f6e5]:
+        - link "M & M Gradnja pocetna" [ref=f6e6] [cursor=pointer]:
+          - /url: /
+          - generic [ref=f6e7]:
+            - img "M & M Gradnja" [ref=f6e9]
+            - generic [ref=f6e10]:
+              - generic [ref=f6e11]: M & M
+              - generic [ref=f6e12]: Gradnja
+        - navigation "Glavna navigacija" [ref=f6e13]:
+          - generic [ref=f6e14]:
+            - button "Kompanija" [ref=f6e15] [cursor=pointer]
+            - generic:
+              - generic:
+                - generic:
+                  - link "O Nama":
+                    - /url: /o-nama
+                - generic:
+                  - link "Politika privatnosti":
+                    - /url: /politika-privatnosti
+          - generic [ref=f6e18]:
+            - button "Projekti" [ref=f6e19] [cursor=pointer]
+            - generic:
+              - generic:
+                - generic:
+                  - link "Heroja Pinkija 13":
+                    - /url: /projekti/heroja-pinkija-13/o-projektu
+          - link "Kupujemo placeve" [ref=f6e22] [cursor=pointer]:
+            - /url: /kupujemo-placeve
+          - link "Kontakt" [ref=f6e23] [cursor=pointer]:
+            - /url: /kontakt
+        - button "Pišite nam" [ref=f6e24] [cursor=pointer]
+    - button "Nazad na prethodnu stranicu" [ref=f6e27] [cursor=pointer]
+    - main [ref=f6e31]:
+      - generic [ref=f6e32]:
+        - img "Parcela pogodna za stambenu gradnju" [ref=f6e33]
+        - generic [ref=f6e35]:
+          - paragraph [ref=f6e36]: Kupujemo placeve
+          - heading "Imate plac ili kuću za stambenu gradnju?" [level=1] [ref=f6e37]
+          - paragraph [ref=f6e38]: M & M Gradnja razmatra atraktivne lokacije za buduće stambene projekte. Pošaljite nam osnovne informacije, a mi ćemo vam se brzo javiti sa narednim koracima.
+          - generic [ref=f6e39]:
+            - link "Pošaljite ponudu" [ref=f6e40] [cursor=pointer]:
+              - /url: "#kupujemo-placeve-forma"
+            - link "Pozovite 064 227 9117" [ref=f6e43] [cursor=pointer]:
+              - /url: tel:0642279117
+        - generic [ref=f6e46]:
+          - generic [ref=f6e47]:
+            - strong [ref=f6e48]: Novi Sad
+            - generic [ref=f6e49]: fokus lokacije
+          - generic [ref=f6e50]:
+            - strong [ref=f6e51]: Stambena namena
+            - generic [ref=f6e52]: potencijal za razvoj
+          - generic [ref=f6e53]:
+            - strong [ref=f6e54]: Jasan dogovor
+            - generic [ref=f6e55]: brza početna procena
+      - generic [ref=f6e57]:
+        - generic [ref=f6e58]:
+          - paragraph [ref=f6e59]: Formular za ponudu
+          - heading "Prvi korak je kratak upit." [level=2] [ref=f6e60]
+          - paragraph [ref=f6e61]: Unesite osnovne podatke o sebi i nekretnini. Ime, telefon i e-mail su obavezni, a adresa i površina parcele nam pomažu da brže procenimo potencijal lokacije.
+          - generic [ref=f6e62]:
+            - link "064 227 9117" [ref=f6e63] [cursor=pointer]:
+              - /url: tel:0642279117
+            - link "prodaja@mimgradnja.rs" [ref=f6e66] [cursor=pointer]:
+              - /url: mailto:prodaja@mimgradnja.rs
+        - generic [ref=f6e69]:
+          - generic [ref=f6e74]:
+            - strong [ref=f6e75]: Podaci za početnu procenu
+            - paragraph [ref=f6e76]: Polja označena zvezdicom su obavezna.
+          - generic [ref=f6e77]:
+            - generic [ref=f6e78]:
+              - generic [ref=f6e79]:
+                - generic [ref=f6e80]: Ime *
+                - textbox "Ime *" [ref=f6e81]
+              - generic [ref=f6e82]:
+                - generic [ref=f6e83]: Telefon *
+                - textbox "Telefon *" [ref=f6e84]
+              - generic [ref=f6e85]:
+                - generic [ref=f6e86]: E-mail *
+                - textbox "E-mail *" [ref=f6e87]
+              - generic [ref=f6e88]:
+                - generic [ref=f6e89]: Adresa nekretnine
+                - textbox "Adresa nekretnine" [ref=f6e90]
+              - generic [ref=f6e91]:
+                - generic [ref=f6e92]: Površina parcele (m2)
+                - spinbutton "Površina parcele (m2)" [ref=f6e93]
+            - generic [ref=f6e94]:
+              - generic [ref=f6e95]:
+                - text: Website
+                - textbox "Website" [ref=f6e96]
+              - generic [ref=f6e97]: Dodatne informacije
+              - textbox "Dodatne informacije" [ref=f6e98]:
+                - /placeholder: Napišite sta znate o dokumentaciji, pristupu, objektu na placu ili uslovima prodaje.
+            - paragraph [ref=f6e100]: Provera sigurnosti *
+            - generic [ref=f6e103] [cursor=pointer]:
+              - checkbox "Saglasan/saglasna sam da me kontaktirate povodom poslate ponude." [ref=f6e104]
+              - generic [ref=f6e105]: Saglasan/saglasna sam da me kontaktirate povodom poslate ponude.
+            - generic [ref=f6e106]:
+              - button "Pošaljite podatke" [ref=f6e107] [cursor=pointer]
+              - paragraph [ref=f6e113]: Prva provera je bez obaveze. Javljamo se nakon sto pogledamo osnovne podatke o lokaciji.
+      - generic [ref=f6e115]:
+        - generic [ref=f6e116]:
+          - paragraph [ref=f6e117]: sta tražimo
+          - heading "Pretvorite svoj plac u vrednu investiciju." [level=2] [ref=f6e118]
+          - paragraph [ref=f6e119]: Najvaznije su nam uredna dokumentacija, dobra pozicija i realna mogućnost razvoja stambenog projekta. Ako niste sigurni da li se vasa nekretnina uklapa, pošaljite podatke i proverićemo.
+          - blockquote [ref=f6e120]: Dovoljno je da posaljete osnovne podatke. Prvu procenu radimo diskretno i bez obaveze za vlasnika.
+        - generic [ref=f6e121]:
+          - article [ref=f6e122]:
+            - heading "Plac ili kuća za rusenje" [level=3] [ref=f6e127]
+            - paragraph [ref=f6e128]: Razmatramo parcele i postojece objekte pogodne za novu stambenu izgradnju.
+          - article [ref=f6e129]:
+            - heading "Novi Sad i bliža okolina" [level=3] [ref=f6e134]
+            - paragraph [ref=f6e135]: Prednost imaju gradske lokacije sa dobrom povezanošću, infrastrukturom i jasnim urbanistickim potencijalom.
+          - article [ref=f6e136]:
+            - heading "Stambena namena" [level=3] [ref=f6e144]
+            - paragraph [ref=f6e145]: Tražimo zemljište koje može da podrži kvalitetan višeporodični stambeni objekat.
+          - article [ref=f6e146]:
+            - heading "Pravno čista situacija" [level=3] [ref=f6e151]
+            - paragraph [ref=f6e152]: Najbrže možemo da reagujemo kada su vlasništvo, dokumentacija i osnovni uslovi za prodaju jasni.
+      - generic [ref=f6e154]:
+        - generic [ref=f6e155]:
+          - paragraph [ref=f6e161]: Proces
+          - generic [ref=f6e162]:
+            - generic [ref=f6e163]: "1"
+            - paragraph [ref=f6e164]: Pošaljite osnovne podatke o parceli, kući ili lokaciji.
+          - generic [ref=f6e165]:
+            - generic [ref=f6e166]: "2"
+            - paragraph [ref=f6e167]: Nas tim proverava potencijal lokacije i kontaktira vas za dodatne informacije.
+          - generic [ref=f6e168]:
+            - generic [ref=f6e169]: "3"
+            - paragraph [ref=f6e170]: Dogovaramo sledeći korak, procenu i uslove saradnje.
+        - generic [ref=f6e171]:
+          - paragraph [ref=f6e172]: Sigurna saradnja
+          - heading "Brz odgovor, jasna komunikacija i korektan dogovor." [level=2] [ref=f6e173]
+          - paragraph [ref=f6e174]: "Fokus je na jednostavnom prvom kontaktu: lokacija, površina, dokumentacija i kratak opis. Nakon toga možemo brzo da procenimo da li postoji osnova za razgovor."
+          - generic [ref=f6e175]:
+            - paragraph [ref=f6e176]: Adresa ili okvirna lokacija nekretnine
+            - paragraph [ref=f6e181]: Površina parcele i pristup ulici
+            - paragraph [ref=f6e186]: Kratak opis postojeceg objekta, ako postoji
+            - paragraph [ref=f6e191]: status dokumentacije koji vam je poznat
+    - contentinfo [ref=f6e196]:
+      - generic [ref=f6e197]:
+        - generic [ref=f6e198]:
+          - img "M & M Gradnja" [ref=f6e201]
+          - generic [ref=f6e202]:
+            - strong [ref=f6e203]: M & M Gradnja
+            - paragraph [ref=f6e204]: Gradimo pažljivo osmišljene prostore za savremen i udoban život u Novom Sadu.
+            - link "Upoznajte kompaniju" [ref=f6e205] [cursor=pointer]:
+              - /url: /o-nama
+        - navigation [ref=f6e209]:
+          - heading "Kompanija" [level=2] [ref=f6e210]
+          - generic [ref=f6e211]:
+            - link "Pocetna" [ref=f6e212] [cursor=pointer]:
+              - /url: /
+            - link "O nama" [ref=f6e213] [cursor=pointer]:
+              - /url: /o-nama
+            - link "Kupujemo placeve" [ref=f6e214] [cursor=pointer]:
+              - /url: /kupujemo-placeve
+            - link "Lokacija" [ref=f6e215] [cursor=pointer]:
+              - /url: /lokacija
+        - navigation [ref=f6e216]:
+          - heading "Aktuelni projekat" [level=2] [ref=f6e217]
+          - generic [ref=f6e218]:
+            - link "Heroja Pinkija 13" [ref=f6e219] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/o-projektu
+            - link "Ponuda stanova" [ref=f6e220] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/ponuda-stanova
+            - link "Spisak stanova" [ref=f6e221] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/spisak-stanova
+        - generic [ref=f6e222]:
+          - heading "Kontakt" [level=2] [ref=f6e223]
+          - generic [ref=f6e224]:
+            - link "Telefon prodaje 064 227 9117" [ref=f6e225] [cursor=pointer]:
+              - /url: tel:0642279117
+              - generic [ref=f6e228]:
+                - generic [ref=f6e229]: Telefon prodaje
+                - strong [ref=f6e230]: 064 227 9117
+            - link "Email prodaja@mimgradnja.rs" [ref=f6e231] [cursor=pointer]:
+              - /url: mailto:prodaja@mimgradnja.rs
+              - generic [ref=f6e235]:
+                - generic [ref=f6e236]: Email
+                - strong [ref=f6e237]: prodaja@mimgradnja.rs
+            - link "Adresa projekta Heroja Pinkija 13, Novi Sad" [ref=f6e238] [cursor=pointer]:
+              - /url: /lokacija
+              - generic [ref=f6e242]:
+                - generic [ref=f6e243]: Adresa projekta
+                - strong [ref=f6e244]: Heroja Pinkija 13, Novi Sad
+      - generic [ref=f6e246]:
+        - generic [ref=f6e247]: (c) 2026 M & M Gradnja. Sva prava zadrzana.
+        - generic [ref=f6e248]:
+          - link "Politika privatnosti" [ref=f6e249] [cursor=pointer]:
+            - /url: /politika-privatnosti
+          - link "Kontakt" [ref=f6e250] [cursor=pointer]:
+            - /url: /kontakt
+  - dialog [ref=f6e251]:
+    - button "Zatvori kontakt formu" [ref=f6e252] [cursor=pointer]
+    - complementary [ref=f6e256]:
+      - paragraph [ref=f6e257]: Pišite nam
+      - heading "Kontaktirajte prodaju" [level=2] [ref=f6e258]
+      - paragraph [ref=f6e259]: Ostavite podatke i napišite šta vas zanima. Prodajni tim će vam se javiti sa informacijama o dostupnosti, ceni i narednim koracima.
+      - generic [ref=f6e260]:
+        - link "Telefon prodaje 064 227 9117" [ref=f6e261] [cursor=pointer]:
+          - /url: tel:0642279117
+          - generic [ref=f6e264]:
+            - generic [ref=f6e265]: Telefon prodaje
+            - strong [ref=f6e266]: 064 227 9117
+        - link "Email prodaja@mimgradnja.rs" [ref=f6e267] [cursor=pointer]:
+          - /url: mailto:prodaja@mimgradnja.rs
+          - generic [ref=f6e271]:
+            - generic [ref=f6e272]: Email
+            - strong [ref=f6e273]: prodaja@mimgradnja.rs
+    - generic [ref=f6e274]:
+      - generic [ref=f6e279]:
+        - strong [ref=f6e280]: Podaci za odgovor
+        - paragraph [ref=f6e281]: Ime i e-mail su obavezni. Telefon pomaze da dogovor bude brzi.
+      - generic [ref=f6e282]:
+        - generic [ref=f6e283]:
+          - generic [ref=f6e284]: Ime i prezime *
+          - textbox "Ime i prezime *" [active] [ref=f6e285]
+        - generic [ref=f6e286]:
+          - generic [ref=f6e287]: Telefon
+          - textbox "Telefon" [ref=f6e288]
+        - generic [ref=f6e289]:
+          - generic [ref=f6e290]: E-mail *
+          - textbox "E-mail *" [ref=f6e291]
+      - generic [ref=f6e292]:
+        - text: Website
+        - textbox "Website" [ref=f6e293]
+      - generic [ref=f6e294]:
+        - generic [ref=f6e295]: Poruka
+        - textbox "Poruka" [ref=f6e296]:
+          - /placeholder: Napišite koji stan, kvadratura ili termin obilaska vas zanima.
+      - generic [ref=f6e297] [cursor=pointer]:
+        - checkbox "Saglasan/saglasna sam da me kontaktirate povodom poslatog upita." [ref=f6e298]
+        - generic [ref=f6e299]: Saglasan/saglasna sam da me kontaktirate povodom poslatog upita.
+      - paragraph [ref=f6e301]: Provera sigurnosti *
+      - generic [ref=f6e304]:
+        - button "Pošaljite upit" [ref=f6e305] [cursor=pointer]
+        - paragraph [ref=f6e312]: Odgovaramo u najkraćem roku. Slanje upita vas ne obavezuje na kupovinu.

@@ -6,9 +6,9 @@ type PublicImageDimensions = {
 };
 
 const publicImageDimensions: Record<string, PublicImageDimensions> = {
-  "/images/heroja-pinkija-13/hero-generated.png": { width: 1672, height: 941 },
-  "/images/heroja-pinkija-13/gradilisna-tabla.jpg": { width: 818, height: 783 },
-  "/images/heroja-pinkija-13/gradilisna-tabla-slika.jpg": { width: 1672, height: 941 },
+  "/images/heroja-pinkija-13/hero-generated.jpg": { width: 1672, height: 941 },
+  "/images/heroja-pinkija-13/gradilisna-tabla-optimized.jpg": { width: 818, height: 783 },
+  "/images/heroja-pinkija-13/gradilisna-tabla-slika-optimized.jpg": { width: 1672, height: 941 },
   "/images/heroja-pinkija-13/radovi-u-toku.jpg": { width: 1663, height: 1247 },
   "/images/kupovina-placeva-hero.jpg": { width: 1672, height: 941 },
   "/images/apartment-plans/stan-1-6-11.png": { width: 2105, height: 1488 },

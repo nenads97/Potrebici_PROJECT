@@ -29,6 +29,7 @@ The initial schema has been applied to the cloud project as migration:
 
 ```txt
 20260522091421_initial_potrebici_schema
+add_inquiry_attachments
 ```
 
 The Supabase CLI is not installed in this workspace.
@@ -58,6 +59,7 @@ Frontend public reads use the Vite variables in `../mim-invest-frontend/.env.exa
 ```txt
 VITE_SUPABASE_URL=
 VITE_SUPABASE_ANON_KEY=
+VITE_TURNSTILE_SITE_KEY=
 ```
 
 Backend/server-only Edge Function writes use the variables in `./.env.example`.
@@ -71,6 +73,8 @@ BREVO_API_KEY=
 BREVO_SENDER_EMAIL=
 BREVO_SENDER_NAME=
 SALES_EMAIL=
+MIM_SECRET_KEY_CAPTCHA=
+TURNSTILE_ALLOWED_HOSTNAMES=
 ```
 
 `SUPABASE_SERVICE_ROLE_KEY` is the legacy server-only key path. If the deployment
@@ -96,12 +100,42 @@ submit-contact-inquiry
 submit-land-offer
 ```
 
+The land-offer and contact inquiry forms use Cloudflare Turnstile. The browser
+receives only the public site key; `submit-land-offer` and
+`submit-contact-inquiry` verify the single-use token with Cloudflare before any
+database write, and check the configured action and hostname. The existing
+honeypot and rate-limit protections remain active as additional layers.
+
 Each function validates the payload, checks the honeypot field, rate-limits repeated submissions by hashed e-mail and hashed IP/network bucket, inserts the record into the relevant table, sends Brevo confirmation/notification e-mails and writes `email_delivery_log` with `delivery_kind`.
+
+### Inquiry attachments
+
+Both public inquiry forms accept one optional document attachment. The server
+accepts PDF, DOC, DOCX, JPG/JPEG and PNG files up to 4 MiB. The frontend checks
+the same limit for immediate feedback, but the Edge Functions and the private
+Storage bucket enforce it again.
+
+Attachments are uploaded by the Edge Functions to the private
+`inquiry-attachments` bucket only after honeypot, Turnstile, field validation
+and rate-limit checks pass. The attachment metadata is stored alongside the
+inquiry in `contact_inquiries` or `land_offers`. The sales notification email
+contains the document as a Brevo attachment; the user confirmation email does
+not echo the document back to the submitter.
+
+Authenticated administrators can download the document from the admin panel
+through a five-minute signed URL. The Storage bucket has no browser upload
+policy, and its read policy is limited to users accepted by
+`app_private.is_admin()`.
+
+Create a Turnstile widget in Cloudflare and allow the production hostnames used by
+the site. Configure the public site key in the frontend environment and the secret
+key plus exact hostnames as Supabase Edge Function secrets. Never place
+`MIM_SECRET_KEY_CAPTCHA` in a `VITE_` variable.
 
 Deploy after setting secrets in the Supabase project:
 
 ```powershell
-supabase secrets set SUPABASE_URL="https://kamwovkvhkurjvabbfks.supabase.co" SUPABASE_SERVICE_ROLE_KEY="..." BREVO_API_KEY="..." BREVO_SENDER_EMAIL="prodaja@mimgradnja.rs" BREVO_SENDER_NAME="M & M Gradnja" SALES_EMAIL="prodaja@mimgradnja.rs"
+supabase secrets set SUPABASE_URL="https://kamwovkvhkurjvabbfks.supabase.co" SUPABASE_SERVICE_ROLE_KEY="..." BREVO_API_KEY="..." BREVO_SENDER_EMAIL="prodaja@mimgradnja.rs" BREVO_SENDER_NAME="M & M Gradnja" SALES_EMAIL="prodaja@mimgradnja.rs" MIM_SECRET_KEY_CAPTCHA="..." TURNSTILE_ALLOWED_HOSTNAMES="mimgradnja.rs,www.mimgradnja.rs"
 supabase functions deploy submit-contact-inquiry --project-ref kamwovkvhkurjvabbfks
 supabase functions deploy submit-land-offer --project-ref kamwovkvhkurjvabbfks
 ```

@@ -52,7 +52,7 @@ export const AdminLoginPage = () => {
     setIsSubmitting(true);
 
     try {
-      const { error } = await withAdminLoginTimeout(
+      const { data: signInData, error } = await withAdminLoginTimeout(
         supabase.auth.signInWithPassword({
           email,
           password,
@@ -64,7 +64,7 @@ export const AdminLoginPage = () => {
         return;
       }
 
-      const canAccessAdmin = await isCurrentUserAdmin();
+      const canAccessAdmin = await isCurrentUserAdmin(signInData.session?.user.id);
 
       if (!canAccessAdmin) {
         await supabase.auth.signOut();

@@ -3,6 +3,7 @@ import type {
   ApartmentImage,
   ApartmentRoomArea,
   ApartmentStatus,
+  ProjectUnitType,
   ProjectInfo,
   TimelineItem,
 } from "../types/project.types";
@@ -24,6 +25,59 @@ export const statusVariant: Record<ApartmentStatus, "available" | "reserved" | "
   Sold: "sold",
 };
 
+export const unitTypeLabel: Record<ProjectUnitType, string> = {
+  apartment: "Stan",
+  commercial_space: "Lokal",
+  business_apartment: "Poslovni apartman",
+};
+
+export function getUnitType(unit: Pick<Apartment, "unitType">) {
+  return unit.unitType ?? "apartment";
+}
+
+export function getUnitLabel(unit: Pick<Apartment, "unitType">) {
+  return unitTypeLabel[getUnitType(unit)];
+}
+
+export function getUnitDisplayName(unit: Pick<Apartment, "number" | "unitType">) {
+  const label = getUnitLabel(unit);
+
+  if (unit.unitType === "commercial_space" && /^lokal\s/i.test(unit.number)) {
+    return unit.number;
+  }
+
+  return `${label} ${unit.number}`;
+}
+
+export function getUnitSortOrder(unit: Pick<Apartment, "number" | "sortOrder">) {
+  return unit.sortOrder ?? Number(unit.number.match(/\d+/)?.[0] ?? 0);
+}
+
+export function getUnitRouteSegment(unit: Pick<Apartment, "number" | "slug">) {
+  return unit.slug ?? unit.number;
+}
+
+export type ApartmentTypeKey =
+  | "stack-1-6-11"
+  | "stack-2-7-12"
+  | "stack-3-8-13"
+  | "stack-4-9-14"
+  | "stack-5-10-15";
+
+export type ApartmentTypeGroup = {
+  key: ApartmentTypeKey;
+  label: string;
+  numbers: readonly string[];
+};
+
+export const apartmentTypeGroups: readonly ApartmentTypeGroup[] = [
+  { key: "stack-1-6-11", label: "Tip 1", numbers: ["1", "6", "11"] },
+  { key: "stack-2-7-12", label: "Tip 2", numbers: ["2", "7", "12"] },
+  { key: "stack-3-8-13", label: "Tip 3", numbers: ["3", "8", "13"] },
+  { key: "stack-4-9-14", label: "Tip 4", numbers: ["4", "9", "14"] },
+  { key: "stack-5-10-15", label: "Tip 5", numbers: ["5", "10", "15"] },
+];
+
 export const projectInfo: ProjectInfo = {
   name: "Heroja Pinkija 13",
   address: "Heroja Pinkija 13",
@@ -40,7 +94,7 @@ export const projectInfo: ProjectInfo = {
   plannedCompletion: "15. novembar 2027.",
   constructionStartDate: "2026-03-16",
   constructionEndDate: "2027-11-15",
-  heroImage: "/images/heroja-pinkija-13/gradilisna-tabla.jpg",
+  heroImage: "/images/heroja-pinkija-13/gradilisna-tabla-optimized.jpg",
   seoTitle: "Heroja Pinkija 13 | M & M Gradnja",
   seoDescription:
     "Pregled projekta Heroja Pinkija 13 u Novom Sadu: stanovi, lokacija, rokovi, status radova i direktan upit prodaji.",
@@ -53,6 +107,10 @@ const apartmentPlanImages = {
   stackThree: "/images/apartment-plans/stan-3-8-13.png",
   stackFour: "/images/apartment-plans/stan-4-9-14.png",
   stackFive: "/images/apartment-plans/stan-5-10-15.png",
+  localOne: "/images/commercial-spaces/lokal-1-plan.png",
+  localOneDocument: "/images/commercial-spaces/lokal-1-document.png",
+  localTwo: "/images/commercial-spaces/lokal-2-plan.png",
+  localTwoDocument: "/images/commercial-spaces/lokal-2-document.png",
 };
 
 type ApartmentStack = {
@@ -86,7 +144,7 @@ const apartmentStacks: ApartmentStack[] = [
     terrace: "Terasa",
     highlight: "Veći stan sa dva kupatila, pogodan za porodicu.",
     description:
-      "Trosoban stan za kupce kojima je važan dodatni komfor i funkcionalno odvajanje dnevne i spavace zone. Isti raspored se ponavlja kroz vertikalu, uz razliku u kvadraturi po etaži.",
+      "Trosoban stan za kupce kojima je važan dodatni komfor i funkcionalno odvajanje dnevne i spavaće zone. Isti raspored se ponavlja kroz vertikalu, uz razliku u kvadraturi po etaži.",
     features: [
       "Trosobna struktura",
       "Dva kupatila",
@@ -109,8 +167,8 @@ const apartmentStacks: ApartmentStack[] = [
       { id: "living", number: "4", label: "Dnevna soba", area: "20.13 m2" },
       { id: "loggia", number: "5", label: "Terasa", area: "3.52 m2" },
       { id: "wc", number: "6", label: "WC", area: "1.67 m2" },
-      { id: "bedroom-primary", number: "7", label: "Spavaca soba", area: "9.64 m2" },
-      { id: "bedroom-secondary", number: "8", label: "Spavaca soba", area: "10.97 m2" },
+      { id: "bedroom-primary", number: "7", label: "Spavaća soba", area: "9.64 m2" },
+      { id: "bedroom-secondary", number: "8", label: "Spavaća soba", area: "10.97 m2" },
     ],
   },
   {
@@ -144,8 +202,8 @@ const apartmentStacks: ApartmentStack[] = [
       { id: "living", number: "4", label: "Dnevni boravak", area: "19.26 m2" },
       { id: "terrace", number: "5", label: "Terasa", area: "3.14 m2" },
       { id: "hall", number: "6", label: "Hodnik", area: "3.08 m2" },
-      { id: "bedroom-primary", number: "7", label: "Spavaca soba", area: "11.96 m2" },
-      { id: "bedroom-secondary", number: "8", label: "Spavaca soba", area: "8.04 m2" },
+      { id: "bedroom-primary", number: "7", label: "Spavaća soba", area: "11.96 m2" },
+      { id: "bedroom-secondary", number: "8", label: "Spavaća soba", area: "8.04 m2" },
     ],
   },
   {
@@ -187,7 +245,7 @@ const apartmentStacks: ApartmentStack[] = [
     terrace: "Terasa",
     highlight: "Praktičan dvosoban stan sa terasom.",
     description:
-      "Dvosoban stan je funkcionalan izbor za prvi dom, parove ili kupce koji planiraju izdavanje. Raspored zadrzava jasnu dnevnu zonu i odvojenu spavacu sobu.",
+      "Dvosoban stan je funkcionalan izbor za prvi dom, parove ili kupce koji planiraju izdavanje. Raspored zadržava jasnu dnevnu zonu i odvojenu spavaću sobu.",
     features: [
       "Dvosobna struktura",
       "Terasa",
@@ -209,7 +267,7 @@ const apartmentStacks: ApartmentStack[] = [
       { id: "bathroom", number: "3", label: "Kupatilo", area: "4.21 m2" },
       { id: "living", number: "4", label: "Dnevni boravak", area: "18.96 m2" },
       { id: "terrace", number: "5", label: "Terasa", area: "3.12 m2" },
-      { id: "bedroom", number: "6", label: "Spavaca soba", area: "12.45 m2" },
+      { id: "bedroom", number: "6", label: "Spavaća soba", area: "12.45 m2" },
     ],
   },
   {
@@ -220,7 +278,7 @@ const apartmentStacks: ApartmentStack[] = [
     terrace: "Terasa",
     highlight: "Manji dvosoban stan sa jasnim rasporedom.",
     description:
-      "Ovaj tip stana nudi kompaktnu kvadraturu uz odvojenu spavacu sobu i terasu. Dobar je izbor za kupce koji traže praktičan stan na dobro povezanoj lokaciji.",
+      "Ovaj tip stana nudi kompaktnu kvadraturu uz odvojenu spavaću sobu i terasu. Dobar je izbor za kupce koji traže praktičan stan na dobro povezanoj lokaciji.",
     features: [
       "Dvosobna struktura",
       "Terasa",
@@ -242,7 +300,7 @@ const apartmentStacks: ApartmentStack[] = [
       { id: "bathroom", number: "3", label: "Kupatilo", area: "4.21 m2" },
       { id: "living", number: "4", label: "Dnevni boravak", area: "16.84 m2" },
       { id: "terrace", number: "5", label: "Terasa", area: "3.19 m2" },
-      { id: "bedroom", number: "6", label: "Spavaca soba", area: "10.21 m2" },
+      { id: "bedroom", number: "6", label: "Spavaća soba", area: "10.21 m2" },
     ],
   },
 ];
@@ -275,14 +333,18 @@ function getFloorNumber(number: string) {
   return 3;
 }
 
-export const apartments: Apartment[] = apartmentStacks.flatMap((stack) =>
-  stack.numbers.map((number, index) => ({
+export const apartments: Apartment[] = [
+  ...apartmentStacks.flatMap((stack) =>
+    stack.numbers.map((number, index) => ({
+    unitType: "apartment" as const,
+    slug: `stan-${number}`,
+    sortOrder: Number(number),
     number,
     floor: getFloor(number),
     floorNumber: getFloorNumber(number),
     size: stack.sizes[index],
     rooms: stack.rooms,
-    status: "Available",
+    status: "Available" as const,
     orientation: "Prema prodajnoj dokumentaciji",
     highlight: stack.highlight,
     description: stack.description,
@@ -305,16 +367,115 @@ export const apartments: Apartment[] = apartmentStacks.flatMap((stack) =>
     roomAreas: stack.roomAreas,
     planVariant: stack.planVariant,
     features: stack.features,
-  })),
-);
+    })),
+  ),
+  {
+    unitType: "commercial_space",
+    slug: "lokal-1",
+    sortOrder: 16,
+    number: "Lokal 1",
+    floor: "Prizemlje",
+    floorNumber: 0,
+    size: "73.71 m2",
+    rooms: "Poslovni prostor",
+    status: "Available" as const,
+    orientation: "Ulaz iz ulice Heroja Pinkija",
+    highlight: "Prostran lokal sa jasno izdvojenim toaletom.",
+    description:
+      "Lokal 1 je poslovni prostor u prizemlju objekta, sa 73.71 m2 obračunske neto površine i zasebnim toaletom.",
+    priceRange: "Na upit",
+    availabilityNote:
+      "Za cenu, uslove kupovine i mogućnost prilagođavanja prostora kontaktirajte prodaju.",
+    bathrooms: "1 toalet",
+    terrace: "Bez terase",
+    parking: "Parking prema dogovoru",
+    storage: "Nije uključeno",
+    ceilingHeight: "Prema prodajnoj dokumentaciji",
+    heroFloorPlan: {
+      src: apartmentPlanImages.localOneDocument,
+      alt: "Originalna projektna dokumentacija za Lokal 1",
+    },
+    projectFloorPlan: {
+      src: apartmentPlanImages.localOne,
+      alt: "Izolovani tlocrt Lokala 1 za poređenje sa gridom prostorija",
+    },
+    floorPlanPdfUrl: "/documents/commercial-spaces/lokal-1.pdf",
+    plan: [
+      { label: "Obračunska neto površina", value: "73.71 m2" },
+      { label: "Ukupno neto", value: "75.99 m2" },
+      { label: "Poslovni prostor", value: "73.24 m2" },
+      { label: "Toalet", value: "2.75 m2" },
+    ],
+    roomAreas: [
+      { id: "business-space", number: "1", label: "Poslovni prostor", area: "73.24 m2" },
+      { id: "toilet", number: "2", label: "Toalet", area: "2.75 m2" },
+    ],
+    planVariant: "commercial-lokal-1",
+    features: [
+      "73.71 m2 obračunske neto površine",
+      "Prostran poslovni prostor",
+      "Zaseban toalet",
+      "Prizemna pozicija sa ulazom iz ulice",
+    ],
+  },
+  {
+    unitType: "commercial_space",
+    slug: "lokal-2",
+    sortOrder: 17,
+    number: "Lokal 2",
+    floor: "Prizemlje",
+    floorNumber: 0,
+    size: "47.65 m2",
+    rooms: "Poslovni prostor",
+    status: "Available" as const,
+    orientation: "Ulaz iz ulice Heroja Pinkija",
+    highlight: "Funkcionalan lokal sa jednostavnim rasporedom.",
+    description:
+      "Lokal 2 je funkcionalan poslovni prostor u prizemlju objekta, sa 47.65 m2 obračunske neto površine i zasebnim toaletom.",
+    priceRange: "Na upit",
+    availabilityNote:
+      "Za cenu, uslove kupovine i mogućnost prilagođavanja prostora kontaktirajte prodaju.",
+    bathrooms: "1 toalet",
+    terrace: "Bez terase",
+    parking: "Parking prema dogovoru",
+    storage: "Nije uključeno",
+    ceilingHeight: "Prema prodajnoj dokumentaciji",
+    heroFloorPlan: {
+      src: apartmentPlanImages.localTwoDocument,
+      alt: "Originalna projektna dokumentacija za Lokal 2",
+    },
+    projectFloorPlan: {
+      src: apartmentPlanImages.localTwo,
+      alt: "Izolovani tlocrt Lokala 2 za poređenje sa gridom prostorija",
+    },
+    floorPlanPdfUrl: "/documents/commercial-spaces/lokal-2.pdf",
+    plan: [
+      { label: "Obračunska neto površina", value: "47.65 m2" },
+      { label: "Ukupno neto", value: "49.12 m2" },
+      { label: "Poslovni prostor", value: "46.37 m2" },
+      { label: "Toalet", value: "2.75 m2" },
+    ],
+    roomAreas: [
+      { id: "business-space", number: "1", label: "Poslovni prostor", area: "46.37 m2" },
+      { id: "toilet", number: "2", label: "Toalet", area: "2.75 m2" },
+    ],
+    planVariant: "commercial-lokal-2",
+    features: [
+      "47.65 m2 obračunske neto površine",
+      "Funkcionalan poslovni prostor",
+      "Zaseban toalet",
+      "Prizemna pozicija sa ulazom iz ulice",
+    ],
+  },
+];
 
 export const locationAdvantages = [
-  "početak Telepa",
-  "linija 12 ka centru",
+  "Početak Telepa",
+  "Linija 12 ka centru",
   "Lidl u blizini",
   "Gimnazija Laza Kostić u blizini",
   "Kej, Ribarac, Šodroš i parkovi",
-  "planirana veza prema Fruškoj gori",
+  "Planirana veza prema Fruškoj gori",
 ];
 
 export const projectTimeline: TimelineItem[] = [
@@ -335,7 +496,7 @@ export const projectTimeline: TimelineItem[] = [
   {
     id: "interior",
     date: "2027.",
-    title: "Unutrasnji radovi",
+      title: "Unutrašnji radovi",
     body: "Instalacije, završni radovi i priprema prostora za kupce.",
     state: "upcoming",
   },

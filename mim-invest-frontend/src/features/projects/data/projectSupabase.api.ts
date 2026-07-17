@@ -14,7 +14,15 @@ import {
 
 const projectSlug = "heroja-pinkija-13";
 const publicFetchTimeoutMs = 800;
+const publicCacheTtlMs = 30_000;
 const projectMediaTypes = ["project_image", "construction_update_image"] as const;
+const comparisonPlanSortOrder = 200;
+
+const publicCache = new Map<
+  string,
+  { expiresAt: number; value: unknown }
+>();
+const publicRequests = new Map<string, Promise<unknown>>();
 
 const statusMap: Record<string, ApartmentStatus> = {
   available: "Available",
@@ -94,37 +102,86 @@ function getApartmentStructure(apartmentNumber: string) {
   return null;
 }
 
-export async function fetchApartments() {
+export function fetchApartments() {
+  return getCachedPublic("apartments", fetchApartmentsUncached);
+}
+
+async function fetchApartmentsUncached() {
   if (!isSupabaseConfigured || !supabase) {
     return fallbackApartments;
   }
 
-  const { data, error } = await withSupabaseTimeout(
-    supabase
-      .from("units")
-      .select("*")
-      .eq("unit_type", "apartment")
-      .eq("is_published", true)
-      .order("sort_order", { ascending: true }),
+  const [unitsResponse, comparisonMediaResponse] = await withSupabaseTimeout(
+    Promise.all([
+      supabase
+        .from("units")
+        .select(
+          "id,slug,code,unit_type,floor_label,floor_number,area_m2,room_structure,status,orientation,short_description,full_description,seo_title,seo_description,bathrooms,terrace,features,main_image_url,floor_plan_pdf_url,sort_order,is_published",
+        )
+        .in("unit_type", ["apartment", "commercial_space"])
+        .eq("is_published", true)
+        .order("sort_order", { ascending: true }),
+      supabase
+        .from("project_media")
+        .select("unit_id,file_path,alt_text,sort_order")
+        .eq("media_type", "unit_image")
+        .eq("is_published", true)
+        .gte("sort_order", comparisonPlanSortOrder)
+        .order("sort_order", { ascending: true }),
+    ]),
   );
 
-  if (error) {
-    throw error;
+  if (unitsResponse.error) {
+    throw unitsResponse.error;
   }
 
-  if (!data?.length) {
+  if (!unitsResponse.data?.length) {
     return fallbackApartments;
   }
 
-  return (data ?? []).map<Apartment>((unit) => {
+  const comparisonPlanByUnitId = new Map<string, { src: string; alt?: string }>();
+
+  if (!comparisonMediaResponse.error) {
+    for (const media of comparisonMediaResponse.data ?? []) {
+      if (
+        typeof media.unit_id === "string" &&
+        typeof media.file_path === "string" &&
+        !comparisonPlanByUnitId.has(media.unit_id)
+      ) {
+        comparisonPlanByUnitId.set(media.unit_id, {
+          src: media.file_path,
+          alt: typeof media.alt_text === "string" ? media.alt_text : undefined,
+        });
+      }
+    }
+  }
+
+  return (unitsResponse.data ?? []).map<Apartment>((unit) => {
     const apartmentNumber = unit.code.replace(/\D/g, "");
     const fallback =
-      fallbackApartments.find((apartment) => apartment.number === apartmentNumber) ?? fallbackApartments[0];
+      fallbackApartments.find(
+        (apartment) =>
+          apartment.slug === unit.slug ||
+          apartment.number.toLowerCase() === unit.code.toLowerCase(),
+      ) ??
+      fallbackApartments.find(
+        (apartment) => apartment.unitType === unit.unit_type,
+      ) ??
+      fallbackApartments[0];
     const area = unit.area_m2 ? `${unit.area_m2} m2` : fallback.size;
-    const rooms = getApartmentStructure(apartmentNumber) ?? unit.room_structure ?? fallback.rooms;
+    const rooms =
+      unit.unit_type === "apartment"
+        ? getApartmentStructure(apartmentNumber) ??
+          unit.room_structure ??
+          fallback.rooms
+        : unit.room_structure ?? fallback.rooms;
+    const comparisonPlan = comparisonPlanByUnitId.get(unit.id);
 
     return {
       ...fallback,
+      unitType: unit.unit_type,
+      slug: unit.slug,
+      sortOrder: unit.sort_order,
       number: unit.code.replace(/^stan\s*/i, "") || unit.code,
       floor: unit.floor_label ?? fallback.floor,
       floorNumber: unit.floor_number ?? fallback.floorNumber,
@@ -138,8 +195,21 @@ export async function fetchApartments() {
       seoDescription: unit.seo_description ?? undefined,
       bathrooms: unit.bathrooms ?? fallback.bathrooms,
       terrace: unit.terrace ?? fallback.terrace,
-      heroFloorPlan: fallback.heroFloorPlan,
-      projectFloorPlan: fallback.projectFloorPlan,
+      heroFloorPlan: unit.main_image_url
+        ? {
+            src: unit.main_image_url,
+            alt: fallback.heroFloorPlan.alt,
+          }
+        : fallback.heroFloorPlan,
+      projectFloorPlan: unit.unit_type === "commercial_space"
+        ? fallback.projectFloorPlan
+        : comparisonPlan
+        ? {
+            src: comparisonPlan.src,
+            alt: comparisonPlan.alt ?? fallback.projectFloorPlan.alt,
+          }
+        : fallback.projectFloorPlan,
+      floorPlanPdfUrl: unit.floor_plan_pdf_url ?? fallback.floorPlanPdfUrl,
       plan: [
         { label: "Ukupna površina", value: area },
         { label: "Struktura", value: rooms },
@@ -153,7 +223,11 @@ export async function fetchApartments() {
   });
 }
 
-export async function fetchProjectInfo(): Promise<ProjectInfo> {
+export function fetchProjectInfo() {
+  return getCachedPublic<ProjectInfo>("project-info", fetchProjectInfoUncached);
+}
+
+async function fetchProjectInfoUncached(): Promise<ProjectInfo> {
   if (!isSupabaseConfigured || !supabase) {
     return fallbackProjectInfo;
   }
@@ -197,25 +271,21 @@ export async function fetchProjectInfo(): Promise<ProjectInfo> {
   };
 }
 
-export async function fetchProjectTimeline(): Promise<TimelineItem[]> {
+export function fetchProjectTimeline() {
+  return getCachedPublic<TimelineItem[]>(
+    "project-timeline",
+    fetchProjectTimelineUncached,
+  );
+}
+
+async function fetchProjectTimelineUncached(): Promise<TimelineItem[]> {
   if (!isSupabaseConfigured || !supabase) {
     return fallbackProjectTimeline;
   }
 
-  const { data: project, error: projectError } = await withSupabaseTimeout(
-    supabase
-      .from("projects")
-      .select("id")
-      .eq("slug", projectSlug)
-      .eq("is_published", true)
-      .maybeSingle(),
-  );
+  const projectId = await fetchProjectId();
 
-  if (projectError) {
-    throw projectError;
-  }
-
-  if (!project) {
+  if (!projectId) {
     return fallbackProjectTimeline;
   }
 
@@ -223,7 +293,7 @@ export async function fetchProjectTimeline(): Promise<TimelineItem[]> {
     supabase
       .from("construction_updates")
       .select("id,update_date,tag,title,short_description,status_label,timeline_state,sort_order")
-      .eq("project_id", project.id)
+      .eq("project_id", projectId)
       .eq("is_published", true)
       .order("sort_order", { ascending: true })
       .order("update_date", { ascending: true }),
@@ -250,25 +320,21 @@ export async function fetchProjectTimeline(): Promise<TimelineItem[]> {
   }));
 }
 
-export async function fetchProjectMedia(): Promise<ProjectMediaItem[]> {
+export function fetchProjectMedia() {
+  return getCachedPublic<ProjectMediaItem[]>(
+    "project-media",
+    fetchProjectMediaUncached,
+  );
+}
+
+async function fetchProjectMediaUncached(): Promise<ProjectMediaItem[]> {
   if (!isSupabaseConfigured || !supabase) {
     return [];
   }
 
-  const { data: project, error: projectError } = await withSupabaseTimeout(
-    supabase
-      .from("projects")
-      .select("id")
-      .eq("slug", projectSlug)
-      .eq("is_published", true)
-      .maybeSingle(),
-  );
+  const projectId = await fetchProjectId();
 
-  if (projectError) {
-    throw projectError;
-  }
-
-  if (!project) {
+  if (!projectId) {
     return [];
   }
 
@@ -276,7 +342,7 @@ export async function fetchProjectMedia(): Promise<ProjectMediaItem[]> {
     supabase
       .from("project_media")
       .select("id,title,media_type,file_path,alt_text,description,sort_order")
-      .eq("project_id", project.id)
+      .eq("project_id", projectId)
       .is("unit_id", null)
       .in("media_type", [...projectMediaTypes])
       .eq("is_published", true)
@@ -296,7 +362,7 @@ export async function fetchProjectMedia(): Promise<ProjectMediaItem[]> {
       id: item.id,
       title: item.title,
       mediaType: item.media_type,
-      filePath: item.file_path,
+      filePath: optimizePublicImagePath(item.file_path),
       altText: item.alt_text ?? undefined,
       description: item.description ?? undefined,
       sortOrder: item.sort_order,
@@ -305,6 +371,38 @@ export async function fetchProjectMedia(): Promise<ProjectMediaItem[]> {
 
 function isProjectMediaType(value: string): value is ProjectMediaItem["mediaType"] {
   return projectMediaTypes.some((mediaType) => mediaType === value);
+}
+
+function optimizePublicImagePath(filePath: string) {
+  return filePath.replace(
+    "/images/heroja-pinkija-13/hero-generated.png",
+    "/images/heroja-pinkija-13/hero-generated.jpg",
+  );
+}
+
+function fetchProjectId(): Promise<string | null> {
+  const client = supabase;
+
+  if (!isSupabaseConfigured || !client) {
+    return Promise.resolve(null);
+  }
+
+  return getCachedPublic("project-id", async () => {
+    const { data, error } = await withSupabaseTimeout(
+      client
+        .from("projects")
+        .select("id")
+        .eq("slug", projectSlug)
+        .eq("is_published", true)
+        .maybeSingle(),
+    );
+
+    if (error) {
+      throw error;
+    }
+
+    return data?.id ?? null;
+  });
 }
 
 const timelineStateLabels: Record<TimelineItem["state"], string> = {
@@ -330,4 +428,37 @@ function withSupabaseTimeout<T>(query: PromiseLike<T>): Promise<T> {
       },
     );
   });
+}
+
+function getCachedPublic<T>(
+  key: string,
+  loader: () => Promise<T>,
+  ttlMs = publicCacheTtlMs,
+): Promise<T> {
+  const cached = publicCache.get(key);
+
+  if (cached && cached.expiresAt > Date.now()) {
+    return Promise.resolve(cached.value as T);
+  }
+
+  const existingRequest = publicRequests.get(key);
+
+  if (existingRequest) {
+    return existingRequest as Promise<T>;
+  }
+
+  const request = loader()
+    .then((value) => {
+      publicCache.set(key, {
+        value,
+        expiresAt: Date.now() + ttlMs,
+      });
+      return value;
+    })
+    .finally(() => {
+      publicRequests.delete(key);
+    });
+
+  publicRequests.set(key, request);
+  return request;
 }

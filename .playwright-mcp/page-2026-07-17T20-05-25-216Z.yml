@@ -1,0 +1,269 @@
+- generic [ref=f43e2]:
+  - generic [ref=f43e10]:
+    - link "Preskocite na glavni sadržaj":
+      - /url: "#main-content"
+    - banner [ref=f43e11]:
+      - generic [ref=f43e12]:
+        - link "M & M Gradnja početna" [ref=f43e13] [cursor=pointer]:
+          - /url: /
+          - generic [ref=f43e14]:
+            - img "M & M Gradnja" [ref=f43e16]
+            - generic [ref=f43e17]:
+              - generic [ref=f43e18]: M & M
+              - generic [ref=f43e19]: Gradnja
+        - button "Otvori navigaciju" [ref=f43e20] [cursor=pointer]
+        - generic:
+          - link "O projektu":
+            - /url: /projekti/heroja-pinkija-13/o-projektu
+          - link "Ponuda stanova":
+            - /url: /projekti/heroja-pinkija-13/ponuda-stanova
+          - link "Spisak stanova":
+            - /url: /projekti/heroja-pinkija-13/spisak-stanova
+    - main [ref=f43e23]:
+      - generic [ref=f43e24]:
+        - img "Gradilišna tabla projekta Heroja Pinkija 13" [ref=f43e25]
+        - generic [ref=f43e28]: M & M GRADNJA / NOVI SAD
+        - generic [ref=f43e29]:
+          - generic [ref=f43e30]: AKTUELNI PROJEKAT
+          - heading "Tvoj prostor. Tvoja pravila. Tvoj novi početak." [level=1] [ref=f43e31]:
+            - generic [ref=f43e32]: Tvoj prostor.
+            - generic [ref=f43e33]: Tvoja pravila.
+            - generic [ref=f43e34]: Tvoj novi početak.
+          - paragraph [ref=f43e35]:
+            - generic [ref=f43e36]: Heroja Pinkija 13, Novi Sad
+            - generic [ref=f43e37]: 15 stanova
+            - generic [ref=f43e38]: prodaja u toku
+          - generic "Glavne akcije" [ref=f43e39]:
+            - link "Pogledaj stanove" [ref=f43e40] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/ponuda-stanova
+            - button "Pišite nam" [ref=f43e44] [cursor=pointer]
+      - region "Kljucne informacije o projektu" [ref=f43e47]:
+        - generic [ref=f43e48]:
+          - generic [ref=f43e49]:
+            - generic [ref=f43e55]:
+              - generic [ref=f43e56]: stanovi
+              - strong [ref=f43e57]: 15 stanova
+            - generic [ref=f43e64]:
+              - generic [ref=f43e65]: Objekat
+              - strong [ref=f43e66]: PO + PR + 3
+            - generic [ref=f43e75]:
+              - generic [ref=f43e76]: Garaža
+              - strong [ref=f43e77]: 13 mesta
+            - generic [ref=f43e84]:
+              - generic [ref=f43e85]: Ostave
+              - strong [ref=f43e86]: 15 ostava
+            - generic [ref=f43e92]:
+              - generic [ref=f43e93]: Grejanje
+              - strong [ref=f43e94]: Podno grejanje
+            - generic [ref=f43e99]:
+              - generic [ref=f43e100]: Rok
+              - strong [ref=f43e101]: 15.11.2027.
+          - paragraph [ref=f43e102]: Garažna mesta i ostave kupuju se odvojeno od stana.
+      - generic [ref=f43e104]:
+        - generic [ref=f43e105]:
+          - generic [ref=f43e106]:
+            - paragraph [ref=f43e107]: Projekti
+            - heading "Prostori za mirniji, udobniji ritam života." [level=2] [ref=f43e108]
+          - generic [ref=f43e109]:
+            - paragraph [ref=f43e110]: "Svaka lokacija se bira pažljivo, sa idejom da stan bude vise od kvadrature: dobro povezan, funkcionalan i prijatan za svakodnevni život."
+            - paragraph [ref=f43e111]: Pregledajte aktuelne projekte, lokacije u pripremi i realizovane objekte.
+        - tablist "Filtriranje projekata" [ref=f43e112]:
+          - tab "Aktuelni" [selected] [ref=f43e113] [cursor=pointer]
+          - tab "U pripremi" [ref=f43e114] [cursor=pointer]
+          - tab "Realizovani" [ref=f43e115] [cursor=pointer]
+        - article [ref=f43e116]:
+          - generic [ref=f43e117]:
+            - paragraph [ref=f43e118]: U prodaji
+            - heading "Heroja Pinkija 13" [level=3] [ref=f43e119]
+            - paragraph [ref=f43e120]: Jedna od traženijih lokacija u razvoju, povezana sa svim delovima grada i prilagođena svakodnevnom životu.
+            - generic [ref=f43e121]:
+              - generic [ref=f43e127]:
+                - heading "Početak Telepa / Liman 5" [level=4] [ref=f43e128]
+                - paragraph [ref=f43e129]: Dinamična gradska lokacija sa odličnom povezanošću i kompletnim sadržajem u neposrednoj blizini.
+              - generic [ref=f43e136]:
+                - heading "Kvalitetna i moderna gradnja" [level=4] [ref=f43e137]
+                - paragraph [ref=f43e138]: Gradnja po savremenim standardima, uz materijale i sisteme koji podržavaju dugotrajnost i udobnost.
+              - generic [ref=f43e144]:
+                - heading "Komfor koji se vidi u svakom detalju" [level=4] [ref=f43e145]
+                - paragraph [ref=f43e146]: Podno grejanje, lift iz garaže i optimalno organizovani stanovi, uz mogućnost odvojene kupovine garažnog mesta i ostave.
+            - generic [ref=f43e147]:
+              - link "Detalji projekta" [ref=f43e148] [cursor=pointer]:
+                - /url: /projekti/heroja-pinkija-13/o-projektu
+              - link "Ponuda stanova" [ref=f43e152] [cursor=pointer]:
+                - /url: /projekti/heroja-pinkija-13/ponuda-stanova
+          - generic [ref=f43e153]:
+            - generic [ref=f43e154]:
+              - img "Generisani render fasade projekta Heroja Pinkija 13" [ref=f43e155]
+              - generic [ref=f43e156]:
+                - img "Radovi u toku na projektu Heroja Pinkija 13" [ref=f43e157]
+                - generic [ref=f43e158]:
+                  - generic [ref=f43e159]: Početak Telepa / Liman 5
+                  - paragraph [ref=f43e163]: Dinamična gradska lokacija sa odličnom povezanošću i kompletnim sadržajem u neposrednoj blizini.
+            - generic [ref=f43e164]:
+              - generic [ref=f43e165]:
+                - text: Aktuelno
+                - strong [ref=f43e166]: Heroja Pinkija 13
+              - generic [ref=f43e167]:
+                - text: stambenih jedinica
+                - strong [ref=f43e168]: 15 stanova
+              - generic [ref=f43e169]:
+                - text: Struktura
+                - strong [ref=f43e170]: PO + PR + 3
+      - generic [ref=f43e172]:
+        - generic [ref=f43e173]:
+          - generic [ref=f43e174]:
+            - paragraph [ref=f43e175]: Kupujemo placeve
+            - heading "Imate plac na prodaju?" [level=2] [ref=f43e176]
+          - paragraph [ref=f43e177]: Pored aktuelne novogradnje, M & M Gradnja razmatra nove parcele i kuće za rušenje na kvalitetnim lokacijama. Pošaljite osnovne podatke i dobićete jasan prvi odgovor o potencijalu saradnje.
+        - article [ref=f43e178]:
+          - generic [ref=f43e179]:
+            - heading "Tražimo parcele za stambenu izgradnju." [level=3] [ref=f43e185]
+            - paragraph [ref=f43e186]: Ako imate plac, stariji objekat ili lokaciju sa potencijalom, možemo brzo da proverimo osnovne uslove i predložimo sledeći korak bez komplikovane procedure.
+            - generic [ref=f43e187]:
+              - link "Detalji za vlasnike" [ref=f43e188] [cursor=pointer]:
+                - /url: /kupujemo-placeve
+              - link "Pošaljite ponudu" [ref=f43e192] [cursor=pointer]:
+                - /url: /kupujemo-placeve
+          - generic [ref=f43e193]:
+            - generic [ref=f43e194]:
+              - generic [ref=f43e195]:
+                - generic [ref=f43e202]: Namena
+                - strong [ref=f43e203]: Stambena gradnja
+              - generic [ref=f43e204]:
+                - generic [ref=f43e209]: Prvi korak
+                - strong [ref=f43e210]: Kratka procena
+              - generic [ref=f43e211]:
+                - generic [ref=f43e214]: Kontakt
+                - strong [ref=f43e215]: Direktan razgovor
+            - generic [ref=f43e216]:
+              - generic [ref=f43e222]:
+                - heading "Novi Sad i bliža okolina" [level=4] [ref=f43e223]
+                - paragraph [ref=f43e224]: Razmatramo lokacije sa dobrim pristupom, infrastrukturom i potencijalom za stambenu gradnju.
+              - generic [ref=f43e230]:
+                - heading "Plac ili kuća za rušenje" [level=4] [ref=f43e231]
+                - paragraph [ref=f43e232]: Interesuju nas parcele i postojeći objekti pogodni za razvoj novih stambenih projekata.
+              - generic [ref=f43e238]:
+                - heading "Jasna dokumentacija" [level=4] [ref=f43e239]
+                - paragraph [ref=f43e240]: Najbrže reagujemo kada su vlasništvo, osnovni podaci i uslovi prodaje spremni za proveru.
+      - generic [ref=f43e242]:
+        - generic [ref=f43e243]:
+          - paragraph [ref=f43e244]: Prodaja i obilazak
+          - heading "Proverite dostupne stanove i uslove kupovine." [level=2] [ref=f43e245]
+          - paragraph [ref=f43e246]: Pozovite prodaju za kvadrature, cenu, tlocrt i trenutni status izabranog stana.
+        - generic [ref=f43e247]:
+          - button "Pišite nam" [ref=f43e248] [cursor=pointer]
+          - link "Pozovite 064 227 9117" [ref=f43e251] [cursor=pointer]:
+            - /url: tel:0642279117
+          - generic [ref=f43e254]:
+            - generic [ref=f43e255]: Heroja Pinkija 13
+            - generic [ref=f43e259]: prodaja@mimgradnja.rs
+    - contentinfo [ref=f43e262]:
+      - generic [ref=f43e264]:
+        - generic [ref=f43e265]:
+          - generic [ref=f43e266]: Zainteresovani ste za stan?
+          - heading "Razgovarajte direktno sa našim prodajnim timom." [level=2] [ref=f43e267]
+        - button "Pišite nam" [ref=f43e268] [cursor=pointer]
+      - generic [ref=f43e271]:
+        - generic [ref=f43e272]:
+          - img "M & M Gradnja" [ref=f43e275]
+          - generic [ref=f43e276]:
+            - strong [ref=f43e277]: M & M Gradnja
+            - paragraph [ref=f43e278]: Gradimo pažljivo osmišljene prostore za savremen i udoban život u Novom Sadu.
+            - link "Upoznajte kompaniju" [ref=f43e279] [cursor=pointer]:
+              - /url: /o-nama
+        - navigation [ref=f43e283]:
+          - heading "Kompanija" [level=2] [ref=f43e284]
+          - generic [ref=f43e285]:
+            - link "Početna" [ref=f43e286] [cursor=pointer]:
+              - /url: /
+            - link "O nama" [ref=f43e287] [cursor=pointer]:
+              - /url: /o-nama
+            - link "Kupujemo placeve" [ref=f43e288] [cursor=pointer]:
+              - /url: /kupujemo-placeve
+            - link "Lokacija" [ref=f43e289] [cursor=pointer]:
+              - /url: /lokacija
+        - navigation [ref=f43e290]:
+          - heading "Aktuelni projekat" [level=2] [ref=f43e291]
+          - generic [ref=f43e292]:
+            - link "Heroja Pinkija 13" [ref=f43e293] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/o-projektu
+            - link "Ponuda stanova" [ref=f43e294] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/ponuda-stanova
+            - link "Spisak stanova" [ref=f43e295] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/spisak-stanova
+        - generic [ref=f43e296]:
+          - heading "Kontakt" [level=2] [ref=f43e297]
+          - generic [ref=f43e298]:
+            - link "Telefon prodaje 064 227 9117" [ref=f43e299] [cursor=pointer]:
+              - /url: tel:0642279117
+              - generic [ref=f43e302]:
+                - generic [ref=f43e303]: Telefon prodaje
+                - strong [ref=f43e304]: 064 227 9117
+            - link "Email prodaja@mimgradnja.rs" [ref=f43e305] [cursor=pointer]:
+              - /url: mailto:prodaja@mimgradnja.rs
+              - generic [ref=f43e309]:
+                - generic [ref=f43e310]: Email
+                - strong [ref=f43e311]: prodaja@mimgradnja.rs
+            - link "Adresa projekta Heroja Pinkija 13, Novi Sad" [ref=f43e312] [cursor=pointer]:
+              - /url: /lokacija
+              - generic [ref=f43e316]:
+                - generic [ref=f43e317]: Adresa projekta
+                - strong [ref=f43e318]: Heroja Pinkija 13, Novi Sad
+      - generic [ref=f43e320]:
+        - generic [ref=f43e321]: (c) 2026 M & M Gradnja. Sva prava zadržana.
+        - generic [ref=f43e322]:
+          - link "Politika privatnosti" [ref=f43e323] [cursor=pointer]:
+            - /url: /politika-privatnosti
+          - link "Kontakt" [ref=f43e324] [cursor=pointer]:
+            - /url: /kontakt
+          - button "Podešavanja privatnosti" [ref=f43e325] [cursor=pointer]
+    - button "Nazad na vrh stranice" [ref=f43e334] [cursor=pointer]
+  - dialog [ref=f43e337]:
+    - button "Zatvori kontakt formu" [ref=f43e338] [cursor=pointer]
+    - complementary [ref=f43e342]:
+      - paragraph [ref=f43e343]: Pišite nam
+      - heading "Kontaktirajte prodaju" [level=2] [ref=f43e344]
+      - paragraph [ref=f43e345]: Ostavite podatke i napišite šta vas zanima. Prodajni tim će vam se javiti sa informacijama o dostupnosti, ceni i narednim koracima.
+      - generic [ref=f43e346]:
+        - link "Telefon prodaje 064 227 9117" [ref=f43e347] [cursor=pointer]:
+          - /url: tel:0642279117
+          - generic [ref=f43e350]:
+            - generic [ref=f43e351]: Telefon prodaje
+            - strong [ref=f43e352]: 064 227 9117
+        - link "Email prodaja@mimgradnja.rs" [ref=f43e353] [cursor=pointer]:
+          - /url: mailto:prodaja@mimgradnja.rs
+          - generic [ref=f43e357]:
+            - generic [ref=f43e358]: Email
+            - strong [ref=f43e359]: prodaja@mimgradnja.rs
+    - generic [ref=f43e360]:
+      - generic [ref=f43e365]:
+        - strong [ref=f43e366]: Podaci za odgovor
+        - paragraph [ref=f43e367]: Ime i e-mail su obavezni. Telefon pomaže da dogovor bude brži.
+      - generic [ref=f43e368]:
+        - generic [ref=f43e369]:
+          - generic [ref=f43e370]: Ime i prezime *
+          - textbox "Ime i prezime *" [active] [ref=f43e371]
+        - generic [ref=f43e372]:
+          - generic [ref=f43e373]: Telefon
+          - textbox "Telefon" [ref=f43e374]
+        - generic [ref=f43e375]:
+          - generic [ref=f43e376]: E-mail *
+          - textbox "E-mail *" [ref=f43e377]
+      - generic [ref=f43e378]:
+        - text: Website
+        - textbox "Website" [ref=f43e379]
+      - generic [ref=f43e380]:
+        - generic [ref=f43e381]: Poruka
+        - textbox "Poruka" [ref=f43e382]:
+          - /placeholder: Napišite koji stan, kvadratura ili termin obilaska vas zanima.
+      - generic [ref=f43e383]:
+        - generic [ref=f43e384]: Priložite dokument (opciono)
+        - button "Priložite dokument (opciono)" [ref=f43e387] [cursor=pointer]
+        - paragraph [ref=f43e388]: PDF, DOC, DOCX, JPG ili PNG. Maksimalno 4 MB.
+      - generic [ref=f43e389] [cursor=pointer]:
+        - checkbox "Saglasan/saglasna sam da me kontaktirate povodom poslatog upita." [ref=f43e390]
+        - generic [ref=f43e391]: Saglasan/saglasna sam da me kontaktirate povodom poslatog upita.
+      - paragraph [ref=f43e393]: Provera sigurnosti *
+      - generic [ref=f43e395]:
+        - button "Pošaljite upit" [ref=f43e396] [cursor=pointer]
+        - paragraph [ref=f43e403]: Odgovaramo u najkraćem roku. Slanje upita vas ne obavezuje na kupovinu.

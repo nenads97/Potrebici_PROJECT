@@ -1,0 +1,52 @@
+- generic [active] [ref=f38e1]:
+  - generic [ref=f38e4]:
+    - link "Skip to content" [ref=f38e5] [cursor=pointer]:
+      - /url: "#main"
+    - banner [ref=f38e7]:
+      - generic [ref=f38e8]:
+        - link "Supabase Back to organization home" [ref=f38e10] [cursor=pointer]:
+          - /url: /dashboard/organizations
+          - img "Supabase" [ref=f38e11]
+          - generic [ref=f38e12]: Back to organization home
+        - generic [ref=f38e13]:
+          - button "Feedback" [ref=f38e14] [cursor=pointer]
+          - generic [ref=f38e16]:
+            - button [ref=f38e17]:
+              - paragraph [ref=f38e22]: Search...
+              - generic [ref=f38e23]: Ctrl K
+            - button "Help" [ref=f38e25] [cursor=pointer]
+            - button "Advisor Center" [ref=f38e32] [cursor=pointer]
+          - button [ref=f38e37] [cursor=pointer]
+    - generic [ref=f38e42]:
+      - generic [ref=f38e46]:
+        - generic [ref=f38e47]:
+          - navigation
+        - button "Sidebar control" [ref=f38e50] [cursor=pointer]
+      - main [ref=f38e57]:
+        - generic [ref=f38e59]:
+          - generic [ref=f38e63]:
+            - heading "Edge Functions" [level=4] [ref=f38e65]
+            - menu "Sidebar" [disabled] [ref=f38e68]:
+              - list [ref=f38e69]:
+                - generic [ref=f38e72]:
+                  - generic [ref=f38e73]: Manage
+                  - generic [ref=f38e77]:
+                    - link [disabled] [ref=f38e78] [cursor=pointer]:
+                      - /url: /dashboard/project/default/functions
+                      - menuitem "Functions" [disabled] [ref=f38e79]
+                    - link [disabled] [ref=f38e84] [cursor=pointer]:
+                      - /url: /dashboard/project/default/functions/secrets
+                      - menuitem "Secrets" [disabled] [ref=f38e85]
+          - separator [disabled] [ref=f38e90]
+          - main [ref=f38e101]:
+            - generic [ref=f38e105]:
+              - generic [ref=f38e106]:
+                - heading "Edge Functions" [level=1] [ref=f38e107]
+                - generic [ref=f38e108]: Run server-side logic close to your users
+              - generic [ref=f38e109]:
+                - link "Docs" [ref=f38e110] [cursor=pointer]:
+                  - /url: https://supabase.com/docs/guides/functions
+                - link "Examples" [ref=f38e116] [cursor=pointer]:
+                  - /url: https://github.com/supabase/supabase/tree/master/examples/edge-functions/supabase/functions
+                - button "Deploy a new function" [disabled] [ref=f38e123]
+  - alert [ref=f38e136]

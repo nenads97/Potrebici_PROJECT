@@ -2,22 +2,17 @@ import { supabase } from "../../../shared/supabase/client";
 
 const adminAuthTimeoutMs = 2500;
 
-export async function isCurrentUserAdmin() {
+export async function isCurrentUserAdmin(userId?: string) {
   if (!supabase) {
     return false;
   }
 
   try {
-    const {
-      data: { user },
-      error: userError,
-    } = await withTimeout(
-      supabase.auth.getUser(),
-      adminAuthTimeoutMs,
-    );
-    const userId = user?.id;
+    const resolvedUserId =
+      userId ??
+      (await withTimeout(supabase.auth.getSession(), adminAuthTimeoutMs)).data.session?.user.id;
 
-    if (userError || !userId) {
+    if (!resolvedUserId) {
       return false;
     }
 
@@ -25,7 +20,7 @@ export async function isCurrentUserAdmin() {
       supabase
         .from("admin_profiles")
         .select("user_id")
-        .eq("user_id", userId)
+        .eq("user_id", resolvedUserId)
         .maybeSingle(),
       adminAuthTimeoutMs,
     );

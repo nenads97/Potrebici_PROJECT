@@ -13,7 +13,13 @@ import {
   Phone,
   X,
 } from "lucide-react";
-import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  Link,
+  NavLink,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 
 import { ContactModalButton } from "../../features/inquiries/components/ContactModal";
 import {
@@ -22,6 +28,10 @@ import {
   contactPhoneHref,
 } from "../../features/projects/data/herojaPinkija13.data";
 import { BrandLogo } from "../../shared/components/BrandLogo";
+import {
+  CookieConsentBanner,
+  CookiePreferencesButton,
+} from "../../shared/components/CookieConsent";
 
 const companyLinks = [
   { to: "/o-nama", label: "O Nama" },
@@ -98,19 +108,27 @@ export const MainLayout = () => {
     if (event.currentTarget instanceof HTMLButtonElement) {
       event.currentTarget.focus();
     } else {
-      document.querySelector<HTMLButtonElement>(".site-header__menu-toggle")?.focus();
+      document
+        .querySelector<HTMLButtonElement>(".site-header__menu-toggle")
+        ?.focus();
     }
   };
 
   return (
-    <div className={`site-shell${isHome ? " site-shell--home" : " site-shell--ambient"}`}>
+    <div
+      className={`site-shell${isHome ? " site-shell--home" : " site-shell--ambient"}`}
+    >
       <a className="skip-link" href="#main-content">
         Preskocite na glavni sadržaj
       </a>
 
       <header className="site-header-wrap">
         <div className="site-header">
-          <Link className="site-header__brand" to="/" aria-label="M & M Gradnja pocetna">
+          <Link
+            className="site-header__brand"
+            to="/"
+            aria-label="M & M Gradnja početna"
+          >
             <BrandLogo />
           </Link>
 
@@ -131,7 +149,10 @@ export const MainLayout = () => {
             id="site-navigation"
             aria-label="Glavna navigacija"
             onClick={(event) => {
-              if (event.target instanceof Element && event.target.closest("a")) {
+              if (
+                event.target instanceof Element &&
+                event.target.closest("a")
+              ) {
                 setIsNavOpen(false);
               }
             }}
@@ -197,8 +218,10 @@ export const MainLayout = () => {
           <div className="site-footer__cta">
             <div className="site-footer__cta-inner">
               <div>
-                <span className="site-footer__eyebrow">Zainteresovani ste za stan?</span>
-                <h2>Razgovarajte direktno sa nasim prodajnim timom.</h2>
+                <span className="site-footer__eyebrow">
+                  Zainteresovani ste za stan?
+                </span>
+                <h2>Razgovarajte direktno sa našim prodajnim timom.</h2>
               </div>
 
               <ContactModalButton className="site-button site-button--accent">
@@ -215,8 +238,8 @@ export const MainLayout = () => {
             <div className="site-footer__brand-copy">
               <strong>M & M Gradnja</strong>
               <p>
-                Gradimo pazljivo osmišljene prostore za savremen i udoban život u
-                Novom Sadu.
+                Gradimo pažljivo osmišljene prostore za savremen i udoban život
+                u Novom Sadu.
               </p>
               <Link className="site-footer__inline-link" to="/o-nama">
                 Upoznajte kompaniju
@@ -229,7 +252,7 @@ export const MainLayout = () => {
             id="footer-company"
             title="Kompanija"
             links={[
-              { to: "/", label: "Pocetna" },
+              { to: "/", label: "Početna" },
               { to: "/o-nama", label: "O nama" },
               { to: "/kupujemo-placeve", label: "Kupujemo placeve" },
               { to: "/lokacija", label: "Lokacija" },
@@ -255,7 +278,10 @@ export const MainLayout = () => {
             ]}
           />
 
-          <address className="site-footer__contact" aria-labelledby="footer-contact">
+          <address
+            className="site-footer__contact"
+            aria-labelledby="footer-contact"
+          >
             <h2 id="footer-contact">Kontakt</h2>
             <div className="site-footer__contact-list">
               <a href={contactPhoneHref}>
@@ -285,10 +311,11 @@ export const MainLayout = () => {
 
         <div className="site-footer__bottom">
           <div className="site-footer__bottom-inner">
-            <span>(c) {currentYear} M & M Gradnja. Sva prava zadrzana.</span>
+            <span>(c) {currentYear} M & M Gradnja. Sva prava zadržana.</span>
             <div className="site-footer__legal">
               <Link to="/politika-privatnosti">Politika privatnosti</Link>
               <Link to="/kontakt">Kontakt</Link>
+              <CookiePreferencesButton />
             </div>
           </div>
         </div>
@@ -305,6 +332,8 @@ export const MainLayout = () => {
       >
         <ArrowUp />
       </button>
+
+      <CookieConsentBanner />
     </div>
   );
 };
@@ -332,19 +361,27 @@ const HeaderDropdown = ({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuId = useId();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const isDropdownActive = links.some((link) => isHeaderLinkActive(link, currentPathname));
+  const isDropdownActive = links.some((link) =>
+    isHeaderLinkActive(link, currentPathname),
+  );
   const isExpanded = isNavigationOpen || isMenuOpen;
 
   const handleMouseLeave = (event: MouseEvent<HTMLDivElement>) => {
     const nextTarget = event.relatedTarget;
 
-    if (nextTarget instanceof Node && dropdownRef.current?.contains(nextTarget)) {
+    if (
+      nextTarget instanceof Node &&
+      dropdownRef.current?.contains(nextTarget)
+    ) {
       return;
     }
 
     const activeElement = document.activeElement;
 
-    if (activeElement instanceof HTMLElement && dropdownRef.current?.contains(activeElement)) {
+    if (
+      activeElement instanceof HTMLElement &&
+      dropdownRef.current?.contains(activeElement)
+    ) {
       activeElement.blur();
     }
 
@@ -354,7 +391,10 @@ const HeaderDropdown = ({
   const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
     const nextTarget = event.relatedTarget;
 
-    if (nextTarget instanceof Node && dropdownRef.current?.contains(nextTarget)) {
+    if (
+      nextTarget instanceof Node &&
+      dropdownRef.current?.contains(nextTarget)
+    ) {
       return;
     }
 
@@ -427,7 +467,10 @@ const HeaderDropdown = ({
                 {link.children ? (
                   <div className="site-nav__submenu">
                     {link.children.map((child) => {
-                      const isChildActive = isPathActive(child.to, currentPathname);
+                      const isChildActive = isPathActive(
+                        child.to,
+                        currentPathname,
+                      );
 
                       return (
                         <Link
@@ -454,7 +497,9 @@ const HeaderDropdown = ({
 function isHeaderLinkActive(link: HeaderLink, currentPathname: string) {
   return (
     isPathActive(link.to, currentPathname) ||
-    Boolean(link.children?.some((child) => isPathActive(child.to, currentPathname)))
+    Boolean(
+      link.children?.some((child) => isPathActive(child.to, currentPathname)),
+    )
   );
 }
 
@@ -508,7 +553,9 @@ function shouldShowPublicFooterCta(pathname: string) {
 }
 
 function isApartmentDetailPath(pathname: string) {
-  return /^\/projekti\/heroja-pinkija-13\/ponuda-stanova\/[^/]+$/.test(pathname);
+  return /^\/projekti\/heroja-pinkija-13\/ponuda-stanova\/[^/]+$/.test(
+    pathname,
+  );
 }
 
 const routeAliases: Record<string, string[]> = {

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   ArrowUpRight,
   Mail,
@@ -14,15 +15,22 @@ import {
   contactPhoneHref,
 } from "../../features/projects/data/herojaPinkija13.data";
 import { PageMeta } from "../../shared/components/PageMeta";
+import {
+  cookieConsentChangeEvent,
+  getCookieConsent,
+  openCookieSettings,
+  type CookieConsentValue,
+} from "../../shared/components/CookieConsentUtils";
 
-const contactHeroImage = "/images/heroja-pinkija-13/gradilisna-tabla-slika.jpg";
+const contactHeroImage = "/images/heroja-pinkija-13/gradilisna-tabla-slika-optimized.jpg";
 
 const location = {
   address: "Heroja Pinkija 13",
   city: "21000 Novi Sad",
   country: "Srbija",
   coordinates: "45.237485, 19.822429",
-  mapsEmbedUrl: "https://maps.google.com/maps?q=45.237485,19.822429&z=16&output=embed",
+  mapsEmbedUrl:
+    "https://maps.google.com/maps?q=45.237485,19.822429&z=16&output=embed",
 };
 
 const heroHighlights = [
@@ -61,7 +69,7 @@ const contactMethods = [
 const visitSteps = [
   "Pošaljite upit ili pozovite prodaju.",
   "Proveravamo dostupne stanove i termin koji vam odgovara.",
-  "Dogovaramo obilazak i saljemo dodatne informacije o izabranom stanu.",
+  "Dogovaramo obilazak i šaljemo dodatne informacije o izabranom stanu.",
 ];
 
 const contactPageModal = {
@@ -74,10 +82,28 @@ const contactPageModal = {
     { label: "Projekat", value: "Heroja Pinkija 13" },
     { label: "Kontakt", value: "Direktna prodaja" },
   ],
-  messagePlaceholder: "Napišite koji stan, kvadratura ili termin obilaska vas zanima.",
+  messagePlaceholder:
+    "Napišite koji stan, kvadratura ili termin obilaska vas zanima.",
 };
 
 export const ContactPage = () => {
+  const [cookieConsent, setCookieConsent] = useState<CookieConsentValue | null>(
+    () => getCookieConsent(),
+  );
+
+  useEffect(() => {
+    const updateCookieConsent = () => setCookieConsent(getCookieConsent());
+
+    window.addEventListener(cookieConsentChangeEvent, updateCookieConsent);
+
+    return () => {
+      window.removeEventListener(
+        cookieConsentChangeEvent,
+        updateCookieConsent,
+      );
+    };
+  }, []);
+
   return (
     <main>
       <PageMeta
@@ -116,10 +142,12 @@ export const ContactPage = () => {
         <div className="page-container split-grid split-grid--end">
           <div className="fade-up">
             <p className="section-eyebrow">Kontakt</p>
-            <h1 className="section-title">Brz kontakt za kupovinu i obilazak.</h1>
+            <h1 className="section-title">
+              Brz kontakt za kupovinu i obilazak.
+            </h1>
             <p className="section-copy section-copy--large">
-              Pozovite prodaju ili pošaljite upit za dostupne stanove, kvadrature,
-              cenu, tlocrt i obilazak objekta Heroja Pinkija 13.
+              Pozovite prodaju ili pošaljite upit za dostupne stanove,
+              kvadrature, cenu, tlocrt i obilazak objekta Heroja Pinkija 13.
             </p>
             <div className="page-actions">
               <ContactModalButton
@@ -129,7 +157,10 @@ export const ContactPage = () => {
                 <MessageCircle />
                 Pišite nam
               </ContactModalButton>
-              <a className="site-button site-button--outline" href={contactPhoneHref}>
+              <a
+                className="site-button site-button--outline"
+                href={contactPhoneHref}
+              >
                 <Phone />
                 Pozovite {contactPhone}
               </a>
@@ -176,40 +207,43 @@ export const ContactPage = () => {
               Sve informacije za kupovinu na jednom mestu.
             </h2>
             <p className="section-copy">
-              Za brzu proveru ponude najbolje je da navedete stan koji vas zanima,
-              zeljenu kvadraturu ili termin kada biste mogli da obidjete lokaciju.
+              Za brzu proveru ponude najbolje je da navedete stan koji vas
+              zanima, zeljenu kvadraturu ili termin kada biste mogli da obidjete
+              lokaciju.
             </p>
             <blockquote>
-              Ako niste sigurni koji stan odgovara vašim potrebama, pošaljite osnovne
-              zahteve i predlozićemo dostupne opcije.
+              Ako niste sigurni koji stan odgovara vašim potrebama, pošaljite
+              osnovne zahteve i predlozićemo dostupne opcije.
             </blockquote>
           </div>
 
           <div className="contact-method-grid">
-            {contactMethods.map(({ icon: Icon, label, title, text, href, action }) => (
-              <article className="info-card" key={label}>
-                <span className="icon-bubble">
-                  <Icon />
-                </span>
-                <small>{label}</small>
-                <h3>{title}</h3>
-                <p>{text}</p>
-                {label === "Pisani upit" ? (
-                  <ContactModalButton
-                    className="info-card__action"
-                    modalOptions={contactPageModal}
-                  >
-                    {action}
-                    <ArrowUpRight className="icon-inline" />
-                  </ContactModalButton>
-                ) : (
-                  <a href={href}>
-                    {action}
-                    <ArrowUpRight className="icon-inline" />
-                  </a>
-                )}
-              </article>
-            ))}
+            {contactMethods.map(
+              ({ icon: Icon, label, title, text, href, action }) => (
+                <article className="info-card" key={label}>
+                  <span className="icon-bubble">
+                    <Icon />
+                  </span>
+                  <small>{label}</small>
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                  {label === "Pisani upit" ? (
+                    <ContactModalButton
+                      className="info-card__action"
+                      modalOptions={contactPageModal}
+                    >
+                      {action}
+                      <ArrowUpRight className="icon-inline" />
+                    </ContactModalButton>
+                  ) : (
+                    <a href={href}>
+                      {action}
+                      <ArrowUpRight className="icon-inline" />
+                    </a>
+                  )}
+                </article>
+              ),
+            )}
           </div>
         </div>
       </section>
@@ -223,8 +257,8 @@ export const ContactPage = () => {
             </div>
             <h2>Heroja Pinkija 13, Novi Sad.</h2>
             <p>
-              Projekat se nalazi na početku Telepa, u gradskom okruženju sa dobrom
-              povezanošću i svakodnevnim sadržajima u blizini.
+              Projekat se nalazi na početku Telepa, u gradskom okruženju sa
+              dobrom povezanošću i svakodnevnim sadržajima u blizini.
             </p>
             {visitSteps.map((step, index) => (
               <div className="process-step" key={step}>
@@ -235,12 +269,30 @@ export const ContactPage = () => {
           </div>
 
           <div className="image-card map-card">
-            <iframe
-              title="Google mapa lokacije Heroja Pinkija 13, Novi Sad"
-              src={location.mapsEmbedUrl}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
+            {cookieConsent === "accepted" ? (
+              <iframe
+                title="Google mapa lokacije Heroja Pinkija 13, Novi Sad"
+                src={location.mapsEmbedUrl}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            ) : (
+              <div className="map-card__consent">
+                <MapPin aria-hidden="true" />
+                <h3>Interaktivna mapa</h3>
+                <p>
+                  Google mapa je sadržaj treće strane i učitava se tek nakon
+                  vašeg odobrenja.
+                </p>
+                <button
+                  className="site-button site-button--outline"
+                  type="button"
+                  onClick={openCookieSettings}
+                >
+                  Podesite privatnost
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </section>

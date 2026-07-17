@@ -1,4 +1,10 @@
-import { apartments, projectInfo, projectTimeline } from "../../projects/data/herojaPinkija13.data";
+import {
+  apartments,
+  getUnitDisplayName,
+  getUnitRouteSegment,
+  projectInfo,
+} from "../../projects/data/herojaPinkija13.data";
+import { projectTimeline } from "../../projects/data/herojaPinkija13.data";
 import type {
   AdminConstructionUpdate,
   AdminInquiry,
@@ -102,18 +108,18 @@ export const adminLandOffers: AdminLandOffer[] = [
 ];
 
 export const adminUnits: AdminUnit[] = apartments.map((apartment) => ({
-  id: `unit-${apartment.number}`,
-  unitCode: `stan ${apartment.number}`,
-  unitType: "apartment",
+  id: `unit-${apartment.slug ?? apartment.number}`,
+  unitCode: getUnitDisplayName(apartment),
+  unitType: apartment.unitType ?? "apartment",
   floorLabel: apartment.floor,
   areaM2: apartment.size,
   roomStructure: apartment.rooms,
   status: unitStatusMap[apartment.status],
   shortDescription: apartment.highlight,
   fullDescription: apartment.description,
-  seoTitle: `stan ${apartment.number} | Heroja Pinkija 13`,
-  seoDescription: `Detalji stana ${apartment.number}: ${apartment.size}, ${apartment.floor}, ${apartment.rooms}.`,
-  publicPath: `/projekti/heroja-pinkija-13/ponuda-stanova/${apartment.number}`,
+  seoTitle: `${getUnitDisplayName(apartment)} | Heroja Pinkija 13`,
+  seoDescription: `Detalji za ${getUnitDisplayName(apartment)}: ${apartment.size}, ${apartment.floor}, ${apartment.rooms}.`,
+  publicPath: `/projekti/heroja-pinkija-13/ponuda-stanova/${getUnitRouteSegment(apartment)}`,
   planVariant: apartment.planVariant,
   floorPlanPath: apartment.heroFloorPlan.src,
   isPublished: true,
@@ -132,7 +138,7 @@ export const adminProjectDraft: AdminProjectDraft = {
   floorStructure: projectInfo.floorStructure,
   constructionStartDate: projectInfo.constructionStartDate ?? "2026-03-16",
   constructionEndDate: projectInfo.constructionEndDate ?? "2027-11-15",
-  heroImageUrl: projectInfo.heroImage ?? "/images/heroja-pinkija-13/gradilisna-tabla.jpg",
+  heroImageUrl: projectInfo.heroImage ?? "/images/heroja-pinkija-13/gradilisna-tabla-optimized.jpg",
   seoTitle: projectInfo.seoTitle ?? "Heroja Pinkija 13 | M & M Gradnja",
   seoDescription:
     projectInfo.seoDescription ??
@@ -167,7 +173,7 @@ export const adminMediaItems: AdminMediaItem[] = [
     projectId: adminProjectDraft.id,
     title: "Gradilišna tabla",
     mediaType: "project_image",
-    filePath: "/images/heroja-pinkija-13/gradilisna-tabla.jpg",
+    filePath: "/images/heroja-pinkija-13/gradilisna-tabla-optimized.jpg",
     altText: "Gradilišna tabla projekta Heroja Pinkija 13",
     isPublished: true,
   },
@@ -176,7 +182,7 @@ export const adminMediaItems: AdminMediaItem[] = [
     projectId: adminProjectDraft.id,
     title: "Render fasade",
     mediaType: "project_image",
-    filePath: "/images/heroja-pinkija-13/gradilisna-tabla-slika.jpg",
+    filePath: "/images/heroja-pinkija-13/gradilisna-tabla-slika-optimized.jpg",
     altText: "Render fasade projekta Heroja Pinkija 13",
     isPublished: false,
   },

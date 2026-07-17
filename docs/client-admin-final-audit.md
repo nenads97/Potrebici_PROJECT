@@ -20,6 +20,12 @@ Za sam launch koristiti i `docs/pre-production-runbook.md`, jer tamo postoji ope
 
 Dopuna 2026-07-15: posle zavrsnog polish prolaza dodati su inline validation guardrail za lead forme, rollback za neuspesno cuvanje statusa leadova u adminu, hygiene provere za mixed Latin/Cyrillic tekst, normalizovani `tel:` helper za sve telefonske CTA linkove i Supabase advisor hardening belezenje za `set_updated_at`, service-only email podesavanja i public bucket listing.
 
+Dopuna 2026-07-16: zavrsen je novi read-only audit javnog i admin toka. Javne rute su proverene u browseru sa jednim `main`/`h1`, canonical URL-om, bez app alert/error boundary prikaza i bez horizontalnog overflow-a. `/o-projektu` sada cita aktuelne statuse i povrsine stanova iz Supabase-a, umesto da prikazuje stale lokalne featured podatke. Admin prikaz strukture koristi isti kanonski stack model kao javni deo, a admin data fetch sada ucitava samo skupove podataka potrebne za aktivnu sekciju. Ovo su ciljane korekcije funkcionalnosti i brzine; detalji stanova nisu redizajnirani.
+
+Aktuelni dokaz za ovu proveru: `audit:surface`, lint, production build, `npm audit --audit-level=low` i `git diff --check` prolaze; read-only/launch Supabase smoke vracaju `projects=1`, `units=15`, `project_media=37` i `construction_updates=3`, privatne lead/log tabele vracaju `401`, a obe Edge Function preflight provere vracaju `200`. Admin smoke u ovom prolazu nije pokrenut zato sto lokalni ignorisani env nije imao `SUPABASE_ADMIN_EMAIL` i `SUPABASE_ADMIN_PASSWORD`; raniji istorijski rezultati ostaju zapisani kao istorijski dokaz, ali nisu zamena za novi admin regression gate.
+
+Browser je tokom javnog prolaza prijavio samo genericku Chrome extension poruku o zatvorenom message channel-u; nije bilo aplikacionog error boundary-ja, alert-a ili render greske. Pre produkcije i dalje treba uraditi rucni keyboard prolaz i proveru na finalnom domenu.
+
 ## Kratak zakljucak
 
 Klijentski deo je vrlo blizu dobrog v1 stanja. Sajt sada ima jasnu premium real-estate prezentaciju, kanonski tok do ponude stanova, detalje stanova zadrzane u postojecem v1 obliku, kontakt modal bez redirekcije, stabilniji Supabase fallback i admin panel koji vec prati glavne operativne potrebe prodaje.
@@ -337,16 +343,16 @@ Produkcione Supabase provere:
 - dodat je `supabase/.env.example` za server-only Edge Function/Brevo vrednosti;
 - Supabase CLI nije instaliran u ovom okruzenju, pa migracije/deploy nisu pokretani iz terminala;
 - javni REST endpointi vracaju 200 za `projects`, `units`, `project_media` i `construction_updates`;
-- cloud `project_media` je popunjen media metadata seed-om za Heroja Pinkija 13: 26 redova ukupno, 25 objavljenih;
+- istorijska provera je ranije videla 26 media redova ukupno; read-only provera 2026-07-16 vidi 37 `project_media` redova, pa staru brojku ne koristiti kao aktuelni cloud count;
 - Edge Function `OPTIONS` preflight za `submit-contact-inquiry` i `submit-land-offer` vraca 200;
 - Edge Functions sada dele helper za form rate-limit i proveravaju dva bucket-a: e-mail hash i IP/network hash;
 - kontrolisani POST test kontakt forme i forme za placeve je uradjen uz odobrenje; oba testa su vratila `ok`, upisala leadove i napravila `email_delivery_log` redove sa statusom `sent`;
-- `npm.cmd run smoke:supabase:readonly` prolazi: `projects` vraca 1 red, `units` 15 redova, `project_media` 25 objavljenih redova, `construction_updates` 3 reda, privatne lead/log tabele vracaju 401 za anon key, a obe public Edge Function preflight provere vracaju 200 sa CORS origin-om `*`; smoke prijavljuje stvaran REST count uz sample od 5 redova i pada ako javna ponuda nema svih 15 objavljenih stanova;
+- `npm.cmd run smoke:supabase:readonly` prolazi: aktuelni 2026-07-16 rezultat je `projects=1`, `units=15`, `project_media=37`, `construction_updates=3`, privatne lead/log tabele vracaju 401 za anon key, a obe public Edge Function preflight provere vracaju 200; smoke prijavljuje stvaran REST count uz sample od 5 redova i pada ako javna ponuda nema svih 15 objavljenih stanova;
 - `npm.cmd run smoke:supabase:launch` prolazi kada se zahteva bar jedan objavljen `project_media` red.
 - UI smoke u browseru 2026-07-14: `/admin` neulogovanog korisnika prebacuje na login formu za oko 1.2s, `/admin/prijava` prikazuje formu bez blokirajuce provere sesije, a kompletan submit sa lokalnim test/admin nalogom otvara admin shell za oko 4.9s i zatim ucitava dashboard iz Supabase baze; detalj stana `/projekti/heroja-pinkija-13/ponuda-stanova/2` renderuje bez blokirajuceg `Ucitavanje stana...`.
-- `npm.cmd run smoke:supabase:admin` prolazi 2026-07-14 sa aktivnim admin nalogom: Supabase Auth ~649ms, `admin_profiles` provera ~386ms, citanje zasticenih admin tabela ~277ms; pokriveno je citanje `contact_inquiries`, `land_offers`, `units`, `projects`, `construction_updates` i `project_media`.
+- `npm.cmd run smoke:supabase:admin` je istorijski prolazio 2026-07-14 sa aktivnim admin nalogom; najnoviji lokalni audit 2026-07-16 ga nije ponovio jer nisu bili dostupni `SUPABASE_ADMIN_EMAIL` i `SUPABASE_ADMIN_PASSWORD` u ignorisanom env fajlu.
 - Kontrolisana admin obrada test leadova je proverena 2026-07-14 kroz eksplicitne test ID selektore: 4 test kontakt upita i 1 test ponuda placa su procitani kroz admin RLS, azurirani na `closed` i verifikovani kao zatvoreni.
-- Supabase smoke 2026-07-15: read-only i launch smoke prolaze; admin smoke je read-only i prolazi sa Auth ~698ms, `admin_profiles` ~152ms, admin data ~229ms, uz procitanih 10 kontakt upita, 1 ponudu placa, 15 stanova, 1 projekat, 3 construction update-a i 26 media redova.
+- Supabase smoke 2026-07-15: read-only i launch smoke prolaze; admin smoke je tada read-only prolazio sa Auth ~698ms, `admin_profiles` ~152ms, admin data ~229ms, uz procitanih 10 kontakt upita, 1 ponudu placa, 15 stanova, 1 projekat, 3 construction update-a i 26 media redova. Aktuelni cloud media count je 37 prema proveri 2026-07-16.
 - Supabase smoke posle advisor remediation plana 2026-07-15: read-only i launch smoke ponovo prolaze sa exact REST count proverom za javne tabele, a admin smoke prolazi sa Auth ~355ms, `admin_profiles` ~177ms i admin data ~164ms.
 - Supabase advisor 2026-07-15: dostupni security/performance advisors ne vracaju critical/high nalaze, ali vracaju WARN/INFO stavke koje su zabelezene u runbook-u; cloud migracije za njih ne pokretati bez odvojene potvrde.
 
@@ -471,6 +477,7 @@ Do sada prolazi:
   - browser console error log je prazan posle Home/Kontakt provere;
   - lazy slike daleko ispod viewport-a su potvrdene kao false-positive za osnovni naturalWidth smoke, ne kao broken asseti;
   - `/projekti`, `/apartmani/1` i `/admin` redirecti ostaju ispravni.
+- browser audit 2026-07-16 dodatno potvrdjuje da javna projektna ponuda prikazuje aktuelne statuse iz Supabase-a (`Rezervisan`, `Prodat`, `Slobodan` tamo gde odgovara cloud stanju), a admin `/admin/stanovi` prikazuje kanonske strukture `Trosoban`, `Dvosoban` i `Garsonjera`. Admin navigacija nema aktivan `Pregled` state na child rutama, jer je root link ogranicen na exact `/admin`.
 - keyboard/interakcioni QA 2026-07-10:
   - javni dropdown `Projekti` se otvara, Escape ga zatvara, `aria-expanded` se vraca na `false`, a fokus ostaje na trigger-u;
   - kontakt modal se otvara iz header CTA-a, fokusira polje `Ime i prezime`, zakljucava body scroll, close dugme zatvara modal i vraca fokus na CTA `Pisite nam`;

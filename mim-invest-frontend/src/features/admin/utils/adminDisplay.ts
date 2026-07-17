@@ -41,6 +41,10 @@ export function formatDate(value: string) {
 export function getApartmentPublicPath(unitCode: string) {
   const apartmentNumber = unitCode.match(/\d+/)?.[0];
 
+  if (/lokal/i.test(unitCode) && apartmentNumber) {
+    return `/projekti/heroja-pinkija-13/ponuda-stanova/lokal-${apartmentNumber}`;
+  }
+
   return apartmentNumber
     ? `/projekti/heroja-pinkija-13/ponuda-stanova/${apartmentNumber}`
     : "/projekti/heroja-pinkija-13/ponuda-stanova";

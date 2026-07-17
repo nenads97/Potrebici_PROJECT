@@ -8,6 +8,7 @@ import {
   Home,
   MapPin,
   MessageCircle,
+  Paperclip,
   Phone,
   Ruler,
   ShieldCheck,
@@ -20,13 +21,16 @@ import {
   contactPhoneHref,
 } from "../../features/projects/data/herojaPinkija13.data";
 import { submitLandOffer } from "../../features/inquiries/api/inquiryFunctions.api";
+import { TurnstileWidget } from "../../features/inquiries/components/TurnstileWidget";
 import {
   focusFirstInvalidField,
   getFormValue,
   hasFieldErrors,
+  inquiryAttachmentAccept,
   mergeFieldError,
   validateConsent,
   validateEmail,
+  validateInquiryAttachment,
   validateOptionalText,
   validatePhone,
   validatePositiveNumber,
@@ -39,46 +43,44 @@ const landHeroImage = "/images/kupovina-placeva-hero.jpg";
 
 const heroHighlights = [
   { value: "Novi Sad", label: "fokus lokacije" },
-  { value: "stambena namena", label: "potencijal za razvoj" },
-  { value: "Jasan dogovor", label: "brza pocetna procena" },
+  { value: "Stambena namena", label: "potencijal za razvoj" },
+  { value: "Jasan dogovor", label: "brza početna procena" },
 ];
 
 const criteria = [
   {
     icon: Home,
-    title: "Plac ili kuća za rusenje",
-    text: "Razmatramo parcele i postojece objekte pogodne za novu stambenu izgradnju.",
+    title: "Plac ili kuća za rušenje",
+    text: "Razmatramo parcele i postojeće objekte pogodne za novu stambenu izgradnju.",
   },
   {
     icon: MapPin,
     title: "Novi Sad i bliža okolina",
-    text:
-      "Prednost imaju gradske lokacije sa dobrom povezanošću, infrastrukturom i jasnim urbanistickim potencijalom.",
+    text: "Prednost imaju gradske lokacije sa dobrom povezanošću, infrastrukturom i jasnim urbanističkim potencijalom.",
   },
   {
     icon: Ruler,
-    title: "stambena namena",
+    title: "Stambena namena",
     text: "Tražimo zemljište koje može da podrži kvalitetan višeporodični stambeni objekat.",
   },
   {
     icon: ShieldCheck,
     title: "Pravno čista situacija",
-    text:
-      "Najbrže možemo da reagujemo kada su vlasništvo, dokumentacija i osnovni uslovi za prodaju jasni.",
+    text: "Najbrže možemo da reagujemo kada su vlasništvo, dokumentacija i osnovni uslovi za prodaju jasni.",
   },
 ];
 
 const processSteps = [
   "Pošaljite osnovne podatke o parceli, kući ili lokaciji.",
-  "Nas tim proverava potencijal lokacije i kontaktira vas za dodatne informacije.",
+  "Naš tim proverava potencijal lokacije i kontaktira vas za dodatne informacije.",
   "Dogovaramo sledeći korak, procenu i uslove saradnje.",
 ];
 
 const preparationItems = [
   "Adresa ili okvirna lokacija nekretnine",
   "Površina parcele i pristup ulici",
-  "Kratak opis postojeceg objekta, ako postoji",
-  "status dokumentacije koji vam je poznat",
+  "Kratak opis postojećeg objekta, ako postoji",
+  "Status dokumentacije koji vam je poznat",
 ];
 
 const fadeUp = {
@@ -100,6 +102,7 @@ type LandOfferFieldName =
   | "address"
   | "plotArea"
   | "details"
+  | "attachment"
   | "consent";
 
 const landOfferFieldOrder: LandOfferFieldName[] = [
@@ -109,19 +112,22 @@ const landOfferFieldOrder: LandOfferFieldName[] = [
   "address",
   "plotArea",
   "details",
+  "attachment",
   "consent",
 ];
 
 export const LandBuyPage = () => {
   const reduceMotion = useReducedMotion();
   const reveal = reduceMotion ? staticFadeUp : fadeUp;
-  const revealTransition = reduceMotion ? instantTransition : { duration: 0.55 };
+  const revealTransition = reduceMotion
+    ? instantTransition
+    : { duration: 0.55 };
 
   return (
     <main className="land-page">
       <PageMeta
         title="Kupujemo placeve | M & M Gradnja"
-        description="M & M Gradnja razmatra placeve i kuće za rusenje u Novom Sadu i okolini za buduće stambene projekte."
+        description="M & M Gradnja razmatra placeve i kuće za rušenje u Novom Sadu i okolini za buduće stambene projekte."
         image={landHeroImage}
         imageAlt="Parcela pogodna za stambenu gradnju"
       />
@@ -146,16 +152,22 @@ export const LandBuyPage = () => {
           <p className="section-eyebrow">Kupujemo placeve</p>
           <h1>Imate plac ili kuću za stambenu gradnju?</h1>
           <p>
-            M & M Gradnja razmatra atraktivne lokacije za buduće stambene projekte.
-            Pošaljite nam osnovne informacije, a mi ćemo vam se brzo javiti sa
-            narednim koracima.
+            M & M Gradnja razmatra atraktivne lokacije za buduće stambene
+            projekte. Pošaljite nam osnovne informacije, a mi ćemo vam se brzo
+            javiti sa narednim koracima.
           </p>
           <div>
-            <a className="site-button site-button--accent" href="#kupujemo-placeve-forma">
+            <a
+              className="site-button site-button--accent"
+              href="#kupujemo-placeve-forma"
+            >
               <MessageCircle />
               Pošaljite ponudu
             </a>
-            <a className="site-button site-button--light" href={contactPhoneHref}>
+            <a
+              className="site-button site-button--light"
+              href={contactPhoneHref}
+            >
               <Phone />
               Pozovite {contactPhone}
             </a>
@@ -166,7 +178,9 @@ export const LandBuyPage = () => {
           className="page-container land-hero__stats"
           initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={reduceMotion ? instantTransition : { duration: 0.55, delay: 0.12 }}
+          transition={
+            reduceMotion ? instantTransition : { duration: 0.55, delay: 0.12 }
+          }
         >
           {heroHighlights.map((item) => (
             <div key={item.value}>
@@ -177,7 +191,10 @@ export const LandBuyPage = () => {
         </motion.div>
       </section>
 
-      <section id="kupujemo-placeve-forma" className="page-section page-section--surface">
+      <section
+        id="kupujemo-placeve-forma"
+        className="page-section page-section--surface"
+      >
         <div className="page-container split-grid">
           <motion.div
             className="land-scroll-heading"
@@ -188,11 +205,13 @@ export const LandBuyPage = () => {
             transition={revealTransition}
           >
             <p className="section-eyebrow">Formular za ponudu</p>
-            <h2 className="section-title section-title--medium">Prvi korak je kratak upit.</h2>
+            <h2 className="section-title section-title--medium">
+              Prvi korak je kratak upit.
+            </h2>
             <p className="section-copy">
-              Unesite osnovne podatke o sebi i nekretnini. Ime, telefon i e-mail su
-              obavezni, a adresa i površina parcele nam pomažu da brže procenimo
-              potencijal lokacije.
+              Unesite osnovne podatke o sebi i nekretnini. Ime, telefon i e-mail
+              su obavezni, a adresa i površina parcele nam pomažu da brže
+              procenimo potencijal lokacije.
             </p>
             <div className="contact-links">
               <a href={contactPhoneHref}>
@@ -220,17 +239,17 @@ export const LandBuyPage = () => {
             variants={reveal}
             transition={revealTransition}
           >
-            <p className="section-eyebrow">sta tražimo</p>
+            <p className="section-eyebrow">šta tražimo</p>
             <h2 className="section-title section-title--medium">
               Pretvorite svoj plac u vrednu investiciju.
             </h2>
             <p className="section-copy">
-              Najvaznije su nam uredna dokumentacija, dobra pozicija i realna
-              mogućnost razvoja stambenog projekta. Ako niste sigurni da li se vasa
-              nekretnina uklapa, pošaljite podatke i proverićemo.
+              Najvažnije su nam uredna dokumentacija, dobra pozicija i realna
+              mogućnost razvoja stambenog projekta. Ako niste sigurni da li se
+              vaša nekretnina uklapa, pošaljite podatke i proverićemo.
             </p>
             <blockquote>
-              Dovoljno je da posaljete osnovne podatke. Prvu procenu radimo
+              Dovoljno je da pošaljete osnovne podatke. Prvu procenu radimo
               diskretno i bez obaveze za vlasnika.
             </blockquote>
           </motion.div>
@@ -240,10 +259,16 @@ export const LandBuyPage = () => {
               <motion.article
                 className="info-card"
                 key={title}
-                initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+                initial={
+                  reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }
+                }
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
-                transition={reduceMotion ? instantTransition : { duration: 0.45, delay: index * 0.06 }}
+                transition={
+                  reduceMotion
+                    ? instantTransition
+                    : { duration: 0.45, delay: index * 0.06 }
+                }
                 whileHover={reduceMotion ? undefined : { y: -4 }}
               >
                 <span className="icon-bubble">
@@ -285,7 +310,9 @@ export const LandBuyPage = () => {
             whileInView="show"
             viewport={{ once: true, amount: 0.25 }}
             variants={reveal}
-            transition={reduceMotion ? instantTransition : { duration: 0.55, delay: 0.08 }}
+            transition={
+              reduceMotion ? instantTransition : { duration: 0.55, delay: 0.08 }
+            }
           >
             <p className="section-eyebrow">Sigurna saradnja</p>
             <h2 className="section-title section-title--medium">
@@ -293,8 +320,8 @@ export const LandBuyPage = () => {
             </h2>
             <p className="section-copy">
               Fokus je na jednostavnom prvom kontaktu: lokacija, površina,
-              dokumentacija i kratak opis. Nakon toga možemo brzo da procenimo da li
-              postoji osnova za razgovor.
+              dokumentacija i kratak opis. Nakon toga možemo brzo da procenimo
+              da li postoji osnova za razgovor.
             </p>
 
             <div className="check-list">
@@ -315,13 +342,22 @@ export const LandBuyPage = () => {
 };
 
 const PropertyOfferForm = () => {
-  const [formStatus, setFormStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [formStatus, setFormStatus] = useState<
+    "idle" | "sending" | "success" | "error"
+  >("idle");
   const [formMessage, setFormMessage] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors<LandOfferFieldName>>({});
+  const [fieldErrors, setFieldErrors] = useState<
+    FieldErrors<LandOfferFieldName>
+  >({});
+  const [hasSubmitAttempted, setHasSubmitAttempted] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileResetSignal, setTurnstileResetSignal] = useState(0);
+  const [captchaError, setCaptchaError] = useState("");
   const reduceMotion = useReducedMotion();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setHasSubmitAttempted(true);
 
     const form = event.currentTarget;
     const formData = new FormData(form);
@@ -335,9 +371,17 @@ const PropertyOfferForm = () => {
       return;
     }
 
+    if (!turnstileToken) {
+      setCaptchaError("Potvrdite da niste robot pre slanja ponude.");
+      setFormStatus("error");
+      setFormMessage("Potvrdite sigurnosnu proveru pre slanja ponude.");
+      return;
+    }
+
     setFormStatus("sending");
     setFormMessage("");
     setFieldErrors({});
+    setCaptchaError("");
 
     try {
       await submitLandOffer({
@@ -350,15 +394,30 @@ const PropertyOfferForm = () => {
         sourcePage: window.location.pathname,
         consentAccepted: formData.get("consent") === "on",
         website: getFormValue(formData, "website"),
+        turnstileToken,
+        attachment:
+          formData.get("attachment") instanceof File
+            ? (formData.get("attachment") as File)
+            : null,
       });
 
       form.reset();
       setFormStatus("success");
-      setFormMessage("Hvala. Ponuda je poslata i javićemo vam se nakon pocetne provere.");
+      setFormMessage(
+        "Hvala. Ponuda je poslata i javićemo vam se nakon pocetne provere.",
+      );
       setFieldErrors({});
+      setHasSubmitAttempted(false);
+      setCaptchaError("");
+      setTurnstileToken("");
+      setTurnstileResetSignal((current) => current + 1);
     } catch (error) {
       setFormStatus("error");
-      setFormMessage(error instanceof Error ? error.message : "Slanje nije uspelo.");
+      setFormMessage(
+        error instanceof Error ? error.message : "Slanje nije uspelo.",
+      );
+      setTurnstileToken("");
+      setTurnstileResetSignal((current) => current + 1);
     }
   };
 
@@ -366,6 +425,10 @@ const PropertyOfferForm = () => {
     fieldName: LandOfferFieldName,
     event: { currentTarget: HTMLInputElement | HTMLTextAreaElement },
   ) => {
+    if (!hasSubmitAttempted) {
+      return;
+    }
+
     const form = event.currentTarget.form;
 
     if (!form) {
@@ -373,7 +436,9 @@ const PropertyOfferForm = () => {
     }
 
     const errors = validateLandOfferForm(new FormData(form));
-    setFieldErrors((currentErrors) => mergeFieldError(currentErrors, fieldName, errors[fieldName]));
+    setFieldErrors((currentErrors) =>
+      mergeFieldError(currentErrors, fieldName, errors[fieldName]),
+    );
   };
 
   return (
@@ -386,12 +451,14 @@ const PropertyOfferForm = () => {
       whileInView="show"
       viewport={{ once: true, amount: 0.2 }}
       variants={reduceMotion ? staticFadeUp : fadeUp}
-      transition={reduceMotion ? instantTransition : { duration: 0.55, delay: 0.08 }}
+      transition={
+        reduceMotion ? instantTransition : { duration: 0.55, delay: 0.08 }
+      }
     >
       <div className="inquiry-form__head">
         <FileText className="icon-inline" />
         <div>
-          <strong>Podaci za pocetnu procenu</strong>
+          <strong>Podaci za početnu procenu</strong>
           <p>Polja označena zvezdicom su obavezna.</p>
         </div>
       </div>
@@ -458,9 +525,18 @@ const PropertyOfferForm = () => {
         </div>
 
         <div className="form-field inquiry-form__textarea">
-          <label className="form-field form-field--hidden" htmlFor="land-website">
+          <label
+            className="form-field form-field--hidden"
+            htmlFor="land-website"
+          >
             Website
-            <input id="land-website" name="website" tabIndex={-1} type="text" autoComplete="off" />
+            <input
+              id="land-website"
+              name="website"
+              tabIndex={-1}
+              type="text"
+              autoComplete="off"
+            />
           </label>
 
           <label className="form-label" htmlFor="land-details">
@@ -474,12 +550,87 @@ const PropertyOfferForm = () => {
             rows={6}
             maxLength={5000}
             aria-invalid={fieldErrors.details ? "true" : undefined}
-            aria-describedby={fieldErrors.details ? "land-details-error" : undefined}
+            aria-describedby={
+              fieldErrors.details ? "land-details-error" : undefined
+            }
             onBlur={(event) => handleFieldBlur("details", event)}
           />
           {fieldErrors.details ? (
             <p className="form-field-error" id="land-details-error">
               {fieldErrors.details}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="form-field inquiry-form__attachment-field">
+          <label className="form-label" htmlFor="land-attachment">
+            <Paperclip />
+            Priložite dokument <span>(opciono)</span>
+          </label>
+          <input
+            className="form-input form-input--file"
+            id="land-attachment"
+            name="attachment"
+            type="file"
+            accept={inquiryAttachmentAccept}
+            aria-invalid={fieldErrors.attachment ? "true" : undefined}
+            aria-describedby={
+              fieldErrors.attachment
+                ? "land-attachment-error"
+                : "land-attachment-hint"
+            }
+            onChange={(event) => {
+              if (!hasSubmitAttempted) {
+                return;
+              }
+
+              const form = event.currentTarget.form;
+
+              if (!form) {
+                return;
+              }
+
+              const attachmentError = validateInquiryAttachment(
+                new FormData(form).get("attachment"),
+              );
+              setFieldErrors((currentErrors) =>
+                mergeFieldError(currentErrors, "attachment", attachmentError),
+              );
+            }}
+          />
+          <p className="form-field-hint" id="land-attachment-hint">
+            PDF, DOC, DOCX, JPG ili PNG. Maksimalno 4 MB.
+          </p>
+          {fieldErrors.attachment ? (
+            <p className="form-field-error" id="land-attachment-error">
+              {fieldErrors.attachment}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="inquiry-form__captcha">
+          <p className="form-label" id="land-captcha-label">
+            Provera sigurnosti *
+          </p>
+          <TurnstileWidget
+            action="land_offer"
+            resetSignal={turnstileResetSignal}
+            onToken={(token) => {
+              setTurnstileToken(token);
+              setCaptchaError("");
+            }}
+            onError={() => {
+              setTurnstileToken("");
+              if (hasSubmitAttempted) {
+                setCaptchaError(
+                  "Sigurnosna provera nije uspela. Osvežite stranicu i pokušajte ponovo.",
+                );
+              }
+            }}
+          />
+          {captchaError ? (
+            <p className="form-field-error" id="land-captcha-error">
+              {captchaError}
             </p>
           ) : null}
         </div>
@@ -491,11 +642,15 @@ const PropertyOfferForm = () => {
             required
             type="checkbox"
             aria-invalid={fieldErrors.consent ? "true" : undefined}
-            aria-describedby={fieldErrors.consent ? "land-consent-error" : undefined}
+            aria-describedby={
+              fieldErrors.consent ? "land-consent-error" : undefined
+            }
             onBlur={(event) => handleFieldBlur("consent", event)}
             onChange={(event) => handleFieldBlur("consent", event)}
           />
-          <span>Saglasan/saglasna sam da me kontaktirate povodom poslate ponude.</span>
+          <span>
+            Saglasan/saglasna sam da me kontaktirate povodom poslate ponude.
+          </span>
         </label>
         {fieldErrors.consent ? (
           <p className="form-field-error" id="land-consent-error">
@@ -514,12 +669,19 @@ const PropertyOfferForm = () => {
         ) : null}
 
         <div className="inquiry-form__submit-group">
-          <button className="site-button site-button--dark" type="submit" disabled={formStatus === "sending"}>
+          <button
+            className="site-button site-button--dark"
+            type="submit"
+            disabled={formStatus === "sending"}
+          >
             <MessageCircle />
             {formStatus === "sending" ? "Slanje..." : "Pošaljite podatke"}
             <ArrowUpRight />
           </button>
-          <p>Prva provera je bez obaveze. Javljamo se nakon sto pogledamo osnovne podatke o lokaciji.</p>
+          <p>
+            Prva provera je bez obaveze. Javljamo se nakon što pogledamo osnovne
+            podatke o lokaciji.
+          </p>
         </div>
       </div>
     </motion.form>
@@ -533,7 +695,15 @@ type FormFieldProps = {
   required?: boolean;
   type?: string;
   autoComplete?: string;
-  inputMode?: "none" | "text" | "decimal" | "numeric" | "tel" | "search" | "email" | "url";
+  inputMode?:
+    | "none"
+    | "text"
+    | "decimal"
+    | "numeric"
+    | "tel"
+    | "search"
+    | "email"
+    | "url";
   min?: string;
   maxLength?: number;
   error?: string;
@@ -584,14 +754,28 @@ const FormField = ({
   );
 };
 
-function validateLandOfferForm(formData: FormData): FieldErrors<LandOfferFieldName> {
+function validateLandOfferForm(
+  formData: FormData,
+): FieldErrors<LandOfferFieldName> {
   return {
     name: validateRequiredText(getFormValue(formData, "name"), "Ime"),
     phone: validatePhone(getFormValue(formData, "phone"), true),
     email: validateEmail(getFormValue(formData, "email")),
-    address: validateOptionalText(getFormValue(formData, "address"), "Adresa nekretnine", 260),
-    plotArea: validatePositiveNumber(getFormValue(formData, "plotArea"), "Površina parcele"),
-    details: validateOptionalText(getFormValue(formData, "details"), "Dodatne informacije", 5000),
+    address: validateOptionalText(
+      getFormValue(formData, "address"),
+      "Adresa nekretnine",
+      260,
+    ),
+    plotArea: validatePositiveNumber(
+      getFormValue(formData, "plotArea"),
+      "Površina parcele",
+    ),
+    details: validateOptionalText(
+      getFormValue(formData, "details"),
+      "Dodatne informacije",
+      5000,
+    ),
+    attachment: validateInquiryAttachment(formData.get("attachment")),
     consent: validateConsent(formData.get("consent")),
   };
 }

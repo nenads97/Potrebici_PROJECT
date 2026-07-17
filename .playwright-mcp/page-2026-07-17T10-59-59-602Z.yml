@@ -1,0 +1,95 @@
+- generic [active] [ref=f41e1]:
+  - generic [ref=f41e5]:
+    - link "Skip to content" [ref=f41e6] [cursor=pointer]:
+      - /url: "#main"
+    - banner [ref=f41e8]:
+      - generic [ref=f41e9]:
+        - generic [ref=f41e10]:
+          - link "Supabase Back to organization home" [ref=f41e11] [cursor=pointer]:
+            - /url: /dashboard/organizations
+            - img "Supabase" [ref=f41e12]
+            - generic [ref=f41e13]: Back to organization home
+          - generic [ref=f41e14]: Account
+        - generic [ref=f41e19]:
+          - button "Feedback" [ref=f41e20] [cursor=pointer]
+          - generic [ref=f41e22]:
+            - button [ref=f41e23]:
+              - paragraph [ref=f41e28]: Search...
+              - generic [ref=f41e29]: Ctrl K
+            - button "Help" [ref=f41e31] [cursor=pointer]
+            - button "Advisor Center" [ref=f41e38] [cursor=pointer]
+          - button [ref=f41e43] [cursor=pointer]
+    - main [ref=f41e52]:
+      - generic [ref=f41e54]:
+        - generic [ref=f41e56]:
+          - link "Back to dashboard" [ref=f41e59] [cursor=pointer]:
+            - /url: /dashboard/organizations
+          - menu "Sidebar" [ref=f41e65]:
+            - list [ref=f41e66]:
+              - generic [ref=f41e69]:
+                - generic [ref=f41e70]: Account Settings
+                - generic [ref=f41e74]:
+                  - link [ref=f41e75] [cursor=pointer]:
+                    - /url: /dashboard/account/me
+                    - menuitem "Preferences" [ref=f41e76]:
+                      - generic "Preferences" [ref=f41e79]
+                  - link [ref=f41e81] [cursor=pointer]:
+                    - /url: /dashboard/account/tokens
+                    - menuitem "Access Tokens" [ref=f41e82]:
+                      - generic "Access Tokens" [ref=f41e85]
+                  - link [ref=f41e87] [cursor=pointer]:
+                    - /url: /dashboard/account/security
+                    - menuitem "Security" [ref=f41e88]:
+                      - generic "Security" [ref=f41e91]
+              - generic [ref=f41e96]:
+                - generic [ref=f41e97]: Logs
+                - link [ref=f41e102] [cursor=pointer]:
+                  - /url: /dashboard/account/audit
+                  - menuitem "Audit Logs" [ref=f41e103]:
+                    - generic "Audit Logs" [ref=f41e106]
+        - generic [ref=f41e109]:
+          - generic [ref=f41e110]:
+            - generic [ref=f41e113]:
+              - heading "Access Tokens" [level=1] [ref=f41e114]
+              - generic [ref=f41e115]: Create and manage access tokens for API authentication.
+            - navigation [ref=f41e118]:
+              - menu [ref=f41e119]:
+                - listitem [ref=f41e120]:
+                  - link "Classic Tokens" [ref=f41e121] [cursor=pointer]:
+                    - /url: /dashboard/account/tokens
+          - generic [ref=f41e123]:
+            - generic [ref=f41e124]:
+              - group [ref=f41e125]:
+                - textbox "Filter tokens" [ref=f41e126]
+                - group [ref=f41e127]
+              - generic [ref=f41e131]:
+                - link "API Docs" [ref=f41e132] [cursor=pointer]:
+                  - /url: https://supabase.com/docs/reference/api/introduction
+                - link "CLI docs" [ref=f41e139] [cursor=pointer]:
+                  - /url: https://supabase.com/docs/reference/cli/start
+                - generic [ref=f41e146]:
+                  - button "Generate new token" [ref=f41e147] [cursor=pointer]
+                  - button "Choose token scope" [ref=f41e149] [cursor=pointer]
+            - table [ref=f41e157]:
+              - rowgroup [ref=f41e158]:
+                - row [ref=f41e159]:
+                  - columnheader "Token" [ref=f41e160]
+                  - columnheader [ref=f41e161]:
+                    - button [ref=f41e162] [cursor=pointer]
+                  - columnheader [ref=f41e171]:
+                    - button [ref=f41e172] [cursor=pointer]
+                  - columnheader [ref=f41e181]
+              - rowgroup [ref=f41e182]:
+                - row [ref=f41e183]:
+                  - cell [ref=f41e184]
+                  - cell [ref=f41e186]
+                  - cell [ref=f41e188]
+                  - cell [ref=f41e190]
+                  - cell [ref=f41e192]
+                - row [ref=f41e194]:
+                  - cell [ref=f41e195]
+                  - cell [ref=f41e197]
+                  - cell [ref=f41e199]
+                  - cell [ref=f41e201]
+                  - cell [ref=f41e203]
+  - alert [ref=f41e205]

@@ -4,6 +4,8 @@ Datum: 2026-07-15
 
 Ovaj runbook je praktican redosled provera pre objave sajta. Namenjen je za poslednji prolaz kroz klijentski deo, admin panel i Supabase okruzenje bez ponovnog trazenja konteksta po audit dokumentima.
 
+Dopuna 2026-07-16: poslednji read-only/launch smoke je video `projects=1`, `units=15`, `project_media=37` i `construction_updates=3`; privatne lead/log tabele su ostale zatvorene za anon key (`401`), a obe Edge Function preflight provere su vratile `200`. Admin smoke nije ponovljen u ovom prolazu jer lokalni ignorisan env nije imao admin kredencijale.
+
 ## Principi
 
 - Ne menjati detalje stanova tokom ovog runbook-a. Detalji ostaju kako su bili u postojecem v1 obliku; proveravaju se samo zbog brzine ucitavanja, broken slika i osnovne funkcionalnosti.
@@ -76,8 +78,8 @@ Ocekivani dokaz:
 Trenutni poznati nalaz:
 
 - cloud `project_media` je popunjen za Heroja Pinkija 13 i strozi launch smoke prolazi. Ako se media metadata kasnije brise ili menja, ponovo pokrenuti `npm.cmd run smoke:supabase:launch`.
-- read-only i launch smoke su ponovo prosli 2026-07-15: `projects` 1 red,
-  `units` 15 redova, `project_media` 25 objavljenih redova,
+- read-only i launch smoke su ponovo prosli 2026-07-16: `projects` 1 red,
+  `units` 15 redova, `project_media` 37 redova,
   `construction_updates` 3 reda, privatne lead/log tabele vracaju 401 za anon
   key, a obe Edge Function `OPTIONS` provere vracaju 200. Smoke sada prijavljuje
   stvaran REST count uz sample od 5 redova i pada ako javna ponuda nema svih 15
@@ -164,7 +166,7 @@ na `/admin/prijava`, a `tel:` href ostaje `tel:0642279117`.
 
 Interakcioni QA 2026-07-10 je dodatno proverio da javni dropdown `Projekti` zatvara Escape i vraca `aria-expanded=false`, kontakt modal fokusira ime i vraca fokus na CTA posle zatvaranja, tabelarni filter sprata smanjuje prikaz sa 15 na 5 redova i `Ponisti filtere` vraca sve filtere na `all`, a admin login ima ispravne email/lozinka labele i `aria-busy=false` u idle stanju.
 
-Admin runtime QA 2026-07-14 je proverio da `/admin` neulogovanog korisnika brzo prebacuje na `/admin/prijava`, da login forma nije zaglavljena na `Provera sesije`, da kontrolisani submit sa test/admin nalogom otvara admin panel i da dashboard javlja `Podaci su ucitani iz Supabase baze.` Opcioni `smoke:supabase:admin` je istog dana prosao sa aktivnim admin nalogom: Auth, `admin_profiles` i citanje zasticenih admin tabela prolaze za manje od 1s po fazi.
+Admin runtime QA 2026-07-14 je proverio da `/admin` neulogovanog korisnika brzo prebacuje na `/admin/prijava`, da login forma nije zaglavljena na `Provera sesije`, da kontrolisani submit sa test/admin nalogom otvara admin panel i da dashboard javlja `Podaci su ucitani iz Supabase baze.` Novi read-only admin smoke treba ponoviti kada budu dostupne admin env promenljive.
 
 Dopuna 2026-07-15: `npm.cmd run smoke:supabase:admin` ponovo prolazi sa
 aktivnim admin nalogom. Auth ~698ms, `admin_profiles` ~152ms, citanje zasticenih

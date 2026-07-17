@@ -8,39 +8,38 @@ type AuthState = "checking" | "allowed" | "denied";
 
 export const RequireAdminAuth = () => {
   const location = useLocation();
-  const [authState, setAuthState] = useState<AuthState>("checking");
+  const [authState, setAuthState] = useState<AuthState>(
+    isSupabaseConfigured ? "checking" : "denied",
+  );
 
   useEffect(() => {
     let isMounted = true;
 
-    async function verifySession() {
-      if (!isSupabaseConfigured || !supabase) {
-        setAuthState("denied");
-        return;
-      }
-
-      const canAccessAdmin = await isCurrentUserAdmin();
-
-      if (!isMounted) {
-        return;
-      }
-
-      setAuthState(canAccessAdmin ? "allowed" : "denied");
+    if (!isSupabaseConfigured || !supabase) {
+      return () => {
+        isMounted = false;
+      };
     }
 
-    verifySession();
-
     const { data } =
-      supabase?.auth.onAuthStateChange((_event, session) => {
-        if (!session) {
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (event === "SIGNED_OUT" || !session) {
           setAuthState("denied");
           return;
         }
 
-        isCurrentUserAdmin().then((canAccessAdmin) => {
-          setAuthState(canAccessAdmin ? "allowed" : "denied");
-        });
-      }) ?? {};
+        if (event !== "INITIAL_SESSION" && event !== "SIGNED_IN" && event !== "USER_UPDATED") {
+          return;
+        }
+
+        window.setTimeout(() => {
+          void isCurrentUserAdmin(session.user.id).then((canAccessAdmin) => {
+            if (isMounted) {
+              setAuthState(canAccessAdmin ? "allowed" : "denied");
+            }
+          });
+        }, 0);
+      });
 
     return () => {
       isMounted = false;

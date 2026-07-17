@@ -15,17 +15,11 @@ import { PageMeta } from "../../shared/components/PageMeta";
 
 const projectImage = "/images/heroja-pinkija-13/radovi-u-toku.jpg";
 
-const heroHighlights = [
-  { value: "Marko i Milan Potrebić", label: "direktno kod investitora" },
-  { value: "15 stanova", label: "pregledna ponuda" },
-  { value: "15.11.2027.", label: "planirani završetak" },
-];
-
 const trustSignals = [
   {
     icon: ShieldCheck,
     title: "Jasna ponuda",
-    text: "stanovi, kvadrature, tlocrti i statusi dostupni su pre prvog razgovora.",
+    text: "Stanovi, kvadrature, tlocrti i statusi dostupni su pre prvog razgovora.",
   },
   {
     icon: BadgeCheck,
@@ -65,12 +59,12 @@ const values = [
   },
   {
     icon: ShieldCheck,
-    title: "stanovi, kvadrature i tlocrti",
+    title: "Stanovi, kvadrature i tlocrti",
     text: "Kupac može da uporedi rasporede, površine i strukture pre prvog razgovora.",
   },
   {
     icon: HardHat,
-    title: "statusi i rokovi",
+    title: "Statusi i rokovi",
     text: "Ponuda stanova i planirani rok završetka prikazani su jasno, uz kontakt za proveru detalja.",
   },
   {
@@ -131,12 +125,15 @@ export const AboutPage = () => {
               M & M Gradnja / Novi Sad
             </motion.p>
             <motion.h1 className="section-title" variants={reveal}>
-              Gradimo prvi projekat otvoreno, jasno i direktno.
+              Naš prvi projekat gradimo otvoreno i transparentno
             </motion.h1>
-            <motion.p className="section-copy section-copy--large" variants={reveal}>
-              M & M Gradnja je porodicno vodjen investitorski projekat iza kog
+            <motion.p
+              className="section-copy section-copy--large"
+              variants={reveal}
+            >
+              M & M Gradnja je porodično vođen investitorski projekat iza kog
               stoje Marko i Milan Potrebić. Kao prvi korak biramo otvoren odnos:
-              kupac treba da zna sta se gradi, u kojoj je fazi i kome može da se
+              kupac treba da zna šta se gradi, u kojoj je fazi i kome može da se
               obrati.
             </motion.p>
             <motion.div className="page-actions" variants={reveal}>
@@ -187,15 +184,6 @@ export const AboutPage = () => {
               ))}
             </ul>
           </motion.div>
-
-          <dl className="about-hero__stats">
-            {heroHighlights.map((item) => (
-              <div key={item.value}>
-                <dt>{item.label}</dt>
-                <dd>{item.value}</dd>
-              </div>
-            ))}
-          </dl>
         </div>
       </section>
 
@@ -246,7 +234,7 @@ export const AboutPage = () => {
             </div>
             <p className="section-copy">
               Detaljna dokumentacija ostaje na stranici projekta, dok ovde
-              izdvajamo ono sto kupcu odmah pomaze da razume ponudu.
+              izdvajamo ono što kupcu odmah pomaže da razume ponudu.
             </p>
           </motion.div>
 
@@ -258,7 +246,11 @@ export const AboutPage = () => {
             variants={revealContainer}
           >
             {values.map(({ icon: Icon, title, text }, index) => (
-              <motion.article className="about-value-card" key={title} variants={reveal}>
+              <motion.article
+                className="about-value-card"
+                key={title}
+                variants={reveal}
+              >
                 <div className="about-value-card__top">
                   <span className="about-value-card__icon">
                     <Icon />
@@ -295,7 +287,10 @@ export const AboutPage = () => {
             </p>
           </motion.div>
 
-          <motion.ol className="about-process__steps" variants={revealContainer}>
+          <motion.ol
+            className="about-process__steps"
+            variants={revealContainer}
+          >
             {processSteps.map(({ icon: Icon, title, text }, index) => (
               <motion.li key={title} variants={reveal}>
                 <span className="about-process__number">
@@ -345,7 +340,7 @@ export const AboutPage = () => {
             variants={revealContainer}
           >
             <motion.div variants={reveal}>
-              <p className="section-eyebrow">Heroja Pinkija 13 kao prvi korak</p>
+              <p className="section-eyebrow">Projekat</p>
               <h2 className="section-title section-title--medium">
                 Heroja Pinkija 13 kao prvi korak.
               </h2>
@@ -398,7 +393,7 @@ export const AboutPage = () => {
             <h2>Dostupni stanovi i direktan razgovor.</h2>
             <p>
               Ponuda je postavljena tako da lako uporedite stanove, proverite
-              tlocrte i posaljete upit za konkretnu jedinicu. Garažna mesta i
+              tlocrte i pošaljete upit za konkretnu jedinicu. Garažna mesta i
               ostave su dodatne opcije i kupuju se odvojeno.
             </p>
           </motion.div>

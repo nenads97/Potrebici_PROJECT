@@ -1,0 +1,278 @@
+- generic [ref=f35e1]:
+  - generic [ref=f35e3]:
+    - generic [ref=f35e4]:
+      - link "Skip to content" [ref=f35e5] [cursor=pointer]:
+        - /url: "#main"
+      - banner [ref=f35e7]:
+        - generic [ref=f35e8]:
+          - generic [ref=f35e9]:
+            - link "Supabase Back to organization home" [ref=f35e10] [cursor=pointer]:
+              - /url: /dashboard/org/lynozqrsfiuflqdysugm
+              - img "Supabase" [ref=f35e11]
+              - generic [ref=f35e12]: Back to organization home
+            - generic [ref=f35e13]:
+              - generic [ref=f35e17]:
+                - link "nenad's Free" [ref=f35e18] [cursor=pointer]:
+                  - /url: /dashboard/org/lynozqrsfiuflqdysugm
+                  - generic [ref=f35e29]: nenad's
+                  - generic [ref=f35e30]: Free
+                - button "Show organizations" [ref=f35e31] [cursor=pointer]
+              - generic [ref=f35e36]:
+                - generic [ref=f35e40]:
+                  - link "Potrebici" [ref=f35e41] [cursor=pointer]:
+                    - /url: /dashboard/project/kamwovkvhkurjvabbfks
+                  - button "Show organization projects" [ref=f35e46] [cursor=pointer]
+                - generic [ref=f35e54]:
+                  - link "main Production" [ref=f35e55] [cursor=pointer]:
+                    - /url: /dashboard/project/kamwovkvhkurjvabbfks
+                    - generic "main" [ref=f35e56]
+                    - generic [ref=f35e57]: Production
+                  - button "Show project branches" [ref=f35e58] [cursor=pointer]
+            - button "Connect" [ref=f35e64] [cursor=pointer]
+          - generic [ref=f35e69]:
+            - button "Feedback" [ref=f35e70] [cursor=pointer]
+            - generic [ref=f35e72]:
+              - button [ref=f35e73]:
+                - paragraph [ref=f35e78]: Search...
+                - generic [ref=f35e79]: Ctrl K
+              - button "Help" [ref=f35e81] [cursor=pointer]
+              - button "Advisor Center" [ref=f35e88] [cursor=pointer]
+              - button "SQL Editor" [ref=f35e93] [cursor=pointer]
+              - button "AI Assistant" [ref=f35e98] [cursor=pointer]
+            - button [ref=f35e106] [cursor=pointer]:
+              - img "nenads97" [ref=f35e108]
+      - generic [ref=f35e109]:
+        - generic [ref=f35e113]:
+          - navigation [ref=f35e115]:
+            - list [ref=f35e117]:
+              - listitem [ref=f35e118]:
+                - link "Project Overview" [ref=f35e119] [cursor=pointer]:
+                  - /url: /dashboard/project/kamwovkvhkurjvabbfks
+              - listitem [ref=f35e122]:
+                - link "Table Editor" [ref=f35e123] [cursor=pointer]:
+                  - /url: /dashboard/project/kamwovkvhkurjvabbfks/editor
+              - listitem [ref=f35e126]:
+                - link "SQL Editor" [ref=f35e127] [cursor=pointer]:
+                  - /url: /dashboard/project/kamwovkvhkurjvabbfks/sql
+            - list [ref=f35e131]:
+              - listitem [ref=f35e132]:
+                - link "Database" [ref=f35e133] [cursor=pointer]:
+                  - /url: /dashboard/project/kamwovkvhkurjvabbfks/database/schemas
+              - listitem [ref=f35e138]:
+                - link "Authentication" [ref=f35e139] [cursor=pointer]:
+                  - /url: /dashboard/project/kamwovkvhkurjvabbfks/auth/users
+              - listitem [ref=f35e142]:
+                - link "Storage" [ref=f35e143] [cursor=pointer]:
+                  - /url: /dashboard/project/kamwovkvhkurjvabbfks/storage/files
+              - listitem [ref=f35e146]:
+                - link "Edge Functions" [ref=f35e147] [cursor=pointer]:
+                  - /url: /dashboard/project/kamwovkvhkurjvabbfks/functions
+              - listitem [ref=f35e153]:
+                - link "Realtime" [ref=f35e154] [cursor=pointer]:
+                  - /url: /dashboard/project/kamwovkvhkurjvabbfks/realtime/inspector
+            - list [ref=f35e158]:
+              - listitem [ref=f35e159]:
+                - link "Advisors" [ref=f35e160] [cursor=pointer]:
+                  - /url: /dashboard/project/kamwovkvhkurjvabbfks/advisors/security
+              - listitem [ref=f35e164]:
+                - link "Observability" [ref=f35e165] [cursor=pointer]:
+                  - /url: /dashboard/project/kamwovkvhkurjvabbfks/observability
+              - listitem [ref=f35e174]:
+                - link "Logs" [ref=f35e175] [cursor=pointer]:
+                  - /url: /dashboard/project/kamwovkvhkurjvabbfks/logs
+              - listitem [ref=f35e177]:
+                - link "Integrations" [ref=f35e178] [cursor=pointer]:
+                  - /url: /dashboard/project/kamwovkvhkurjvabbfks/integrations
+            - list [ref=f35e183]:
+              - listitem [ref=f35e184]:
+                - link "Project Settings" [ref=f35e185] [cursor=pointer]:
+                  - /url: /dashboard/project/kamwovkvhkurjvabbfks/settings/general
+          - button "Sidebar control" [ref=f35e191] [cursor=pointer]
+        - main [ref=f35e198]:
+          - generic [ref=f35e200]:
+            - generic [ref=f35e204]:
+              - heading "Edge Functions" [level=4] [ref=f35e206]
+              - menu "Sidebar" [disabled] [ref=f35e209]:
+                - list [ref=f35e210]:
+                  - generic [ref=f35e213]:
+                    - generic [ref=f35e214]: Manage
+                    - generic [ref=f35e218]:
+                      - link [disabled] [ref=f35e219] [cursor=pointer]:
+                        - /url: /dashboard/project/kamwovkvhkurjvabbfks/functions
+                        - menuitem "Functions" [disabled] [ref=f35e220]
+                      - link [disabled] [ref=f35e225] [cursor=pointer]:
+                        - /url: /dashboard/project/kamwovkvhkurjvabbfks/functions/secrets
+                        - menuitem "Secrets" [disabled] [ref=f35e226]
+            - separator [disabled] [ref=f35e231]
+            - main [ref=f35e242]:
+              - generic [ref=f35e243]:
+                - generic [ref=f35e247]:
+                  - heading "Edge Function Secrets" [level=1] [ref=f35e248]
+                  - generic [ref=f35e249]: Manage encrypted values for your functions
+                - generic [ref=f35e253]:
+                  - generic [ref=f35e255]:
+                    - heading "Add or replace secrets" [level=3] [ref=f35e257]
+                    - generic [ref=f35e259]:
+                      - generic [ref=f35e261]:
+                        - generic [ref=f35e263]:
+                          - group [ref=f35e264]:
+                            - textbox "e.g. CLIENT_KEY" [ref=f35e265]
+                          - button "Remove secret" [disabled]
+                        - generic [ref=f35e266]:
+                          - generic [ref=f35e267]: Name
+                          - generic [ref=f35e269]: A unique name for your secret.
+                      - generic [ref=f35e271]:
+                        - generic [ref=f35e273]:
+                          - textbox [ref=f35e274]
+                          - button "Show secret value" [ref=f35e275] [cursor=pointer]
+                        - generic [ref=f35e280]:
+                          - generic [ref=f35e281]: Value
+                          - generic [ref=f35e283]: Supports multi-line values such as PEM keys, JSON, or functions.
+                    - generic [ref=f35e284]:
+                      - paragraph [ref=f35e285]: Insert or update multiple secrets at once by pasting key-value pairs
+                      - generic [ref=f35e286]:
+                        - button "Add another" [ref=f35e287] [cursor=pointer]
+                        - button "Save" [ref=f35e289] [cursor=pointer]
+                  - generic [ref=f35e291]:
+                    - generic [ref=f35e292]:
+                      - generic [ref=f35e293]:
+                        - heading "Custom secrets" [level=3] [ref=f35e294]
+                        - paragraph [ref=f35e295]: Secrets you have defined for this project
+                      - group [ref=f35e296]:
+                        - textbox "Search for a secret" [ref=f35e297]
+                        - group [ref=f35e298]
+                    - table [ref=f35e305]:
+                      - rowgroup [ref=f35e306]:
+                        - row [ref=f35e307]:
+                          - columnheader "Name" [ref=f35e308]
+                          - columnheader "Digest SHA256" [ref=f35e309]:
+                            - text: Digest
+                            - generic [ref=f35e310]: SHA256
+                          - columnheader "Updated" [ref=f35e311]
+                          - columnheader [ref=f35e312]
+                      - rowgroup [ref=f35e313]:
+                        - row [ref=f35e314]:
+                          - cell [ref=f35e315]:
+                            - button [ref=f35e316]:
+                              - paragraph [ref=f35e317]:
+                                - code [ref=f35e318]: MIM_SECRET_KEY_CAPTCHA
+                          - cell [ref=f35e319]:
+                            - paragraph [ref=f35e320]:
+                              - code [ref=f35e321]: cebf24d41f076e4f956b41d47cab67575ed31eccfafbb3fd12c8cb7de984efb7
+                          - cell "17 Jul 2026 10:35:16 (+0000)" [ref=f35e322]
+                          - cell [ref=f35e323]:
+                            - button "More options" [ref=f35e325] [cursor=pointer]
+                  - generic [ref=f35e331]:
+                    - generic [ref=f35e332]:
+                      - generic [ref=f35e333]:
+                        - heading "Default secrets" [level=3] [ref=f35e334]
+                        - paragraph [ref=f35e335]: Reserved secrets available in every project
+                      - link "Docs" [ref=f35e336] [cursor=pointer]:
+                        - /url: https://supabase.com/docs/guides/functions/secrets#default-secrets
+                    - table [ref=f35e345]:
+                      - rowgroup [ref=f35e346]:
+                        - row [ref=f35e347]:
+                          - columnheader "Name" [ref=f35e348]
+                          - columnheader "Description" [ref=f35e349]
+                      - rowgroup [ref=f35e350]:
+                        - row [ref=f35e351]:
+                          - cell [ref=f35e352]:
+                            - button [ref=f35e354]:
+                              - paragraph [ref=f35e355]:
+                                - code [ref=f35e356]: SUPABASE_URL
+                          - cell [ref=f35e357]:
+                            - paragraph [ref=f35e358]: The API gateway for your Supabase project.
+                        - row [ref=f35e359]:
+                          - cell [ref=f35e360]:
+                            - button [ref=f35e362]:
+                              - paragraph [ref=f35e363]:
+                                - code [ref=f35e364]: SUPABASE_DB_URL
+                          - cell [ref=f35e365]:
+                            - paragraph [ref=f35e366]: The direct PostgreSQL connection URL. Should not be shared with anyone, only use it on the server.
+                        - row [ref=f35e367]:
+                          - cell [ref=f35e368]:
+                            - button [ref=f35e370]:
+                              - paragraph [ref=f35e371]:
+                                - code [ref=f35e372]: SUPABASE_PUBLISHABLE_KEYS
+                          - cell [ref=f35e373]:
+                            - paragraph [ref=f35e374]: JSON dictionary of publishable API keys. Safe to use in a browser if RLS is enabled.
+                        - row [ref=f35e375]:
+                          - cell [ref=f35e376]:
+                            - button [ref=f35e378]:
+                              - paragraph [ref=f35e379]:
+                                - code [ref=f35e380]: SUPABASE_SECRET_KEYS
+                          - cell [ref=f35e381]:
+                            - paragraph [ref=f35e382]: JSON dictionary of secret API keys. Should never be exposed to a browser.
+                        - row [ref=f35e383]:
+                          - cell "SUPABASE_ANON_KEY Deprecated" [ref=f35e384]:
+                            - generic [ref=f35e385]:
+                              - button [ref=f35e386]:
+                                - paragraph [ref=f35e387]:
+                                  - code [ref=f35e388]: SUPABASE_ANON_KEY
+                              - generic [ref=f35e389]: Deprecated
+                          - cell [ref=f35e390]:
+                            - paragraph [ref=f35e391]: Legacy anonymous key. Use SUPABASE_PUBLISHABLE_KEYS issued through JWT Signing Keys instead.
+                        - row [ref=f35e392]:
+                          - cell "SUPABASE_SERVICE_ROLE_KEY Deprecated" [ref=f35e393]:
+                            - generic [ref=f35e394]:
+                              - button [ref=f35e395]:
+                                - paragraph [ref=f35e396]:
+                                  - code [ref=f35e397]: SUPABASE_SERVICE_ROLE_KEY
+                              - generic [ref=f35e398]: Deprecated
+                          - cell [ref=f35e399]:
+                            - paragraph [ref=f35e400]: Legacy service role key. Use SUPABASE_SECRET_KEYS issued through JWT Signing Keys instead.
+                        - row [ref=f35e401]:
+                          - cell [ref=f35e402]:
+                            - button [ref=f35e404]:
+                              - paragraph [ref=f35e405]:
+                                - code [ref=f35e406]: SUPABASE_JWKS
+                          - cell [ref=f35e407]:
+                            - paragraph [ref=f35e408]: JSON Web Key Set used to verify JWTs issued by your project's auth server.
+                        - row [ref=f35e409]:
+                          - cell [ref=f35e410]:
+                            - button [ref=f35e412]:
+                              - paragraph [ref=f35e413]:
+                                - code [ref=f35e414]: SB_REGION
+                          - cell [ref=f35e415]:
+                            - paragraph [ref=f35e416]: The region the function was invoked in. Set per request.
+                        - row [ref=f35e417]:
+                          - cell [ref=f35e418]:
+                            - button [ref=f35e420]:
+                              - paragraph [ref=f35e421]:
+                                - code [ref=f35e422]: SB_EXECUTION_ID
+                          - cell [ref=f35e423]:
+                            - paragraph [ref=f35e424]: A unique identifier for each function instance. Set per request.
+                        - row [ref=f35e425]:
+                          - cell [ref=f35e426]:
+                            - button [ref=f35e428]:
+                              - paragraph [ref=f35e429]:
+                                - code [ref=f35e430]: DENO_DEPLOYMENT_ID
+                          - cell [ref=f35e431]:
+                            - paragraph [ref=f35e432]: The version of the function code. Set when the function is deployed.
+    - generic [ref=f35e436]:
+      - generic:
+        - img "Background pattern"
+      - generic [ref=f35e437]:
+        - button "Close banner" [ref=f35e439] [cursor=pointer]
+        - generic [ref=f35e444]:
+          - generic [ref=f35e445]:
+            - generic [ref=f35e446]: Beta
+            - generic [ref=f35e448]:
+              - generic [ref=f35e487]:
+                - generic [ref=f35e489]: 17 Jul 26 12:50:17
+                - generic [ref=f35e490]: "200"
+              - generic [ref=f35e492]:
+                - generic [ref=f35e494]: 17 Jul 26 12:50:14
+                - generic [ref=f35e495]: "500"
+              - generic [ref=f35e497]:
+                - generic [ref=f35e499]: 17 Jul 26 12:50:11
+                - generic [ref=f35e500]: "200"
+              - generic [ref=f35e502]:
+                - generic [ref=f35e504]: 17 Jul 26 12:50:08
+                - generic [ref=f35e505]: "400"
+          - generic [ref=f35e469]:
+            - paragraph [ref=f35e470]: Unified Logs is here
+            - paragraph [ref=f35e471]: Search and correlate logs across all of your services from a single place.
+          - link "Explore Unified Logs" [ref=f35e473] [cursor=pointer]:
+            - /url: /dashboard/project/kamwovkvhkurjvabbfks/logs
+  - alert [ref=f35e475]: Supabase

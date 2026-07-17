@@ -11,6 +11,8 @@ export type ContactInquiryPayload = {
   sourcePage: string;
   consentAccepted: boolean;
   website?: string;
+  turnstileToken: string;
+  attachment?: File | null;
 };
 
 export type LandOfferPayload = {
@@ -23,6 +25,8 @@ export type LandOfferPayload = {
   sourcePage: string;
   consentAccepted: boolean;
   website?: string;
+  turnstileToken: string;
+  attachment?: File | null;
 };
 
 export async function submitContactInquiry(payload: ContactInquiryPayload) {
@@ -41,8 +45,18 @@ async function invokeInquiryFunction(
     throw new Error("Supabase nije konfigurisan. Proverite .env.local.");
   }
 
+  const body = new FormData();
+
+  Object.entries(payload).forEach(([key, value]) => {
+    if (value === undefined || value === null) {
+      return;
+    }
+
+    body.append(key, value instanceof File ? value : String(value));
+  });
+
   const { data, error } = await supabase.functions.invoke(functionName, {
-    body: payload,
+    body,
   });
 
   if (error) {

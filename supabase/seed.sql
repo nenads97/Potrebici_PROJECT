@@ -187,6 +187,81 @@ on conflict (project_id, code) do update set
 with project as (
   select id from public.projects where slug = 'heroja-pinkija-13'
 ),
+local_rows(code, slug, area_m2, short_description, full_description, main_image_url, floor_plan_pdf_url, sort_order) as (
+  values
+    ('Lokal 1', 'lokal-1', 73.71, 'Prostran lokal sa jasno izdvojenim toaletom.', 'Lokal 1 je poslovni prostor u prizemlju objekta, sa 73.71 m2 obračunske neto površine i zasebnim toaletom.', '/images/commercial-spaces/lokal-1-document.png', '/documents/commercial-spaces/lokal-1.pdf', 16),
+    ('Lokal 2', 'lokal-2', 47.65, 'Funkcionalan lokal sa jednostavnim rasporedom.', 'Lokal 2 je funkcionalan poslovni prostor u prizemlju objekta, sa 47.65 m2 obračunske neto površine i zasebnim toaletom.', '/images/commercial-spaces/lokal-2-document.png', '/documents/commercial-spaces/lokal-2.pdf', 17)
+)
+insert into public.units (
+  project_id,
+  code,
+  slug,
+  unit_type,
+  floor_label,
+  floor_number,
+  area_m2,
+  room_structure,
+  status,
+  orientation,
+  bathrooms,
+  terrace,
+  short_description,
+  full_description,
+  features,
+  main_image_url,
+  floor_plan_pdf_url,
+  price_display_mode,
+  sort_order,
+  is_published
+)
+select
+  project.id,
+  local_rows.code,
+  local_rows.slug,
+  'commercial_space'::public.unit_type,
+  'Prizemlje',
+  0,
+  local_rows.area_m2,
+  'Poslovni prostor',
+  'available'::public.unit_status,
+  'Ulaz iz ulice Heroja Pinkija',
+  '1 toalet',
+  'Bez terase',
+  local_rows.short_description,
+  local_rows.full_description,
+  case local_rows.code
+    when 'Lokal 1' then '["73.71 m2 obračunske neto površine", "Prostran poslovni prostor", "Zaseban toalet", "Prizemna pozicija sa ulazom iz ulice"]'::jsonb
+    else '["47.65 m2 obračunske neto površine", "Funkcionalan poslovni prostor", "Zaseban toalet", "Prizemna pozicija sa ulazom iz ulice"]'::jsonb
+  end,
+  local_rows.main_image_url,
+  local_rows.floor_plan_pdf_url,
+  'on_request'::public.price_display_mode,
+  local_rows.sort_order,
+  true
+from project, local_rows
+on conflict (project_id, code) do update set
+  slug = excluded.slug,
+  unit_type = excluded.unit_type,
+  floor_label = excluded.floor_label,
+  floor_number = excluded.floor_number,
+  area_m2 = excluded.area_m2,
+  room_structure = excluded.room_structure,
+  status = excluded.status,
+  orientation = excluded.orientation,
+  bathrooms = excluded.bathrooms,
+  terrace = excluded.terrace,
+  short_description = excluded.short_description,
+  full_description = excluded.full_description,
+  features = excluded.features,
+  main_image_url = excluded.main_image_url,
+  floor_plan_pdf_url = excluded.floor_plan_pdf_url,
+  price_display_mode = excluded.price_display_mode,
+  sort_order = excluded.sort_order,
+  is_published = excluded.is_published;
+
+with project as (
+  select id from public.projects where slug = 'heroja-pinkija-13'
+),
   known_seed_paths(file_path) as (
     values
     ('/images/heroja-pinkija-13/gradilisna-tabla.jpg'),
@@ -203,7 +278,11 @@ with project as (
     ('/images/apartment-plans/stan-2-7-12.png'),
     ('/images/apartment-plans/stan-3-8-13.png'),
     ('/images/apartment-plans/stan-4-9-14.png'),
-    ('/images/apartment-plans/stan-5-10-15.png')
+    ('/images/apartment-plans/stan-5-10-15.png'),
+    ('/images/commercial-spaces/lokal-1-plan.png'),
+    ('/images/commercial-spaces/lokal-1-document.png'),
+    ('/images/commercial-spaces/lokal-2-plan.png'),
+    ('/images/commercial-spaces/lokal-2-document.png')
 ),
 project_units as (
   select units.id
@@ -246,6 +325,8 @@ media_rows(unit_code, title, media_type, file_path, alt_text, description, sort_
     ('13', 'Tlocrt stana 13', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-3-8-13.png', 'Tlocrt stana 13 u projektu Heroja Pinkija 13', 'Tlocrt za detalj stana i poređenje prostorija.', 113, true),
     ('14', 'Tlocrt stana 14', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-4-9-14.png', 'Tlocrt stana 14 u projektu Heroja Pinkija 13', 'Tlocrt za detalj stana i poređenje prostorija.', 114, true),
     ('15', 'Tlocrt stana 15', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-5-10-15.png', 'Tlocrt stana 15 u projektu Heroja Pinkija 13', 'Tlocrt za detalj stana i poređenje prostorija.', 115, true),
+    ('Lokal 1', 'Tlocrt Lokala 1', 'unit_image'::public.project_media_type, '/images/commercial-spaces/lokal-1-document.png', 'Originalna dokumentacija Lokala 1 u projektu Heroja Pinkija 13', 'Originalna dokumentacija za vrh detalja lokala.', 116, true),
+    ('Lokal 2', 'Tlocrt Lokala 2', 'unit_image'::public.project_media_type, '/images/commercial-spaces/lokal-2-document.png', 'Originalna dokumentacija Lokala 2 u projektu Heroja Pinkija 13', 'Originalna dokumentacija za vrh detalja lokala.', 117, true),
     ('1', 'Projektni tlocrt stana 1 za poređenje', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-1-6-11-comparison.png', 'Projektni tlocrt stana 1 za poređenje sa gridom prostorija', 'Originalni projektni tlocrt koji se koristi pored grida prostorija.', 201, true),
     ('6', 'Projektni tlocrt stana 6 za poređenje', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-1-6-11-comparison.png', 'Projektni tlocrt stana 6 za poređenje sa gridom prostorija', 'Originalni projektni tlocrt koji se koristi pored grida prostorija.', 206, true),
     ('11', 'Projektni tlocrt stana 11 za poređenje', 'unit_image'::public.project_media_type, '/images/apartment-plans/stan-1-6-11-comparison.png', 'Projektni tlocrt stana 11 za poređenje sa gridom prostorija', 'Originalni projektni tlocrt koji se koristi pored grida prostorija.', 211, true)

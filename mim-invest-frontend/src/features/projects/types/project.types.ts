@@ -1,5 +1,10 @@
 export type ApartmentStatus = "Available" | "Reserved" | "Sold";
 
+export type ProjectUnitType =
+  | "apartment"
+  | "commercial_space"
+  | "business_apartment";
+
 export type ApartmentImage = {
   src: string;
   alt: string;
@@ -17,7 +22,19 @@ export type ApartmentRoomArea = {
   area: string;
 };
 
+export type ApartmentPlanVariant =
+  | "stack-1-6-11"
+  | "stack-2-7-12"
+  | "stack-3-8-13"
+  | "stack-4-9-14"
+  | "stack-5-10-15"
+  | "commercial-lokal-1"
+  | "commercial-lokal-2";
+
 export type Apartment = {
+  unitType?: ProjectUnitType;
+  slug?: string;
+  sortOrder?: number;
   number: string;
   floor: string;
   floorNumber: number;
@@ -38,9 +55,10 @@ export type Apartment = {
   ceilingHeight: string;
   heroFloorPlan: ApartmentImage;
   projectFloorPlan: ApartmentImage;
+  floorPlanPdfUrl?: string;
   plan: ApartmentPlanItem[];
   roomAreas: ApartmentRoomArea[];
-  planVariant?: "stack-1-6-11" | "stack-2-7-12" | "stack-3-8-13" | "stack-4-9-14" | "stack-5-10-15";
+  planVariant?: ApartmentPlanVariant;
   features: string[];
 };
 

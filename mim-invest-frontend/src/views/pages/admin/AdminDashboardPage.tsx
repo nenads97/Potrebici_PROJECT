@@ -5,6 +5,7 @@ import {
   Building2,
   CheckCircle2,
   Clock3,
+  Download,
   Eye,
   FileText,
   FileUp,
@@ -15,6 +16,7 @@ import {
   Inbox,
   Mail,
   MapPinned,
+  MessageSquare,
   Phone,
   Save,
   Search,
@@ -41,6 +43,7 @@ import {
 } from "../../../features/admin/data/adminMock.data";
 import {
   createMediaItem as persistNewMediaItem,
+  createInquiryAttachmentDownloadUrl,
   deleteMediaItem as persistDeleteMediaItem,
   fetchAdminState,
   updateConstructionUpdate as persistConstructionUpdate,
@@ -50,9 +53,11 @@ import {
   updateProject as persistProject,
   updateUnit as persistUnit,
   uploadMediaFile as persistMediaFile,
+  type AdminDataSection,
 } from "../../../features/admin/data/adminSupabase.api";
 import type {
   AdminConstructionUpdate,
+  AdminInquiryAttachment,
   AdminInquiry,
   AdminLandOffer,
   AdminMediaItem,
@@ -139,6 +144,53 @@ const inquiryTypeLabels: Record<AdminInquiry["inquiryType"], string> = {
   availability: "Dostupnost",
 };
 
+type ParsedInquiryMessage = {
+  context: Array<{ label: string; value: string }>;
+  message: string;
+};
+
+function parseInquiryMessage(rawMessage: string, unitCode?: string): ParsedInquiryMessage {
+  const normalizedMessage = rawMessage.replace(/\r\n/g, "\n").trim();
+  const contextMatch = normalizedMessage.match(
+    /^Kontekst upita:\s*\n([\s\S]*?)(?:\n\s*\n|$)([\s\S]*)$/i,
+  );
+
+  if (!contextMatch) {
+    return { context: [], message: normalizedMessage };
+  }
+
+  const repeatedUnitNumber = unitCode?.replace(/^stan\s*/i, "").trim().toLowerCase();
+  const context = contextMatch[1]
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const separatorIndex = line.indexOf(":");
+
+      if (separatorIndex === -1) {
+        return { label: "Detalj", value: line };
+      }
+
+      return {
+        label: line.slice(0, separatorIndex).trim(),
+        value: line.slice(separatorIndex + 1).trim(),
+      };
+    })
+    .filter(
+      ({ label, value }) =>
+        !(
+          repeatedUnitNumber &&
+          label.toLowerCase() === "stan" &&
+          value.toLowerCase() === repeatedUnitNumber
+        ),
+    );
+
+  return {
+    context,
+    message: contextMatch[2].trim(),
+  };
+}
+
 const mediaTypeLabels: Record<AdminMediaItem["mediaType"], string> = {
   project_image: "Slika projekta",
   unit_image: "Slika/tlocrt stana",
@@ -171,7 +223,7 @@ const sectionCopy: Record<
   },
   units: {
     eyebrow: "Ponuda",
-    title: "stanovi i statusi",
+    title: "Stanovi i statusi",
     body: "Brza promena dostupnosti stanova koja se direktno odrazava na javnu ponudu.",
   },
   project: {
@@ -221,7 +273,9 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
 
     async function loadAdminData() {
       try {
-        const data = await fetchAdminState();
+        setIsLoading(true);
+        setFeedback("Ucitavanje podataka za ovu sekciju...");
+        const data = await fetchAdminState(section as AdminDataSection);
 
         if (!isMounted || !data) {
           return;
@@ -250,7 +304,7 @@ export const AdminDashboardPage = ({ section }: AdminDashboardPageProps) => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [section]);
 
   const persist = async (
     action: () => Promise<void>,
@@ -966,6 +1020,61 @@ type InquiryPanelProps = {
   ) => Promise<AdminPersistResult>;
 };
 
+function formatAttachmentSize(bytes: number) {
+  if (bytes < 1024 * 1024) {
+    return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  }
+
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+const AdminAttachmentDownload = ({
+  attachment,
+}: {
+  attachment: AdminInquiryAttachment;
+}) => {
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleDownload = async () => {
+    setIsDownloading(true);
+    setError("");
+
+    try {
+      const signedUrl = await createInquiryAttachmentDownloadUrl(attachment);
+      const link = document.createElement("a");
+      link.href = signedUrl;
+      link.download = attachment.name;
+      link.rel = "noreferrer";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch {
+      setError("Preuzimanje dokumenta nije uspelo. Pokušajte ponovo.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  return (
+    <div className="admin-attachment" aria-label="Priloženi dokument">
+      <button
+        className="admin-attachment__button"
+        type="button"
+        onClick={() => void handleDownload()}
+        disabled={isDownloading}
+      >
+        <Download />
+        {isDownloading ? "Priprema preuzimanja..." : "Preuzmi dokument"}
+      </button>
+      <span className="admin-attachment__meta">
+        {attachment.name} · {formatAttachmentSize(attachment.sizeBytes)}
+      </span>
+      {error ? <span className="admin-attachment__error">{error}</span> : null}
+    </div>
+  );
+};
+
 const InquiryPanel = ({
   inquiries,
   query,
@@ -1034,6 +1143,7 @@ const InquiryPanel = ({
 
         {filtered.map((inquiry) => {
           const sourceHref = getSafeAdminSourceHref(inquiry.sourcePage);
+          const parsedMessage = parseInquiryMessage(inquiry.message, inquiry.unitCode);
 
           return (
             <article className="admin-card" key={inquiry.id}>
@@ -1069,6 +1179,33 @@ const InquiryPanel = ({
                 />
               </div>
 
+              <section className="admin-inquiry-message" aria-labelledby={`inquiry-message-${inquiry.id}`}>
+                <div className="admin-inquiry-section-label" id={`inquiry-message-${inquiry.id}`}>
+                  <MessageSquare />
+                  <span>Poruka kupca</span>
+                </div>
+                <p className="admin-card__message">
+                  {parsedMessage.message || "Poruka nije navedena."}
+                </p>
+              </section>
+
+              {parsedMessage.context.length > 0 ? (
+                <section className="admin-inquiry-context" aria-labelledby={`inquiry-context-${inquiry.id}`}>
+                  <div className="admin-inquiry-section-label" id={`inquiry-context-${inquiry.id}`}>
+                    <FileText />
+                    <span>Detalji izabranog stana</span>
+                  </div>
+                  <dl>
+                    {parsedMessage.context.map(({ label, value }) => (
+                      <div key={`${label}-${value}`}>
+                        <dt>{label}</dt>
+                        <dd>{value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </section>
+              ) : null}
+
               <div className="admin-contact-grid">
                 {inquiry.phone ? (
                   <a href={createPhoneHref(inquiry.phone)}>
@@ -1086,6 +1223,10 @@ const InquiryPanel = ({
                   {inquiry.email}
                 </a>
               </div>
+
+              {inquiry.attachment ? (
+                <AdminAttachmentDownload attachment={inquiry.attachment} />
+              ) : null}
 
               <div className="admin-card__links" aria-label="Kontekst upita">
                 {inquiry.unitCode ? (
@@ -1109,8 +1250,6 @@ const InquiryPanel = ({
                   </a>
                 ) : null}
               </div>
-
-              <p className="admin-card__message">{inquiry.message}</p>
 
               <label className="form-field">
                 <span className="form-label">Interna beleska</span>
@@ -1237,10 +1376,7 @@ const LandOfferPanel = ({
                     {adminStatusLabels[offer.adminStatus]}
                   </span>
                   <h2>{offer.fullName}</h2>
-                  <p>
-                    {offer.propertyAddress} · {offer.plotAreaM2} m2 ·{" "}
-                    {formatDate(offer.createdAt)}
-                  </p>
+                  <p>Ponuda placa · {formatDate(offer.createdAt)}</p>
                 </div>
                 <WorkflowSelect
                   value={offer.adminStatus}
@@ -1265,6 +1401,37 @@ const LandOfferPanel = ({
                 </a>
               </div>
 
+              <section className="admin-inquiry-message" aria-labelledby={`land-offer-message-${offer.id}`}>
+                <div className="admin-inquiry-section-label" id={`land-offer-message-${offer.id}`}>
+                  <MessageSquare />
+                  <span>Poruka ponuđača</span>
+                </div>
+                <p className="admin-card__message">
+                  {offer.details || "Detalji ponude nisu navedeni."}
+                </p>
+              </section>
+
+              <section className="admin-inquiry-context" aria-labelledby={`land-offer-context-${offer.id}`}>
+                <div className="admin-inquiry-section-label" id={`land-offer-context-${offer.id}`}>
+                  <MapPinned />
+                  <span>Detalji parcele</span>
+                </div>
+                <dl>
+                  <div>
+                    <dt>Adresa / lokacija</dt>
+                    <dd>{offer.propertyAddress || "Nije navedena"}</dd>
+                  </div>
+                  <div>
+                    <dt>Površina placa</dt>
+                    <dd>{offer.plotAreaM2 ? `${offer.plotAreaM2} m²` : "Nije navedena"}</dd>
+                  </div>
+                </dl>
+              </section>
+
+              {offer.attachment ? (
+                <AdminAttachmentDownload attachment={offer.attachment} />
+              ) : null}
+
               {sourceHref ? (
                 <div className="admin-card__links" aria-label="Kontekst ponude">
                   <a
@@ -1277,8 +1444,6 @@ const LandOfferPanel = ({
                   </a>
                 </div>
               ) : null}
-
-              <p className="admin-card__message">{offer.details}</p>
 
               <label className="form-field">
                 <span className="form-label">Interna beleska</span>
@@ -1525,7 +1690,7 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
 
         <label className="admin-filter">
           <Filter />
-          <span>status</span>
+          <span>Status</span>
           <select
             value={unitStatusFilter}
             onChange={(event) =>
@@ -1542,12 +1707,12 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
         </label>
 
         <label className="admin-filter">
-          <span>Etaza</span>
+          <span>Etaža</span>
           <select
             value={floorFilter}
             onChange={(event) => setFloorFilter(event.target.value)}
           >
-            <option value="all">Sve etaze</option>
+            <option value="all">Sve etaže</option>
             {floorOptions.map((floor) => (
               <option key={floor} value={floor}>
                 {floor}
@@ -1574,17 +1739,41 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
       </div>
 
       <div className="admin-unit-summary" role="status">
-        Prikazano {filteredUnits.length} od {units.length} stanova. Status i
-        objava se cuvaju odmah; kratak opis cuvajte dugmetom po stanu.
+        <strong>
+          Prikazano {filteredUnits.length} od {units.length} stanova
+        </strong>
+        <span>
+          Promene statusa i objave čuvaju se odmah. Kratak opis sačuvajte dugmetom
+          po stanu.
+        </span>
+      </div>
+
+      <div className="admin-unit-status-legend" aria-label="Legenda statusa stanova">
+        <span className="admin-unit-status-legend__title">Statusi</span>
+        {unitStatuses.map((status) => (
+          <span
+            className={`admin-unit-status-legend__item admin-unit-status-legend__item--${status}`}
+            key={status}
+          >
+            <i aria-hidden="true" />
+            {adminUnitStatusLabels[status]}
+          </span>
+        ))}
+        <span className="admin-unit-status-legend__hint">
+          Izaberite novi status direktno u tabeli.
+        </span>
       </div>
 
       <div className="admin-table-wrap">
-        <table className="admin-table">
+        <table className="admin-table admin-unit-table">
+          <caption className="sr-only">
+            Upravljanje statusima, sadržajem i objavom stanova
+          </caption>
           <thead>
             <tr>
               <th>Jedinica</th>
               <th>Detalji</th>
-              <th>status</th>
+              <th>Status stana</th>
               <th>Kratak opis za javnu ponudu</th>
               <th>Tlocrt i javni prikaz</th>
               <th>Objava</th>
@@ -1626,11 +1815,11 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
                     <td>
                       <dl className="admin-unit-facts">
                         <div>
-                          <dt>Etaza</dt>
+                          <dt>Etaža</dt>
                           <dd>{unit.floorLabel}</dd>
                         </div>
                         <div>
-                          <dt>Povrsina</dt>
+                          <dt>Površina</dt>
                           <dd>{unit.areaM2}</dd>
                         </div>
                         <div>
@@ -1639,30 +1828,39 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
                         </div>
                       </dl>
                     </td>
-                    <td>
-                      <span
-                        className={`admin-unit-status admin-unit-status--${unit.status}`}
+                    <td className="admin-unit-status-cell">
+                      <div
+                        className={`admin-unit-status-control admin-unit-status-control--${unit.status}`}
                       >
-                        {adminUnitStatusLabels[unit.status]}
-                      </span>
-                      <select
-                        className="admin-table-select"
-                        aria-label={`Promeni status za ${unit.unitCode}`}
-                        value={unit.status}
-                        onChange={(event) =>
-                          void persistUnitChange(
-                            unit,
-                            { status: event.target.value as AdminUnitStatus },
-                            "Status stana je sacuvan.",
-                          )
-                        }
-                      >
-                        {unitStatuses.map((status) => (
-                          <option key={status} value={status}>
-                            {adminUnitStatusLabels[status]}
-                          </option>
-                        ))}
-                      </select>
+                        <span
+                          className={`admin-unit-status admin-unit-status--${unit.status}`}
+                          role="status"
+                        >
+                          <i aria-hidden="true" />
+                          {adminUnitStatusLabels[unit.status]}
+                        </span>
+                        <label className="admin-unit-status-select">
+                          <span>Promeni status</span>
+                          <select
+                            className="admin-table-select"
+                            aria-label={`Promeni status za ${unit.unitCode}`}
+                            value={unit.status}
+                            onChange={(event) =>
+                              void persistUnitChange(
+                                unit,
+                                { status: event.target.value as AdminUnitStatus },
+                                "Status stana je sačuvan.",
+                              )
+                            }
+                          >
+                            {unitStatuses.map((status) => (
+                              <option key={status} value={status}>
+                                {adminUnitStatusLabels[status]}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      </div>
                     </td>
                     <td>
                       <label className="admin-unit-description">
@@ -2102,7 +2300,7 @@ const ProjectPanel = ({
           <p>Objavljeni hero/status vizuali u media biblioteci.</p>
         </article>
         <article>
-          <span>status</span>
+          <span>Status</span>
           <strong>{projectStatusLabels[projectDraft.projectStatus]}</strong>
           <p>{projectDraft.statusLabel || "Dodajte javnu oznaku statusa."}</p>
         </article>
@@ -2452,7 +2650,7 @@ const ProjectPanel = ({
             onChange={(event) =>
               updateProject({ heroImageUrl: event.target.value })
             }
-            placeholder="/images/heroja-pinkija-13/gradilisna-tabla.jpg"
+            placeholder="/images/heroja-pinkija-13/gradilisna-tabla-optimized.jpg"
           />
         </label>
 

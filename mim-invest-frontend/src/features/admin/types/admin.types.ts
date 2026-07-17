@@ -4,6 +4,13 @@ export type AdminUnitStatus = "available" | "reserved" | "sold";
 
 export type AdminTimelineState = "done" | "active" | "upcoming";
 
+export type AdminInquiryAttachment = {
+  path: string;
+  name: string;
+  mimeType: string;
+  sizeBytes: number;
+};
+
 export type AdminInquiry = {
   id: string;
   fullName: string;
@@ -16,6 +23,7 @@ export type AdminInquiry = {
   sourcePage: string;
   adminStatus: AdminWorkflowStatus;
   adminNote: string;
+  attachment?: AdminInquiryAttachment;
   createdAt: string;
 };
 
@@ -30,6 +38,7 @@ export type AdminLandOffer = {
   sourcePage: string;
   adminStatus: AdminWorkflowStatus;
   adminNote: string;
+  attachment?: AdminInquiryAttachment;
   createdAt: string;
 };
 

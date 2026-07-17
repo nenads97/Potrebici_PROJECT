@@ -1,7 +1,12 @@
 import { isSupabaseConfigured, supabase } from "../../../shared/supabase/client";
-import { apartments, projectInfo } from "../../projects/data/herojaPinkija13.data";
+import {
+  apartments,
+  getUnitRouteSegment,
+  projectInfo,
+} from "../../projects/data/herojaPinkija13.data";
 import type {
   AdminConstructionUpdate,
+  AdminInquiryAttachment,
   AdminInquiry,
   AdminLandOffer,
   AdminMediaItem,
@@ -12,8 +17,11 @@ import type {
 
 const projectSlug = "heroja-pinkija-13";
 const publicAssetsBucket = "public-assets";
+const inquiryAttachmentsBucket = "inquiry-attachments";
 const adminFetchTimeoutMs = 5000;
-const apartmentLookup = new Map(apartments.map((apartment) => [apartment.number, apartment]));
+const apartmentLookup = new Map(
+  apartments.map((apartment) => [apartment.slug ?? apartment.number, apartment]),
+);
 
 export type AdminSupabaseState = {
   inquiries: AdminInquiry[];
@@ -23,6 +31,23 @@ export type AdminSupabaseState = {
   constructionUpdates: AdminConstructionUpdate[];
   mediaItems: AdminMediaItem[];
 };
+
+export type AdminDataSection =
+  | "overview"
+  | "inquiries"
+  | "land"
+  | "units"
+  | "project"
+  | "media"
+  | "all";
+
+type AdminDataSource =
+  | "inquiries"
+  | "land"
+  | "units"
+  | "project"
+  | "constructionUpdates"
+  | "media";
 
 export type AdminMediaUploadResult = {
   publicUrl: string;
@@ -41,40 +66,77 @@ export type AdminMediaCreateInput = {
   sortOrder?: number;
 };
 
-export async function fetchAdminState(): Promise<AdminSupabaseState | null> {
+export async function fetchAdminState(
+  section: AdminDataSection = "all",
+): Promise<AdminSupabaseState | null> {
   if (!isSupabaseConfigured || !supabase) {
     return null;
   }
 
-  const [inquiries, landOffers, units, project, constructionUpdates, mediaItems] = await withAdminFetchTimeout(
-    Promise.all([
-      supabase
-        .from("contact_inquiries")
-        .select("*")
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("land_offers")
-        .select("*")
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("units")
-        .select("*")
-        .order("sort_order", { ascending: true }),
-      supabase
-        .from("projects")
-        .select("*")
-        .eq("slug", projectSlug)
-        .single(),
-      supabase
-        .from("construction_updates")
-        .select("*")
-        .order("sort_order", { ascending: true }),
-      supabase
-        .from("project_media")
-        .select("*")
-        .order("sort_order", { ascending: true }),
-    ]),
-  );
+  const needs = (dataSource: AdminDataSource) => {
+    if (section === "all") {
+      return true;
+    }
+
+    if (section === "overview") {
+      return ["inquiries", "land", "units", "media"].includes(dataSource);
+    }
+
+    if (section === "project") {
+      return ["project", "constructionUpdates", "units", "media"].includes(
+        dataSource,
+      );
+    }
+
+    if (section === "media") {
+      return ["media", "project", "units"].includes(dataSource);
+    }
+
+    return section === dataSource;
+  };
+
+  const [inquiries, landOffers, units, project, constructionUpdates, mediaItems] =
+    await withAdminFetchTimeout(
+      Promise.all([
+        needs("inquiries")
+          ? supabase
+              .from("contact_inquiries")
+              .select("*")
+              .order("created_at", { ascending: false })
+          : Promise.resolve({ data: [], error: null }),
+        needs("land")
+          ? supabase
+              .from("land_offers")
+              .select("*")
+              .order("created_at", { ascending: false })
+          : Promise.resolve({ data: [], error: null }),
+        needs("units")
+          ? supabase
+              .from("units")
+              .select("*")
+              .order("sort_order", { ascending: true })
+          : Promise.resolve({ data: [], error: null }),
+        needs("project")
+          ? supabase
+              .from("projects")
+              .select("*")
+              .eq("slug", projectSlug)
+              .single()
+          : Promise.resolve({ data: null, error: null }),
+        needs("constructionUpdates")
+          ? supabase
+              .from("construction_updates")
+              .select("*")
+              .order("sort_order", { ascending: true })
+          : Promise.resolve({ data: [], error: null }),
+        needs("media")
+          ? supabase
+              .from("project_media")
+              .select("*")
+              .order("sort_order", { ascending: true })
+          : Promise.resolve({ data: [], error: null }),
+      ]),
+    );
 
   const error =
     inquiries.error ??
@@ -101,6 +163,7 @@ export async function fetchAdminState(): Promise<AdminSupabaseState | null> {
       sourcePage: item.source_page ?? "",
       adminStatus: item.admin_status,
       adminNote: item.admin_note ?? "",
+      attachment: mapInquiryAttachment(item),
       createdAt: item.created_at,
     })),
     landOffers: (landOffers.data ?? []).map((item) => ({
@@ -114,25 +177,32 @@ export async function fetchAdminState(): Promise<AdminSupabaseState | null> {
       sourcePage: item.source_page ?? "",
       adminStatus: item.admin_status,
       adminNote: item.admin_note ?? "",
+      attachment: mapInquiryAttachment(item),
       createdAt: item.created_at,
     })),
     units: (units.data ?? []).map((unit) => {
       const apartmentNumber = unit.code.match(/\d+/)?.[0] ?? unit.code;
-      const apartment = apartmentLookup.get(apartmentNumber);
+      const apartment =
+        apartmentLookup.get(unit.slug) ??
+        apartmentLookup.get(unit.code) ??
+        apartmentLookup.get(apartmentNumber);
 
       return {
         id: unit.id,
-        unitCode: unit.code.startsWith("stan") ? unit.code : `stan ${unit.code}`,
+        unitCode:
+          unit.unit_type === "apartment" ? `stan ${apartmentNumber}` : unit.code,
         unitType: unit.unit_type,
         floorLabel: unit.floor_label ?? "",
         areaM2: unit.area_m2 ? `${unit.area_m2} m2` : "",
-        roomStructure: unit.room_structure ?? "",
+        roomStructure: apartment?.rooms ?? unit.room_structure ?? "",
         status: unit.status,
         shortDescription: unit.short_description ?? apartment?.highlight ?? "",
         fullDescription: unit.full_description ?? apartment?.description ?? "",
         seoTitle: unit.seo_title ?? "",
         seoDescription: unit.seo_description ?? "",
-        publicPath: `/projekti/${projectSlug}/ponuda-stanova/${apartmentNumber}`,
+        publicPath: `/projekti/${projectSlug}/ponuda-stanova/${
+          apartment ? getUnitRouteSegment(apartment) : unit.slug
+        }`,
         planVariant: apartment?.planVariant,
         floorPlanPath: unit.main_image_url ?? apartment?.heroFloorPlan.src,
         isPublished: unit.is_published,
@@ -179,6 +249,24 @@ export async function updateInquiry(id: string, changes: {
   if (!supabase) return;
   const { error } = await supabase.from("contact_inquiries").update(changes).eq("id", id);
   if (error) throw error;
+}
+
+export async function createInquiryAttachmentDownloadUrl(
+  attachment: AdminInquiryAttachment,
+) {
+  if (!supabase) {
+    throw new Error("Supabase nije konfigurisan. Preuzimanje dokumenta nije moguce.");
+  }
+
+  const { data, error } = await supabase.storage
+    .from(inquiryAttachmentsBucket)
+    .createSignedUrl(attachment.path, 300, { download: attachment.name });
+
+  if (error) {
+    throw error;
+  }
+
+  return data.signedUrl;
 }
 
 export async function updateLandOffer(id: string, changes: {
@@ -499,6 +587,29 @@ function mapMediaItem(item: {
     filePath: item.file_path,
     altText: item.alt_text ?? "",
     isPublished: item.is_published,
+  };
+}
+
+function mapInquiryAttachment(item: {
+  attachment_path?: string | null;
+  attachment_name?: string | null;
+  attachment_mime_type?: string | null;
+  attachment_size_bytes?: number | null;
+}): AdminInquiryAttachment | undefined {
+  if (
+    !item.attachment_path ||
+    !item.attachment_name ||
+    !item.attachment_mime_type ||
+    !item.attachment_size_bytes
+  ) {
+    return undefined;
+  }
+
+  return {
+    path: item.attachment_path,
+    name: item.attachment_name,
+    mimeType: item.attachment_mime_type,
+    sizeBytes: Number(item.attachment_size_bytes),
   };
 }
 

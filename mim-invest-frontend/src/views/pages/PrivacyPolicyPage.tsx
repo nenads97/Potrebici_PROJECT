@@ -26,16 +26,18 @@ const privacyContactModal = {
   description:
     "Napišite na koji upit ili komunikaciju se pitanje odnosi. Javićemo vam se sa odgovorom ili narednim koracima.",
   submitLabel: "Pošaljite zahtev",
-  successMessage: "Hvala. Zahtev je poslat i kontaktiraćemo vas povodom obrade podataka.",
+  successMessage:
+    "Hvala. Zahtev je poslat i kontaktiraćemo vas povodom obrade podataka.",
   inquiryType: "general" as const,
   details: [{ label: "Tema", value: "Politika privatnosti" }],
-  messagePlaceholder: "Napišite zahtev za pristup, ispravku, brisanje ili pitanje o obradi podataka.",
+  messagePlaceholder:
+    "Napišite zahtev za pristup, ispravku, brisanje ili pitanje o obradi podataka.",
 };
 
 const heroHighlights = [
-  { value: "Transparentno", label: "objasnjena svrha obrade" },
-  { value: "Namenski", label: "podaci se koriste za konkretan upit" },
-  { value: "Kontrolisano", label: "zahtev možete poslati direktno" },
+  { value: "Transparentno", label: "Objašnjena svrha obrade" },
+  { value: "Namenski", label: "Podaci se koriste za konkretan upit" },
+  { value: "Kontrolisano", label: "Zahtev možete poslati direktno" },
 ];
 
 const privacySections = [
@@ -43,61 +45,58 @@ const privacySections = [
     id: "rukovalac",
     icon: FileText,
     title: "Rukovalac podacima",
-    text:
-      "Rukovalac podacima je M & M Gradnja. Za pitanja u vezi sa obradom podataka možete nas kontaktirati putem prodajnog e-maila ili telefona navedenih na sajtu.",
+    text: "Rukovalac podacima je M & M Gradnja. Za pitanja u vezi sa obradom podataka možete nas kontaktirati putem prodajnog e-maila ili telefona navedenih na sajtu.",
   },
   {
     id: "podaci",
     icon: Database,
     title: "Podaci koje prikupljamo",
-    text:
-      "Podatke prikupljamo kada posaljete upit, zakazete obilazak, pozovete prodaju ili zatražite informacije o odredjenom stanu.",
+    text: "Podatke prikupljamo kada pošaljete upit, zakažete obilazak, pozovete prodaju ili zatražite informacije o određenom stanu.",
   },
   {
     id: "svrha",
     icon: ClipboardList,
     title: "Svrha obrade",
-    text:
-      "Podaci se koriste za komunikaciju sa potencijalnim kupcima, slanje informacija o stanovima, organizaciju obilazaka i pripremu ponuda.",
+    text: "Podaci se koriste za komunikaciju sa potencijalnim kupcima, slanje informacija o stanovima, organizaciju obilazaka i pripremu ponuda.",
   },
   {
     id: "bezbednost",
     icon: LockKeyhole,
     title: "Bezbednost podataka",
-    text:
-      "Podaci se cuvaju uz razumne organizacione i tehnicke mere zastite. Pristup imaju samo osobe kojima su informacije potrebne za prodaju ili zakonske obaveze.",
+    text: "Podaci se čuvaju uz razumne organizacione i tehničke mere zaštite. Pristup imaju samo osobe kojima su informacije potrebne za prodaju ili zakonske obaveze.",
+  },
+  {
+    id: "kolacici",
+    icon: ShieldCheck,
+    title: "Kolačići i sadržaj trećih lica",
+    text: "Sajt ne koristi marketinšku analitiku ni kolačiće za profilisanje. Neophodni tehnički mehanizmi koriste se za rad aplikacije i zaštitu formi od zloupotreba. Google mapa na kontakt stranici učitava se tek nakon vaše dozvole, a izbor možete promeniti u podešavanjima privatnosti u podnožju sajta.",
   },
   {
     id: "prava",
     icon: Scale,
-    title: "Vasa prava",
-    text:
-      "Mozete zatražiti pristup, ispravku, brisanje ili ogranicenje obrade podataka, kao i povlacenje saglasnosti kada je obrada zasnovana na saglasnosti.",
+    title: "Vaša prava",
+    text: "Možete zatražiti pristup, ispravku, brisanje ili ograničenje obrade podataka, kao i povlačenje saglasnosti kada je obrada zasnovana na saglasnosti.",
   },
   {
     id: "izmene",
     icon: RefreshCw,
     title: "Izmene politike",
-    text:
-      "Politika privatnosti može biti ažurirana kada se promene procesi, pravni zahtevi ili našin komunikacije sa kupcima.",
+    text: "Politika privatnosti može biti ažurirana kada se promene procesi, pravni zahtevi ili način komunikacije sa kupcima.",
   },
 ];
 
 const processingSteps = [
   {
     title: "Kontakt",
-    text:
-      "Podatke nam najcesce dostavljate kroz kontakt formu, e-mail, telefonski razgovor ili upit za konkretan stan.",
+    text: "Podatke nam najčešće dostavljate kroz kontakt formu, e-mail, telefonski razgovor ili upit za konkretan stan.",
   },
   {
     title: "Komunikacija",
-    text:
-      "Koristimo ih da odgovorimo na zahtev, proverimo dostupnost stanova i dogovorimo dalje korake sa prodajnim timom.",
+    text: "Koristimo ih da odgovorimo na zahtev, proverimo dostupnost stanova i dogovorimo dalje korake sa prodajnim timom.",
   },
   {
-    title: "Zastita",
-    text:
-      "Podaci ostaju ograniceni na osobe i procese kojima su potrebni za komunikaciju, prodaju ili zakonske obaveze.",
+    title: "Zaštita",
+    text: "Podaci ostaju ograničeni na osobe i procese kojima su potrebni za komunikaciju, prodaju ili zakonske obaveze.",
   },
 ];
 
@@ -131,7 +130,7 @@ export const PrivacyPolicyPage = () => {
     <main className="privacy-page">
       <PageMeta
         title="Politika privatnosti | M & M Gradnja"
-        description="Saznajte kako M & M Gradnja obradjuje podatke poslate kroz upite za stanove, obilazak projekta i kontakt sa prodajom."
+        description="Saznajte kako M & M Gradnja obrađuje podatke poslate kroz upite za stanove, obilazak projekta i kontakt sa prodajom."
       />
       <section className="privacy-hero">
         <div className="page-container privacy-hero__grid">
@@ -145,11 +144,14 @@ export const PrivacyPolicyPage = () => {
               Politika privatnosti
             </motion.p>
             <motion.h1 className="section-title" variants={reveal}>
-              Vasi podaci, jasno i odgovorno.
+              Vaši podaci, jasno i odgovorno.
             </motion.h1>
-            <motion.p className="section-copy section-copy--large" variants={reveal}>
-              Ova stranica objasnjava kako M & M Gradnja prikuplja, koristi i
-              cuva podatke koje dostavite prilikom interesovanja za stanove,
+            <motion.p
+              className="section-copy section-copy--large"
+              variants={reveal}
+            >
+              Ova stranica objašnjava kako M & M Gradnja prikuplja, koristi i
+              čuva podatke koje dostavite prilikom interesovanja za stanove,
               obilazak projekta ili kontakt sa prodajnim timom.
             </motion.p>
             <motion.div className="page-actions" variants={reveal}>
@@ -160,7 +162,10 @@ export const PrivacyPolicyPage = () => {
                 <Mail />
                 Pišite nam
               </ContactModalButton>
-              <a className="site-button site-button--outline" href={contactPhoneHref}>
+              <a
+                className="site-button site-button--outline"
+                href={contactPhoneHref}
+              >
                 <Phone />
                 Pozovite prodaju
               </a>
@@ -173,14 +178,14 @@ export const PrivacyPolicyPage = () => {
             animate="show"
             variants={reveal}
             transition={{ duration: 0.62, delay: reduceMotion ? 0 : 0.14 }}
-            aria-label="Sazetak politike privatnosti"
+            aria-label="Sažetak politike privatnosti"
           >
             <div className="privacy-hero__summary-head">
               <span className="privacy-hero__summary-icon">
                 <ShieldCheck />
               </span>
               <div>
-                <p>Sazetak politike</p>
+                <p>Sažetak politike</p>
                 <h2>Podaci imaju jasno definisanu namenu.</h2>
               </div>
             </div>
@@ -213,7 +218,7 @@ export const PrivacyPolicyPage = () => {
             <h2>Podatke tražimo samo kada su potrebni za konkretan odgovor.</h2>
             <blockquote>
               Ne koristimo podatke za nepotrebnu komunikaciju. Fokus je na
-              prodajnim informacijama, organizaciji obilaska i odgovoru na vas
+              prodajnim informacijama, organizaciji obilaska i odgovoru na vaš
               zahtev.
             </blockquote>
           </motion.div>
@@ -239,7 +244,10 @@ export const PrivacyPolicyPage = () => {
         </motion.div>
       </section>
 
-      <section className="privacy-document" aria-labelledby="privacy-document-title">
+      <section
+        className="privacy-document"
+        aria-labelledby="privacy-document-title"
+      >
         <div className="page-container privacy-document__grid">
           <motion.aside
             className="privacy-document__aside"
@@ -252,7 +260,7 @@ export const PrivacyPolicyPage = () => {
             <h2 id="privacy-document-title">Kako postupamo sa podacima.</h2>
             <p>
               Svaki odeljak opisuje jednu oblast obrade, od trenutka kada nam se
-              obratite do našina na koji možete ostvariti svoja prava.
+              obratite do načina na koji možete ostvariti svoja prava.
             </p>
           </motion.aside>
 
@@ -264,7 +272,12 @@ export const PrivacyPolicyPage = () => {
             variants={revealContainer}
           >
             {privacySections.map(({ id, icon: Icon, title, text }, index) => (
-              <motion.article id={id} className="privacy-clause" key={id} variants={reveal}>
+              <motion.article
+                id={id}
+                className="privacy-clause"
+                key={id}
+                variants={reveal}
+              >
                 <div className="privacy-clause__meta">
                   <span>{String(index + 1).padStart(2, "0")}</span>
                   <Icon />
@@ -294,12 +307,15 @@ export const PrivacyPolicyPage = () => {
             </div>
             <h2>Od vašeg upita do bezbedne komunikacije.</h2>
             <p>
-              Obrada je vezana za razgovor koji ste zapoceli i informacije koje
+              Obrada je vezana za razgovor koji ste započeli i informacije koje
               su potrebne da taj razgovor bude koristan.
             </p>
           </motion.div>
 
-          <motion.ol className="privacy-processing__steps" variants={revealContainer}>
+          <motion.ol
+            className="privacy-processing__steps"
+            variants={revealContainer}
+          >
             {processingSteps.map((step, index) => (
               <motion.li key={step.title} variants={reveal}>
                 <span>{String(index + 1).padStart(2, "0")}</span>
@@ -324,10 +340,10 @@ export const PrivacyPolicyPage = () => {
           <motion.div variants={reveal}>
             <p className="section-eyebrow">Podaci u upitu</p>
             <h2 className="section-title section-title--medium">
-              Samo ono sto je potrebno za odgovor.
+              Samo ono što je potrebno za odgovor.
             </h2>
             <p className="section-copy">
-              Uobicajeno su to osnovni kontakt podaci i informacija o projektu,
+              Uobičajeno su to osnovni kontakt podaci i informacija o projektu,
               stanu ili terminu obilaska koji vas zanima.
             </p>
           </motion.div>
@@ -354,7 +370,10 @@ export const PrivacyPolicyPage = () => {
         >
           <motion.div variants={reveal}>
             <p className="section-eyebrow">Zahtevi i pitanja</p>
-            <h2>Za pristup, ispravku ili brisanje podataka obratite nam se direktno.</h2>
+            <h2>
+              Za pristup, ispravku ili brisanje podataka obratite nam se
+              direktno.
+            </h2>
             <p>
               Navedite na koji upit ili komunikaciju se zahtev odnosi kako bismo
               mogli precizno da proverimo potrebne informacije.

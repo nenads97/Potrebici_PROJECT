@@ -17,7 +17,7 @@ const adminLinks = [
   { to: "/admin", label: "Pregled", icon: LayoutDashboard },
   { to: "/admin/upiti-stanovi", label: "Upiti za stanove", icon: Inbox },
   { to: "/admin/upiti-placevi", label: "Upiti za placeve", icon: MapPinned },
-  { to: "/admin/stanovi", label: "stanovi i statusi", icon: Home },
+  { to: "/admin/stanovi", label: "Stanovi i statusi", icon: Home },
   { to: "/admin/projekat", label: "Projekat", icon: Building2 },
   { to: "/admin/fajlovi", label: "Slike i PDF fajlovi", icon: Images },
 ];
@@ -51,6 +51,7 @@ export const AdminLayout = () => {
                 className={({ isActive }) =>
                   `admin-nav-link${isActive ? " admin-nav-link--active" : ""}`
                 }
+                end={link.to === "/admin"}
                 key={link.to}
                 to={link.to}
               >

@@ -15,7 +15,10 @@ type AppErrorBoundarystate = {
   error: Error | null;
 };
 
-class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorBoundarystate> {
+class AppErrorBoundary extends Component<
+  AppErrorBoundaryProps,
+  AppErrorBoundarystate
+> {
   state: AppErrorBoundarystate = {
     error: null,
   };
@@ -40,7 +43,9 @@ class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorBoundary
 
   render() {
     if (this.state.error) {
-      return <ErrorFallback onReset={this.reset} variant={this.props.variant} />;
+      return (
+        <ErrorFallback onReset={this.reset} variant={this.props.variant} />
+      );
     }
 
     return this.props.children;
@@ -70,10 +75,14 @@ const ErrorFallback = ({ onReset, variant }: ErrorFallbackProps) => {
         <p>
           {isAdmin
             ? "Podaci nisu izgubljeni. Osvežite prikaz ili se vratite na početak admin panela."
-            : "Izgleda da je doslo do privremenog problema u prikazu. Mozete pokusati ponovo ili se vratiti na pocetnu stranicu."}
+            : "Izgleda da je doslo do privremenog problema u prikazu. Možete pokusati ponovo ili se vratiti na početnu stranicu."}
         </p>
         <div className="app-error-fallback__actions">
-          <button className="site-button site-button--accent" type="button" onClick={onReset}>
+          <button
+            className="site-button site-button--accent"
+            type="button"
+            onClick={onReset}
+          >
             Pokusaj ponovo
           </button>
           <Link

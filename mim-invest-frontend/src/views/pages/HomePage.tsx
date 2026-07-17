@@ -1,13 +1,5 @@
-import { useEffect, useRef, useState, type MouseEvent } from "react";
-import {
-  AnimatePresence,
-  motion,
-  useMotionValue,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-} from "framer-motion";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ArrowUpRight,
   Building2,
@@ -34,14 +26,18 @@ import type { ProjectMediaItem } from "../../features/projects/types/project.typ
 import { PageMeta } from "../../shared/components/PageMeta";
 
 const images = {
-  hero: "/images/heroja-pinkija-13/hero-generated.png",
-  living: "/images/heroja-pinkija-13/hero-generated.png",
+  hero: "/images/heroja-pinkija-13/hero-generated.jpg",
+  living: "/images/heroja-pinkija-13/hero-generated.jpg",
   terrace: "/images/heroja-pinkija-13/radovi-u-toku.jpg",
 };
 
 const heroLines = ["Tvoj prostor.", "Tvoja pravila.", "Tvoj novi početak."];
 
-const heroLeadItems = ["Heroja Pinkija 13, Novi Sad", "15 stanova", "prodaja u toku"];
+const heroLeadItems = [
+  "Heroja Pinkija 13, Novi Sad",
+  "15 stanova",
+  "prodaja u toku",
+];
 
 const availabilityItems = [
   { icon: Home, label: "stanovi", value: "15 stanova" },
@@ -72,6 +68,16 @@ const heroTextContainer = {
   },
 };
 
+const revealContainer = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.09,
+      delayChildren: 0.06,
+    },
+  },
+};
+
 const heroTextLine = {
   hidden: { opacity: 0, y: 28, filter: "blur(8px)" },
   show: { opacity: 1, y: 0, filter: "blur(0px)" },
@@ -88,20 +94,17 @@ const lifestyleItems = [
   {
     icon: MapPin,
     title: "Početak Telepa / Liman 5",
-    text:
-      "Dinamična gradska lokacija sa odličnom povezanošću i kompletnim sadržajem u neposrednoj blizini.",
+    text: "Dinamična gradska lokacija sa odličnom povezanošću i kompletnim sadržajem u neposrednoj blizini.",
   },
   {
     icon: Building2,
     title: "Kvalitetna i moderna gradnja",
-    text:
-      "Gradnja po savremenim standardima, uz materijale i sisteme koji podržavaju dugotrajnost i udobnost.",
+    text: "Gradnja po savremenim standardima, uz materijale i sisteme koji podržavaju dugotrajnost i udobnost.",
   },
   {
     icon: Sparkles,
     title: "Komfor koji se vidi u svakom detalju",
-    text:
-      "Podno grejanje, lift iz garaže i optimalno organizovani stanovi, uz mogućnost odvojene kupovine garažnog mesta i ostave.",
+    text: "Podno grejanje, lift iz garaže i optimalno organizovani stanovi, uz mogućnost odvojene kupovine garažnog mesta i ostave.",
   },
 ];
 
@@ -120,7 +123,7 @@ const futureProjectSlots = [
   {
     icon: MapPin,
     title: "Nova lokacija",
-    text: "Buduci projekti biće dodati ovde, u istom preglednom formatu.",
+    text: "Budući projekti biće dodati ovde, u istom preglednom formatu.",
   },
 ];
 
@@ -132,7 +135,7 @@ const landAcquisitionHighlights = [
   },
   {
     icon: Home,
-    title: "Plac ili kuća za rusenje",
+    title: "Plac ili kuća za rušenje",
     text: "Interesuju nas parcele i postojeći objekti pogodni za razvoj novih stambenih projekata.",
   },
   {
@@ -143,7 +146,7 @@ const landAcquisitionHighlights = [
 ];
 
 const landAcquisitionFacts = [
-  { icon: Ruler, label: "Namena", value: "stambena gradnja" },
+  { icon: Ruler, label: "Namena", value: "Stambena gradnja" },
   { icon: ClipboardCheck, label: "Prvi korak", value: "Kratka procena" },
   { icon: MessageCircle, label: "Kontakt", value: "Direktan razgovor" },
 ];
@@ -151,57 +154,15 @@ const landAcquisitionFacts = [
 type ProjectTab = "active" | "upcoming" | "completed";
 
 export const HomePage = () => {
-  const heroRef = useRef<HTMLElement>(null);
   const [activeTab, setActiveTab] = useState<ProjectTab>("active");
   const [projectMedia, setProjectMedia] = useState<ProjectMediaItem[]>([]);
   const reduceMotion = useReducedMotion();
-  const heroPointerX = useMotionValue(0);
-  const heroPointerY = useMotionValue(0);
-  const smoothHeroPointerX = useSpring(heroPointerX, {
-    stiffness: 180,
-    damping: 24,
-    mass: 0.4,
-  });
-  const smoothHeroPointerY = useSpring(heroPointerY, {
-    stiffness: 180,
-    damping: 24,
-    mass: 0.4,
-  });
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const smoothScroll = useSpring(scrollYProgress, {
-    stiffness: 85,
-    damping: 28,
-    mass: 0.35,
-  });
-  const imageY = useTransform(smoothScroll, [0, 1], ["-7%", "22%"]);
-  const imageX = useTransform(smoothHeroPointerX, [-1, 1], [-12, 12]);
-  const imageRotate = useTransform(smoothHeroPointerX, [-1, 1], [-0.35, 0.35]);
-  const imageRotateX = useTransform(smoothHeroPointerY, [-1, 1], [0.35, -0.35]);
-  const imageScale = useTransform(smoothScroll, [0, 1], [1.12, 1.18]);
-  const imageOpacity = useTransform(smoothScroll, [0, 0.48, 1], [1, 0.86, 0.48]);
-  const contentOpacity = useTransform(smoothScroll, [0, 0.28, 0.62], [1, 0.78, 0]);
-  const contentY = useTransform(smoothScroll, [0, 0.68], ["0px", "-58px"]);
-  const contentScale = useTransform(smoothScroll, [0, 0.68], [1, 0.96]);
-  const contentBlur = useTransform(smoothScroll, [0, 0.62], ["blur(0px)", "blur(10px)"]);
   const reveal = reduceMotion ? staticFadeUp : fadeUp;
   const heroText = reduceMotion ? staticHeroTextLine : heroTextLine;
-  const revealTransition = reduceMotion ? instantTransition : { duration: 0.55 };
-
-  const handleHeroMouseMove = (event: MouseEvent<HTMLElement>) => {
-    if (reduceMotion) return;
-
-    const bounds = event.currentTarget.getBoundingClientRect();
-    heroPointerX.set(((event.clientX - bounds.left) / bounds.width - 0.5) * 2);
-    heroPointerY.set(((event.clientY - bounds.top) / bounds.height - 0.5) * 2);
-  };
-
-  const resetHeroPointer = () => {
-    heroPointerX.set(0);
-    heroPointerY.set(0);
-  };
+  const motionState = reduceMotion ? "show" : "hidden";
+  const revealTransition = reduceMotion
+    ? instantTransition
+    : { duration: 0.55 };
 
   useEffect(() => {
     let isMounted = true;
@@ -253,12 +214,7 @@ export const HomePage = () => {
           },
         })}
       />
-      <section
-        className="home-hero"
-        ref={heroRef}
-        onMouseMove={handleHeroMouseMove}
-        onMouseLeave={resetHeroPointer}
-      >
+      <section className="home-hero">
         <motion.img
           src={images.hero}
           alt="Gradilišna tabla projekta Heroja Pinkija 13"
@@ -267,50 +223,15 @@ export const HomePage = () => {
           height="941"
           fetchPriority="high"
           decoding="async"
-          style={
-            reduceMotion
-              ? undefined
-              : {
-                  y: imageY,
-                  x: imageX,
-                  rotate: imageRotate,
-                  rotateX: imageRotateX,
-                  scale: imageScale,
-                  opacity: imageOpacity,
-                }
-          }
         />
         <div className="home-hero__overlay" />
         <div className="home-hero__fade" />
         <div className="home-hero__kicker">M &amp; M GRADNJA / NOVI SAD</div>
-        <div className="home-hero__project-card">
-          <div>
-            <span>AKTUELNO</span>
-            <strong>Heroja Pinkija 13</strong>
-            <small>Telep / Novi Sad / prodaja u toku</small>
-          </div>
-          <Link
-            to="/projekti/heroja-pinkija-13/o-projektu"
-            aria-label="Otvori projekat Heroja Pinkija 13"
-          >
-            <ArrowUpRight />
-          </Link>
-        </div>
         <motion.div
           className="home-hero__content"
           initial="hidden"
           animate="show"
           variants={heroTextContainer}
-          style={
-            reduceMotion
-              ? undefined
-              : {
-                  opacity: contentOpacity,
-                  y: contentY,
-                  scale: contentScale,
-                  filter: contentBlur,
-                }
-          }
         >
           <span className="home-hero__anchor">AKTUELNI PROJEKAT</span>
           <h1>
@@ -318,7 +239,11 @@ export const HomePage = () => {
               <motion.span
                 key={line}
                 variants={heroText}
-                transition={reduceMotion ? instantTransition : { duration: 0.82, ease: "easeOut" }}
+                transition={
+                  reduceMotion
+                    ? instantTransition
+                    : { duration: 0.82, ease: "easeOut" }
+                }
               >
                 {line}
               </motion.span>
@@ -330,7 +255,10 @@ export const HomePage = () => {
             ))}
           </p>
           <div className="home-hero__actions" aria-label="Glavne akcije">
-            <Link className="site-button site-button--accent" to="/projekti/heroja-pinkija-13/ponuda-stanova">
+            <Link
+              className="site-button site-button--accent"
+              to="/projekti/heroja-pinkija-13/ponuda-stanova"
+            >
               <Home />
               Pogledaj stanove
             </Link>
@@ -342,15 +270,26 @@ export const HomePage = () => {
         </motion.div>
       </section>
 
-      <section
+      <motion.section
         id="home-project-facts"
         className="home-availability"
         aria-label="Kljucne informacije o projektu"
+        initial={motionState}
+        whileInView="show"
+        viewport={{ once: true, amount: 0.28 }}
+        variants={revealContainer}
       >
         <div className="page-container">
-          <div className="home-availability__grid">
+          <motion.div
+            className="home-availability__grid"
+            variants={revealContainer}
+          >
             {availabilityItems.map(({ icon: Icon, label, value }) => (
-              <div className="home-availability__item" key={label}>
+              <motion.div
+                className="home-availability__item"
+                key={label}
+                variants={reveal}
+              >
                 <span className="icon-bubble">
                   <Icon />
                 </span>
@@ -358,14 +297,14 @@ export const HomePage = () => {
                   <span>{label}</span>
                   <strong>{value}</strong>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
-          <p className="home-availability__note">
+          </motion.div>
+          <motion.p className="home-availability__note" variants={reveal}>
             Garažna mesta i ostave kupuju se odvojeno od stana.
-          </p>
+          </motion.p>
         </div>
-      </section>
+      </motion.section>
 
       <section className="page-section home-projects">
         <div className="page-container">
@@ -374,29 +313,37 @@ export const HomePage = () => {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.3 }}
-            variants={reveal}
-            transition={revealTransition}
+            variants={revealContainer}
           >
-            <div>
+            <motion.div variants={reveal}>
               <p className="section-eyebrow">Projekti</p>
               <h2 className="section-title section-title--medium">
                 Prostori za mirniji, udobniji ritam života.
               </h2>
-            </div>
-            <div className="home-projects__intro">
+            </motion.div>
+            <motion.div className="home-projects__intro" variants={reveal}>
               <p>
-                Svaka lokacija se bira pazljivo, sa idejom da stan bude vise od
-                kvadrature: dobro povezan, funkcionalan i prijatan za svakodnevni
-                život.
+                Svaka lokacija se bira pažljivo, sa idejom da stan bude vise od
+                kvadrature: dobro povezan, funkcionalan i prijatan za
+                svakodnevni život.
               </p>
               <p>
                 Pregledajte aktuelne projekte, lokacije u pripremi i realizovane
-                objekte kroz jedan jasan portfolio.
+                objekte.
               </p>
-            </div>
+            </motion.div>
           </motion.div>
 
-          <div className="portfolio-tabs" role="tablist" aria-label="Filtriranje projekata">
+          <motion.div
+            className="portfolio-tabs"
+            role="tablist"
+            aria-label="Filtriranje projekata"
+            initial={motionState}
+            whileInView="show"
+            viewport={{ once: true, amount: 0.4 }}
+            variants={reveal}
+            transition={revealTransition}
+          >
             <button
               className={activeTab === "active" ? "is-active" : ""}
               type="button"
@@ -424,7 +371,7 @@ export const HomePage = () => {
             >
               Realizovani
             </button>
-          </div>
+          </motion.div>
 
           <AnimatePresence mode="wait">
             {activeTab === "active" ? (
@@ -434,9 +381,17 @@ export const HomePage = () => {
                 reduceMotion={Boolean(reduceMotion)}
               />
             ) : null}
-            {activeTab === "upcoming" ? <UpcomingProjectsCard key="upcoming" reduceMotion={Boolean(reduceMotion)} /> : null}
+            {activeTab === "upcoming" ? (
+              <UpcomingProjectsCard
+                key="upcoming"
+                reduceMotion={Boolean(reduceMotion)}
+              />
+            ) : null}
             {activeTab === "completed" ? (
-              <CompletedProjectsCard key="completed" reduceMotion={Boolean(reduceMotion)} />
+              <CompletedProjectsCard
+                key="completed"
+                reduceMotion={Boolean(reduceMotion)}
+              />
             ) : null}
           </AnimatePresence>
         </div>
@@ -449,20 +404,19 @@ export const HomePage = () => {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.3 }}
-            variants={reveal}
-            transition={revealTransition}
+            variants={revealContainer}
           >
-            <div>
+            <motion.div variants={reveal}>
               <p className="section-eyebrow">Kupujemo placeve</p>
               <h2 className="section-title section-title--medium">
-                Imate lokaciju za budući stambeni projekat?
+                Imate plac na prodaju?
               </h2>
-            </div>
-            <p className="section-copy">
+            </motion.div>
+            <motion.p className="section-copy" variants={reveal}>
               Pored aktuelne novogradnje, M & M Gradnja razmatra nove parcele i
-              kuće za rusenje na kvalitetnim lokacijama. Pošaljite osnovne podatke
-              i dobićete jasan prvi odgovor o potencijalu saradnje.
-            </p>
+              kuće za rušenje na kvalitetnim lokacijama. Pošaljite osnovne
+              podatke i dobićete jasan prvi odgovor o potencijalu saradnje.
+            </motion.p>
           </motion.div>
 
           <motion.article
@@ -470,14 +424,13 @@ export const HomePage = () => {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.25 }}
-            variants={reveal}
-            transition={reduceMotion ? instantTransition : { duration: 0.55, delay: 0.08 }}
+            variants={revealContainer}
           >
-            <div className="land-preview-card__copy">
+            <motion.div className="land-preview-card__copy" variants={reveal}>
               <span className="icon-bubble">
                 <Building2 />
               </span>
-              <h3>Tražimo parcele za plansku, kvalitetnu stambenu izgradnju.</h3>
+              <h3>Tražimo parcele za stambenu izgradnju.</h3>
               <p>
                 Ako imate plac, stariji objekat ili lokaciju sa potencijalom,
                 možemo brzo da proverimo osnovne uslove i predložimo sledeći
@@ -485,17 +438,26 @@ export const HomePage = () => {
               </p>
 
               <div className="land-preview-card__actions">
-                <Link className="site-button site-button--dark" to="/kupujemo-placeve">
+                <Link
+                  className="site-button site-button--dark"
+                  to="/kupujemo-placeve"
+                >
                   Detalji za vlasnike
                   <ArrowUpRight />
                 </Link>
-                <Link className="site-button site-button--outline" to="/kupujemo-placeve">
+                <Link
+                  className="site-button site-button--outline"
+                  to="/kupujemo-placeve"
+                >
                   Pošaljite ponudu
                 </Link>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="land-preview-card__details">
+            <motion.div
+              className="land-preview-card__details"
+              variants={reveal}
+            >
               <div className="land-preview-card__facts">
                 {landAcquisitionFacts.map(({ icon: Icon, label, value }) => (
                   <div key={label}>
@@ -507,19 +469,21 @@ export const HomePage = () => {
               </div>
 
               <div className="land-preview-card__highlights">
-                {landAcquisitionHighlights.map(({ icon: Icon, title, text }) => (
-                  <div key={title} className="portfolio-feature">
-                    <span className="icon-bubble">
-                      <Icon />
-                    </span>
-                    <div>
-                      <h4>{title}</h4>
-                      <p>{text}</p>
+                {landAcquisitionHighlights.map(
+                  ({ icon: Icon, title, text }) => (
+                    <div key={title} className="portfolio-feature">
+                      <span className="icon-bubble">
+                        <Icon />
+                      </span>
+                      <div>
+                        <h4>{title}</h4>
+                        <p>{text}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ),
+                )}
               </div>
-            </div>
+            </motion.div>
           </motion.article>
         </div>
       </section>
@@ -530,10 +494,9 @@ export const HomePage = () => {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
-          variants={reveal}
-          transition={revealTransition}
+          variants={revealContainer}
         >
-          <div>
+          <motion.div variants={reveal}>
             <p className="section-eyebrow">Prodaja i obilazak</p>
             <h2 className="section-title section-title--medium">
               Proverite dostupne stanove i uslove kupovine.
@@ -542,14 +505,17 @@ export const HomePage = () => {
               Pozovite prodaju za kvadrature, cenu, tlocrt i trenutni status
               izabranog stana.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="home-contact__actions">
+          <motion.div className="home-contact__actions" variants={reveal}>
             <ContactModalButton className="site-button site-button--dark">
               <MessageCircle />
               Pišite nam
             </ContactModalButton>
-            <a className="site-button site-button--outline" href={contactPhoneHref}>
+            <a
+              className="site-button site-button--outline"
+              href={contactPhoneHref}
+            >
               <Phone />
               Pozovite {contactPhone}
             </a>
@@ -563,10 +529,9 @@ export const HomePage = () => {
                 {contactEmail}
               </span>
             </div>
-          </div>
+          </motion.div>
         </motion.div>
       </section>
-
     </main>
   );
 };
@@ -579,9 +544,11 @@ type ActiveProjectCardProps = PortfolioCardProps & {
   projectMedia: ProjectMediaItem[];
 };
 
-const ActiveProjectCard = ({ projectMedia, reduceMotion }: ActiveProjectCardProps) => {
-  const [activeFeature, setActiveFeature] = useState(0);
-  const selectedFeature = lifestyleItems[activeFeature] ?? lifestyleItems[0];
+const ActiveProjectCard = ({
+  projectMedia,
+  reduceMotion,
+}: ActiveProjectCardProps) => {
+  const selectedFeature = lifestyleItems[0];
   const facadeImage =
     projectMedia.find((item) => item.mediaType === "project_image") ??
     ({
@@ -589,7 +556,9 @@ const ActiveProjectCard = ({ projectMedia, reduceMotion }: ActiveProjectCardProp
       altText: "Render fasade projekta Heroja Pinkija 13",
     } as Pick<ProjectMediaItem, "filePath" | "altText">);
   const worksImage =
-    projectMedia.find((item) => item.mediaType === "construction_update_image") ??
+    projectMedia.find(
+      (item) => item.mediaType === "construction_update_image",
+    ) ??
     ({
       filePath: images.terrace,
       altText: "Radovi u toku na projektu Heroja Pinkija 13",
@@ -601,30 +570,22 @@ const ActiveProjectCard = ({ projectMedia, reduceMotion }: ActiveProjectCardProp
       initial="hidden"
       animate="show"
       exit={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
-      variants={reduceMotion ? staticFadeUp : fadeUp}
-      transition={reduceMotion ? instantTransition : { duration: 0.55 }}
+      variants={revealContainer}
     >
-      <div className="portfolio-card__copy">
+      <motion.div
+        className="portfolio-card__copy"
+        variants={reduceMotion ? staticFadeUp : fadeUp}
+      >
         <p className="section-eyebrow">U prodaji</p>
         <h3>Heroja Pinkija 13</h3>
         <p>
-          Jedna od traženijih lokacija u razvoju, povezana sa svim delovima grada
-          i prilagođena svakodnevnom životu.
+          Jedna od traženijih lokacija u razvoju, povezana sa svim delovima
+          grada i prilagođena svakodnevnom životu.
         </p>
 
         <div className="portfolio-card__features">
-          {lifestyleItems.map(({ icon: Icon, title, text }, index) => (
-            <button
-              key={title}
-              className={`portfolio-feature portfolio-feature--interactive${
-                activeFeature === index ? " is-active" : ""
-              }`}
-              type="button"
-              aria-pressed={activeFeature === index}
-              onPointerEnter={() => setActiveFeature(index)}
-              onFocus={() => setActiveFeature(index)}
-              onClick={() => setActiveFeature(index)}
-            >
+          {lifestyleItems.map(({ icon: Icon, title, text }) => (
+            <div key={title} className="portfolio-feature">
               <span className="icon-bubble">
                 <Icon />
               </span>
@@ -632,12 +593,15 @@ const ActiveProjectCard = ({ projectMedia, reduceMotion }: ActiveProjectCardProp
                 <h4>{title}</h4>
                 <p>{text}</p>
               </div>
-            </button>
+            </div>
           ))}
         </div>
 
         <div className="portfolio-card__actions">
-          <Link className="site-button site-button--dark" to="/projekti/heroja-pinkija-13/o-projektu">
+          <Link
+            className="site-button site-button--dark"
+            to="/projekti/heroja-pinkija-13/o-projektu"
+          >
             Detalji projekta
             <ArrowUpRight />
           </Link>
@@ -648,14 +612,19 @@ const ActiveProjectCard = ({ projectMedia, reduceMotion }: ActiveProjectCardProp
             Ponuda stanova
           </Link>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="portfolio-card__media">
+      <motion.div
+        className="portfolio-card__media"
+        variants={reduceMotion ? staticFadeUp : fadeUp}
+      >
         <div className="portfolio-card__images">
           <img
             className="portfolio-card__image portfolio-card__image--facade"
             src={facadeImage.filePath}
-            alt={facadeImage.altText ?? "Render fasade projekta Heroja Pinkija 13"}
+            alt={
+              facadeImage.altText ?? "Render fasade projekta Heroja Pinkija 13"
+            }
             width="1672"
             height="941"
             loading="lazy"
@@ -665,7 +634,10 @@ const ActiveProjectCard = ({ projectMedia, reduceMotion }: ActiveProjectCardProp
             <img
               className="portfolio-card__image portfolio-card__image--works"
               src={worksImage.filePath}
-              alt={worksImage.altText ?? "Radovi u toku na projektu Heroja Pinkija 13"}
+              alt={
+                worksImage.altText ??
+                "Radovi u toku na projektu Heroja Pinkija 13"
+              }
               width="1663"
               height="1247"
               loading="lazy"
@@ -689,7 +661,7 @@ const ActiveProjectCard = ({ projectMedia, reduceMotion }: ActiveProjectCardProp
             </div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </motion.article>
   );
 };
@@ -701,19 +673,24 @@ const UpcomingProjectsCard = ({ reduceMotion }: PortfolioCardProps) => {
       initial="hidden"
       animate="show"
       exit={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
-      variants={reduceMotion ? staticFadeUp : fadeUp}
-      transition={reduceMotion ? instantTransition : { duration: 0.55 }}
+      variants={revealContainer}
     >
-      <div className="portfolio-card__copy portfolio-card__copy--surface">
+      <motion.div
+        className="portfolio-card__copy portfolio-card__copy--surface"
+        variants={reduceMotion ? staticFadeUp : fadeUp}
+      >
         <p className="section-eyebrow">U pripremi</p>
-        <h3>Sledeći projekti će biti prikazani ovde.</h3>
+        <h3>Uskoro...</h3>
         <p>
           Kada portfolio bude proširen, svaki projekat će dobiti svoje mesto sa
           lokacijom, statusom, ponudom stanova i kontaktom.
         </p>
-      </div>
+      </motion.div>
 
-      <div className="portfolio-card__slots">
+      <motion.div
+        className="portfolio-card__slots"
+        variants={reduceMotion ? staticFadeUp : fadeUp}
+      >
         {futureProjectSlots.map(({ icon: Icon, title, text }) => (
           <div key={title} className="portfolio-slot">
             <div>
@@ -726,7 +703,7 @@ const UpcomingProjectsCard = ({ reduceMotion }: PortfolioCardProps) => {
             <p>{text}</p>
           </div>
         ))}
-      </div>
+      </motion.div>
     </motion.article>
   );
 };
@@ -738,22 +715,35 @@ const CompletedProjectsCard = ({ reduceMotion }: PortfolioCardProps) => {
       initial="hidden"
       animate="show"
       exit={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
-      variants={reduceMotion ? staticFadeUp : fadeUp}
-      transition={reduceMotion ? instantTransition : { duration: 0.55 }}
+      variants={revealContainer}
     >
-      <div className="portfolio-card__copy portfolio-card__copy--dark">
+      <motion.div
+        className="portfolio-card__copy portfolio-card__copy--dark"
+        variants={reduceMotion ? staticFadeUp : fadeUp}
+      >
         <p className="section-eyebrow">Realizovani projekti</p>
-        <h3>Završeni objekti će biti prikazani ovde.</h3>
+        <h3>Uskoro...</h3>
         <p>
-          Kada projekti budu završeni i useljeni, ovaj tab će slučiti kao arhiva
-          realizovanih lokacija i referenci kompanije.
+          Kada projekti budu završeni i useljeni, ova sekcija će služiti kao
+          arhiva realizovanih lokacija i referenci kompanije.
         </p>
-      </div>
+      </motion.div>
 
-      <div className="portfolio-card__slots">
+      <motion.div
+        className="portfolio-card__slots"
+        variants={reduceMotion ? staticFadeUp : fadeUp}
+      >
         {[
-          { icon: Building2, title: "Realizovani objekat", text: "Mesto za završene projekte i osnovne podatke o lokaciji." },
-          { icon: MapPin, title: "Završena lokacija", text: "Arhiva će biti odvojena od aktuelne ponude." },
+          {
+            icon: Building2,
+            title: "Realizovani objekat",
+            text: "Mesto za završene projekte i osnovne podatke o lokaciji.",
+          },
+          {
+            icon: MapPin,
+            title: "Završena lokacija",
+            text: "Arhiva će biti odvojena od aktuelne ponude.",
+          },
         ].map(({ icon: Icon, title, text }) => (
           <div key={title} className="portfolio-slot">
             <div>
@@ -766,7 +756,7 @@ const CompletedProjectsCard = ({ reduceMotion }: PortfolioCardProps) => {
             <p>{text}</p>
           </div>
         ))}
-      </div>
+      </motion.div>
     </motion.article>
   );
 };
