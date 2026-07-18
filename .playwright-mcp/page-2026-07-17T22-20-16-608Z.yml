@@ -1,0 +1,285 @@
+- generic [ref=f1e2]:
+  - status [ref=f1e3]: Otvorena je ponuda stanova i lokala.
+  - generic [ref=f1e11]:
+    - link "Preskocite na glavni sadržaj":
+      - /url: "#main-content"
+    - banner [ref=f1e12]:
+      - generic [ref=f1e13]:
+        - link "M & M Gradnja početna" [ref=f1e14] [cursor=pointer]:
+          - /url: /
+          - generic [ref=f1e15]:
+            - img "M & M Gradnja" [ref=f1e17]
+            - generic [ref=f1e18]:
+              - generic [ref=f1e19]: M & M
+              - generic [ref=f1e20]: Gradnja
+        - button "Otvori navigaciju" [ref=f1e21] [cursor=pointer]
+        - generic:
+          - link "O projektu":
+            - /url: /projekti/heroja-pinkija-13/o-projektu
+          - link "Ponuda stanova":
+            - /url: /projekti/heroja-pinkija-13/ponuda-stanova
+          - link "Spisak stanova":
+            - /url: /projekti/heroja-pinkija-13/spisak-stanova
+    - button "Nazad na prethodnu stranicu" [ref=f1e23] [cursor=pointer]
+    - main [ref=f1e27]:
+      - generic [ref=f1e29]:
+        - generic [ref=f1e30]:
+          - paragraph [ref=f1e31]: Heroja Pinkija 13
+          - heading "Ponuda stanova i lokala." [level=1] [ref=f1e32]
+          - paragraph [ref=f1e33]: Uporedite sprat, kvadraturu, namenu i trenutni status stanova i lokala u objektu na početku Telepa.
+          - generic [ref=f1e34]:
+            - button "Pišite nam" [ref=f1e35] [cursor=pointer]
+            - link "Detalji projekta" [ref=f1e38] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/o-projektu
+        - generic [ref=f1e43]:
+          - generic [ref=f1e44]:
+            - term [ref=f1e48]: Ukupna ponuda
+            - definition [ref=f1e49]: 17 jedinica
+          - generic [ref=f1e50]:
+            - term [ref=f1e55]: stambene etaže
+            - definition [ref=f1e56]: 3 etaže
+          - generic [ref=f1e57]:
+            - term [ref=f1e62]: Raspored
+            - definition [ref=f1e63]: 15 stanova i 2 lokala
+          - generic [ref=f1e64]:
+            - term [ref=f1e68]: Lokacija
+            - definition [ref=f1e69]: Početak Telepa
+      - region [ref=f1e70]:
+        - generic [ref=f1e71]:
+          - generic [ref=f1e72]:
+            - generic [ref=f1e73]:
+              - paragraph [ref=f1e74]: Ponuda stanova i lokala
+              - heading "Pregled jedinica po spratu i tipu." [level=2] [ref=f1e75]
+            - paragraph [ref=f1e76]: Stanovi su organizovani po pet na etaži, a lokali su u prizemlju. Uporedite kvadraturu, strukturu i trenutni status u istom pregledu.
+          - generic "Filtriranje ponude" [ref=f1e77]:
+            - group [ref=f1e78]:
+              - paragraph [ref=f1e79]: Vrsta jedinice
+              - generic [ref=f1e80]:
+                - button "Sve jedinice" [pressed] [ref=f1e81] [cursor=pointer]
+                - button "Stanovi" [ref=f1e82] [cursor=pointer]
+                - button "Lokali" [ref=f1e83] [cursor=pointer]
+            - group [ref=f1e84]:
+              - paragraph [ref=f1e85]: Dostupnost
+              - generic [ref=f1e86]:
+                - button "Sve jedinice" [pressed] [ref=f1e87] [cursor=pointer]
+                - button "Slobodni" [ref=f1e88] [cursor=pointer]
+                - button "Rezervisani" [ref=f1e89] [cursor=pointer]
+                - button "Prodati" [ref=f1e90] [cursor=pointer]
+            - group [ref=f1e91]:
+              - paragraph [ref=f1e92]: Struktura
+              - generic [ref=f1e93]:
+                - button "Sve strukture" [pressed] [ref=f1e94] [cursor=pointer]
+                - button "Garsonjera" [ref=f1e95] [cursor=pointer]
+                - button "Dvosoban" [ref=f1e96] [cursor=pointer]
+                - button "Trosoban" [ref=f1e97] [cursor=pointer]
+            - group [ref=f1e98]:
+              - paragraph [ref=f1e99]: Tip stana
+              - generic [ref=f1e100]:
+                - button "Svi tipovi" [pressed] [ref=f1e101] [cursor=pointer]
+                - button "Tip 1" [ref=f1e102] [cursor=pointer]
+                - button "Tip 2" [ref=f1e103] [cursor=pointer]
+                - button "Tip 3" [ref=f1e104] [cursor=pointer]
+                - button "Tip 4" [ref=f1e105] [cursor=pointer]
+                - button "Tip 5" [ref=f1e106] [cursor=pointer]
+          - generic [ref=f1e107]:
+            - heading "Prikazano 1–6 od 17 jedinica" [level=3] [ref=f1e108]
+            - generic [ref=f1e109]: Prikazane jedinice 1 do 6 od ukupno 17.
+            - link "Tabelarni spisak" [ref=f1e110] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/spisak-stanova
+          - generic [ref=f1e113]:
+            - link "Detalji za Stan 1" [ref=f1e114] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-1
+              - generic [ref=f1e115]:
+                - img "Projektni tlocrt stanova 1, 6 i 11" [ref=f1e116]
+                - generic [ref=f1e117]: Slobodan
+              - generic [ref=f1e118]:
+                - generic [ref=f1e120]:
+                  - text: Broj stana
+                  - heading "1" [level=3] [ref=f1e121]
+                - generic [ref=f1e122]:
+                  - generic [ref=f1e123]:
+                    - generic [ref=f1e124]: Sprat
+                    - strong [ref=f1e129]: 1. etaža
+                  - generic [ref=f1e130]:
+                    - generic [ref=f1e131]: Površina
+                    - strong [ref=f1e138]: 62.15 m2
+                  - generic [ref=f1e139]:
+                    - generic [ref=f1e140]: Struktura
+                    - strong [ref=f1e144]: Trosoban
+                - generic [ref=f1e145]: Detalji stan
+            - link "Detalji za Stan 2" [ref=f1e146] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-2
+              - generic [ref=f1e147]:
+                - img "Projektni tlocrt stanova 2, 7 i 12" [ref=f1e148]
+                - generic [ref=f1e149]: Slobodan
+              - generic [ref=f1e150]:
+                - generic [ref=f1e152]:
+                  - text: Broj stana
+                  - heading "2" [level=3] [ref=f1e153]
+                - generic [ref=f1e154]:
+                  - generic [ref=f1e155]:
+                    - generic [ref=f1e156]: Sprat
+                    - strong [ref=f1e161]: 1. etaža
+                  - generic [ref=f1e162]:
+                    - generic [ref=f1e163]: Površina
+                    - strong [ref=f1e170]: 58.25 m2
+                  - generic [ref=f1e171]:
+                    - generic [ref=f1e172]: Struktura
+                    - strong [ref=f1e176]: Trosoban
+                - generic [ref=f1e177]: Detalji stan
+            - link "Detalji za Stan 3" [ref=f1e178] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-3
+              - generic [ref=f1e179]:
+                - img "Projektni tlocrt stanova 3, 8 i 13" [ref=f1e180]
+                - generic [ref=f1e181]: Slobodan
+              - generic [ref=f1e182]:
+                - generic [ref=f1e184]:
+                  - text: Broj stana
+                  - heading "3" [level=3] [ref=f1e185]
+                - generic [ref=f1e186]:
+                  - generic [ref=f1e187]:
+                    - generic [ref=f1e188]: Sprat
+                    - strong [ref=f1e193]: 1. etaža
+                  - generic [ref=f1e194]:
+                    - generic [ref=f1e195]: Površina
+                    - strong [ref=f1e202]: 28.55 m2
+                  - generic [ref=f1e203]:
+                    - generic [ref=f1e204]: Struktura
+                    - strong [ref=f1e208]: Garsonjera
+                - generic [ref=f1e209]: Detalji stan
+            - link "Detalji za Stan 4" [ref=f1e210] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-4
+              - generic [ref=f1e211]:
+                - img "Projektni tlocrt stanova 4, 9 i 14" [ref=f1e212]
+                - generic [ref=f1e213]: Slobodan
+              - generic [ref=f1e214]:
+                - generic [ref=f1e216]:
+                  - text: Broj stana
+                  - heading "4" [level=3] [ref=f1e217]
+                - generic [ref=f1e218]:
+                  - generic [ref=f1e219]:
+                    - generic [ref=f1e220]: Sprat
+                    - strong [ref=f1e225]: 1. etaža
+                  - generic [ref=f1e226]:
+                    - generic [ref=f1e227]: Površina
+                    - strong [ref=f1e234]: 46.95 m2
+                  - generic [ref=f1e235]:
+                    - generic [ref=f1e236]: Struktura
+                    - strong [ref=f1e240]: Dvosoban
+                - generic [ref=f1e241]: Detalji stan
+            - link "Detalji za Stan 5" [ref=f1e242] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-5
+              - generic [ref=f1e243]:
+                - img "Projektni tlocrt stanova 5, 10 i 15" [ref=f1e244]
+                - generic [ref=f1e245]: Slobodan
+              - generic [ref=f1e246]:
+                - generic [ref=f1e248]:
+                  - text: Broj stana
+                  - heading "5" [level=3] [ref=f1e249]
+                - generic [ref=f1e250]:
+                  - generic [ref=f1e251]:
+                    - generic [ref=f1e252]: Sprat
+                    - strong [ref=f1e257]: 1. etaža
+                  - generic [ref=f1e258]:
+                    - generic [ref=f1e259]: Površina
+                    - strong [ref=f1e266]: 42.57 m2
+                  - generic [ref=f1e267]:
+                    - generic [ref=f1e268]: Struktura
+                    - strong [ref=f1e272]: Dvosoban
+                - generic [ref=f1e273]: Detalji stan
+            - link "Detalji za Stan 6" [ref=f1e274] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-6
+              - generic [ref=f1e275]:
+                - img "Projektni tlocrt stanova 1, 6 i 11" [ref=f1e276]
+                - generic [ref=f1e277]: Slobodan
+              - generic [ref=f1e278]:
+                - generic [ref=f1e280]:
+                  - text: Broj stana
+                  - heading "6" [level=3] [ref=f1e281]
+                - generic [ref=f1e282]:
+                  - generic [ref=f1e283]:
+                    - generic [ref=f1e284]: Sprat
+                    - strong [ref=f1e289]: 2. etaža
+                  - generic [ref=f1e290]:
+                    - generic [ref=f1e291]: Površina
+                    - strong [ref=f1e298]: 60.29 m2
+                  - generic [ref=f1e299]:
+                    - generic [ref=f1e300]: Struktura
+                    - strong [ref=f1e304]: Trosoban
+                - generic [ref=f1e305]: Detalji stan
+          - navigation "Paginacija ponude" [ref=f1e306]:
+            - button "Prethodna" [disabled] [ref=f1e307]
+            - generic [ref=f1e311]:
+              - button "1" [ref=f1e312] [cursor=pointer]
+              - button "2" [ref=f1e313] [cursor=pointer]
+              - button "3" [ref=f1e314] [cursor=pointer]
+            - button "Sledeca" [ref=f1e315] [cursor=pointer]
+      - generic [ref=f1e320]:
+        - generic [ref=f1e321]:
+          - paragraph [ref=f1e322]: Pomoć pri izboru
+          - heading "Niste sigurni koja jedinica najbolje odgovara vašim potrebama?" [level=2] [ref=f1e323]
+          - paragraph [ref=f1e324]: Prodajni tim može vam pomoći da uporedite rasporede, kvadrature i aktuelnu dostupnost.
+        - generic [ref=f1e325]:
+          - button "Pišite nam" [ref=f1e326] [cursor=pointer]
+          - link "Spisak stanova i lokala" [ref=f1e329] [cursor=pointer]:
+            - /url: /projekti/heroja-pinkija-13/spisak-stanova
+    - contentinfo [ref=f1e333]:
+      - generic [ref=f1e335]:
+        - generic [ref=f1e336]:
+          - generic [ref=f1e337]: Zainteresovani ste za stan?
+          - heading "Razgovarajte direktno sa našim prodajnim timom." [level=2] [ref=f1e338]
+        - button "Pišite nam" [ref=f1e339] [cursor=pointer]
+      - generic [ref=f1e342]:
+        - generic [ref=f1e343]:
+          - img "M & M Gradnja" [ref=f1e346]
+          - generic [ref=f1e347]:
+            - strong [ref=f1e348]: M & M Gradnja
+            - paragraph [ref=f1e349]: Gradimo pažljivo osmišljene prostore za savremen i udoban život u Novom Sadu.
+            - link "Upoznajte kompaniju" [ref=f1e350] [cursor=pointer]:
+              - /url: /o-nama
+        - navigation [ref=f1e354]:
+          - heading "Kompanija" [level=2] [ref=f1e355]
+          - generic [ref=f1e356]:
+            - link "Početna" [ref=f1e357] [cursor=pointer]:
+              - /url: /
+            - link "O nama" [ref=f1e358] [cursor=pointer]:
+              - /url: /o-nama
+            - link "Kupujemo placeve" [ref=f1e359] [cursor=pointer]:
+              - /url: /kupujemo-placeve
+            - link "Lokacija" [ref=f1e360] [cursor=pointer]:
+              - /url: /lokacija
+        - navigation [ref=f1e361]:
+          - heading "Aktuelni projekat" [level=2] [ref=f1e362]
+          - generic [ref=f1e363]:
+            - link "Heroja Pinkija 13" [ref=f1e364] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/o-projektu
+            - link "Ponuda stanova" [ref=f1e365] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/ponuda-stanova
+            - link "Spisak stanova" [ref=f1e366] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/spisak-stanova
+        - generic [ref=f1e367]:
+          - heading "Kontakt" [level=2] [ref=f1e368]
+          - generic [ref=f1e369]:
+            - link "Telefon prodaje 064 227 9117" [ref=f1e370] [cursor=pointer]:
+              - /url: tel:0642279117
+              - generic [ref=f1e373]:
+                - generic [ref=f1e374]: Telefon prodaje
+                - strong [ref=f1e375]: 064 227 9117
+            - link "Email prodaja@mimgradnja.rs" [ref=f1e376] [cursor=pointer]:
+              - /url: mailto:prodaja@mimgradnja.rs
+              - generic [ref=f1e380]:
+                - generic [ref=f1e381]: Email
+                - strong [ref=f1e382]: prodaja@mimgradnja.rs
+            - link "Adresa projekta Heroja Pinkija 13, Novi Sad" [ref=f1e383] [cursor=pointer]:
+              - /url: /lokacija
+              - generic [ref=f1e387]:
+                - generic [ref=f1e388]: Adresa projekta
+                - strong [ref=f1e389]: Heroja Pinkija 13, Novi Sad
+      - generic [ref=f1e391]:
+        - generic [ref=f1e392]: (c) 2026 M & M Gradnja. Sva prava zadržana.
+        - generic [ref=f1e393]:
+          - link "Politika privatnosti" [ref=f1e394] [cursor=pointer]:
+            - /url: /politika-privatnosti
+          - link "Kontakt" [ref=f1e395] [cursor=pointer]:
+            - /url: /kontakt
+          - button "Podešavanja privatnosti" [ref=f1e396] [cursor=pointer]

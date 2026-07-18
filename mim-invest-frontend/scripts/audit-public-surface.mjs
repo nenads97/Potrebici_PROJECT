@@ -288,6 +288,8 @@ function auditSitemapAndRobots() {
     "/kontakt",
     "/politika-privatnosti",
     ...Array.from({ length: 15 }, (_, index) => `/projekti/heroja-pinkija-13/ponuda-stanova/${index + 1}`),
+    "/projekti/heroja-pinkija-13/ponuda-stanova/lokal-1",
+    "/projekti/heroja-pinkija-13/ponuda-stanova/lokal-2",
   ].map((urlPath) => `${canonicalOrigin}${urlPath}`);
 
   if (!fs.existsSync(sitemapPath)) {
@@ -317,8 +319,8 @@ function auditSitemapAndRobots() {
     fail("sitemap.xml is missing an XML declaration.");
   }
 
-  if (locs.length !== 24 || lastmods.length !== 24) {
-    fail(`Expected 24 sitemap URLs and 24 lastmod values, got ${locs.length} URLs and ${lastmods.length} lastmods.`);
+  if (locs.length !== 26 || lastmods.length !== 26) {
+    fail(`Expected 26 sitemap URLs and 26 lastmod values, got ${locs.length} URLs and ${lastmods.length} lastmods.`);
   }
 
   if (duplicateLocs.length > 0) {
@@ -367,7 +369,7 @@ function auditSitemapAndRobots() {
     indexHtml.includes('<meta property="og:type" content="website" />') &&
     indexHtml.includes('<meta property="og:url" content="https://mimgradnja.rs/" />') &&
     indexHtml.includes('property="og:image"') &&
-    indexHtml.includes("https://mimgradnja.rs/images/heroja-pinkija-13/gradilisna-tabla.jpg") &&
+    indexHtml.includes("https://mimgradnja.rs/images/heroja-pinkija-13/gradilisna-tabla-optimized.jpg") &&
     indexHtml.includes('<meta property="og:image:width" content="818" />') &&
     indexHtml.includes('<meta property="og:image:height" content="783" />') &&
     indexHtml.includes('<meta property="og:image:alt" content="Gradilisna tabla projekta Heroja Pinkija 13" />') &&
@@ -688,7 +690,9 @@ function auditProjectContentModel() {
 
   const projectData = readText(projectDataPath);
   const projectSpec = readText(projectSpecPath);
-  const stackNumberMatches = [...projectData.matchAll(/numbers:\s*\[([^\]]+)\]/g)];
+  const apartmentStacksBlock =
+    projectData.match(/const apartmentStacks:[^=]*=\s*\[([\s\S]*?)\n\];/)?.[1] ?? "";
+  const stackNumberMatches = [...apartmentStacksBlock.matchAll(/numbers:\s*\[([^\]]+)\]/g)];
   const apartmentNumbers = stackNumberMatches.flatMap((match) =>
     [...match[1].matchAll(/["'](\d+)["']/g)].map((numberMatch) => numberMatch[1]),
   );
@@ -835,6 +839,13 @@ function auditUxGuardrails() {
     "ApartmentsPage.tsx",
   );
   const contactModalPath = path.join(srcRoot, "features", "inquiries", "components", "ContactModal.tsx");
+  const contactModalDialogPath = path.join(
+    srcRoot,
+    "features",
+    "inquiries",
+    "components",
+    "ContactModalDialog.tsx",
+  );
   const formValidationPath = path.join(srcRoot, "features", "inquiries", "utils", "formValidation.ts");
   const landBuyPath = path.join(srcRoot, "views", "pages", "LandBuyPage.tsx");
   const projectPagePath = path.join(
@@ -868,6 +879,7 @@ function auditUxGuardrails() {
     !fs.existsSync(contactPagePath) ||
     !fs.existsSync(apartmentsListingPath) ||
     !fs.existsSync(contactModalPath) ||
+    !fs.existsSync(contactModalDialogPath) ||
     !fs.existsSync(formValidationPath) ||
     !fs.existsSync(landBuyPath) ||
     !fs.existsSync(projectPagePath) ||
@@ -889,7 +901,7 @@ function auditUxGuardrails() {
   const home = readText(homePath);
   const contactPage = readText(contactPagePath);
   const apartmentsListing = readText(apartmentsListingPath);
-  const contactModal = readText(contactModalPath);
+  const contactModal = `${readText(contactModalPath)}\n${readText(contactModalDialogPath)}`;
   const formValidation = readText(formValidationPath);
   const landBuy = readText(landBuyPath);
   const projectPage = readText(projectPagePath);
@@ -942,7 +954,8 @@ function auditUxGuardrails() {
     mobileNavEscape:
       mainLayout.includes("const handleNavKeyDown") &&
       mainLayout.includes("!isNavOpen") &&
-      mainLayout.includes('document.querySelector<HTMLButtonElement>(".site-header__menu-toggle")?.focus()') &&
+      mainLayout.includes('querySelector<HTMLButtonElement>(".site-header__menu-toggle")') &&
+      mainLayout.includes("?.focus()") &&
       (mainLayout.match(/onKeyDown=\{handleNavKeyDown\}/g)?.length ?? 0) >= 2,
     adminLayoutSkipTarget:
       adminLayout.includes('href="#admin-main-content"') &&
@@ -974,7 +987,9 @@ function auditUxGuardrails() {
     apartmentCsvExportUsesPublicOrigin:
       apartmentsListing.includes('import { createPublicUrl } from "../../../../shared/config/site"') &&
       apartmentsListing.includes("function downloadApartmentsCsv") &&
-      apartmentsListing.includes("createPublicUrl(`/projekti/heroja-pinkija-13/ponuda-stanova/${apartment.number}`)"),
+      apartmentsListing.includes(
+        "`/projekti/heroja-pinkija-13/ponuda-stanova/${getUnitRouteSegment(apartment)}`",
+      ),
     localHeroImagesExposeDimensions:
       home.includes('src={images.hero}') &&
       home.includes('width="1672"') &&
@@ -1020,7 +1035,7 @@ function auditUxGuardrails() {
       landBuy.includes("validateLandOfferForm") &&
       landBuy.includes("noValidate") &&
       landBuy.includes("aria-invalid={fieldErrors.") &&
-      landBuy.includes("aria-describedby={fieldErrors.") &&
+      landBuy.includes("aria-describedby={") &&
       styles.includes(".form-field-error"),
     publicMotionRespectsReducedMotion:
       home.includes("useReducedMotion") &&
@@ -1038,6 +1053,221 @@ function auditUxGuardrails() {
   }
 
   return checks;
+}
+
+function auditAgenticBrowsingSurface() {
+  const manifestPath = path.join(publicRoot, "agent-manifest.json");
+  const indexPath = path.join(frontendRoot, "index.html");
+  const routerPath = path.join(srcRoot, "app", "router", "AppRouter.tsx");
+  const mainLayoutPath = path.join(srcRoot, "views", "layout", "MainLayout.tsx");
+  const homePath = path.join(srcRoot, "views", "pages", "HomePage.tsx");
+  const availabilityPath = path.join(
+    srcRoot,
+    "features",
+    "projects",
+    "components",
+    "ApartmentAvailability.tsx",
+  );
+  const listingPath = path.join(
+    srcRoot,
+    "views",
+    "pages",
+    "projects",
+    "HerojaPinkija13",
+    "ApartmentsPage.tsx",
+  );
+  const detailsPath = path.join(
+    srcRoot,
+    "views",
+    "pages",
+    "projects",
+    "HerojaPinkija13",
+    "ApartmentDetailsPage.tsx",
+  );
+  const contactTriggerPath = path.join(
+    srcRoot,
+    "features",
+    "inquiries",
+    "components",
+    "ContactModal.tsx",
+  );
+  const contactDialogPath = path.join(
+    srcRoot,
+    "features",
+    "inquiries",
+    "components",
+    "ContactModalDialog.tsx",
+  );
+  const landBuyPath = path.join(srcRoot, "views", "pages", "LandBuyPage.tsx");
+  const requiredPaths = [
+    manifestPath,
+    indexPath,
+    routerPath,
+    mainLayoutPath,
+    homePath,
+    availabilityPath,
+    listingPath,
+    detailsPath,
+    contactTriggerPath,
+    contactDialogPath,
+    landBuyPath,
+  ];
+  const missingPaths = requiredPaths.filter((filePath) => !fs.existsSync(filePath));
+
+  if (missingPaths.length > 0) {
+    fail(`Missing agentic browsing guardrail files:\n${missingPaths.map(toRelative).join("\n")}`);
+    return {};
+  }
+
+  let manifest;
+  let staticStructuredData;
+  const indexHtml = readText(indexPath);
+
+  try {
+    manifest = JSON.parse(readText(manifestPath));
+  } catch (error) {
+    fail(`agent-manifest.json must contain valid JSON: ${error instanceof Error ? error.message : String(error)}`);
+    return {};
+  }
+
+  const structuredDataMatch = indexHtml.match(
+    /<script\s+type="application\/ld\+json"\s+id="site-structured-data">([\s\S]*?)<\/script>/,
+  );
+
+  if (structuredDataMatch) {
+    try {
+      staticStructuredData = JSON.parse(structuredDataMatch[1]);
+    } catch (error) {
+      fail(`Static site JSON-LD must contain valid JSON: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  const router = readText(routerPath);
+  const mainLayout = readText(mainLayoutPath);
+  const home = readText(homePath);
+  const availability = readText(availabilityPath);
+  const listing = readText(listingPath);
+  const details = readText(detailsPath);
+  const contactTrigger = readText(contactTriggerPath);
+  const contactDialog = readText(contactDialogPath);
+  const landBuy = readText(landBuyPath);
+  const manifestNavigationPaths = new Set(
+    Array.isArray(manifest.navigation) ? manifest.navigation.map((item) => item?.path) : [],
+  );
+  const expectedNavigationPaths = [
+    "/",
+    "/o-nama",
+    "/projekti/heroja-pinkija-13/o-projektu",
+    "/projekti/heroja-pinkija-13/ponuda-stanova",
+    "/projekti/heroja-pinkija-13/spisak-stanova",
+    "/lokacija",
+    "/kontakt",
+    "/kupujemo-placeve",
+    "/politika-privatnosti",
+  ];
+  const manifestActions = Array.isArray(manifest.actions) ? manifest.actions : [];
+  const manifestActionIds = new Set(manifestActions.map((action) => action?.id));
+  const graphTypes = new Set(
+    Array.isArray(staticStructuredData?.["@graph"])
+      ? staticStructuredData["@graph"].map((entry) => entry?.["@type"])
+      : [],
+  );
+  const checks = {
+    manifestDeclaresSiteContract:
+      manifest.schemaVersion === "1.0" &&
+      manifest.type === "website-agent-manifest" &&
+      manifest.language === "sr-Latn" &&
+      manifest.baseUrl === "https://mimgradnja.rs",
+    manifestCoversPublicNavigation: expectedNavigationPaths.every((routePath) =>
+      manifestNavigationPaths.has(routePath),
+    ),
+    manifestDocumentsPrimaryActions:
+      ["open-contact-form", "browse-apartments", "browse-table", "open-project-document", "submit-land-offer"].every(
+        (actionId) => manifestActionIds.has(actionId),
+      ) &&
+      manifestActions.some(
+        (action) =>
+          action?.id === "open-contact-form" &&
+          action.selector === '[data-agent-action="open-contact-form"]',
+      ) &&
+      manifestActions.some(
+        (action) =>
+          action?.id === "submit-land-offer" &&
+          action.formSelector === '[data-agent-form="land-offer"]',
+      ),
+    indexAdvertisesAgentManifest:
+      indexHtml.includes('rel="alternate"') &&
+      indexHtml.includes('type="application/json"') &&
+      indexHtml.includes('href="/agent-manifest.json"'),
+    indexProvidesStaticEntityGraph:
+      Boolean(staticStructuredData) &&
+      graphTypes.has("Organization") &&
+      graphTypes.has("WebSite") &&
+      graphTypes.has("ApartmentComplex"),
+    routesAnnounceNavigationState:
+      router.includes("const RouteAnnouncer") &&
+      router.includes('role="status"') &&
+      router.includes('aria-live="polite"') &&
+      router.includes('data-agent-surface="route-status"'),
+    layoutExposesStableLandmarks:
+      mainLayout.includes('data-agent-surface="site-header"') &&
+      mainLayout.includes('data-agent-surface="site-navigation"') &&
+      mainLayout.includes('data-agent-surface="page-content"') &&
+      mainLayout.includes('data-agent-surface="site-footer"'),
+    primaryNavigationActionsAreNamed:
+      home.includes('data-agent-surface="home-hero"') &&
+      home.includes('data-agent-action="browse-apartments"') &&
+      contactTrigger.includes('data-agent-action="open-contact-form"') &&
+      contactTrigger.includes('aria-haspopup="dialog"') &&
+      contactTrigger.includes('aria-controls="contact-modal-dialog"'),
+    contactFormHasStableDialogContract:
+      contactDialog.includes('id="contact-modal-dialog"') &&
+      contactDialog.includes('data-agent-surface="contact-form-dialog"') &&
+      contactDialog.includes('data-agent-form="contact-inquiry"') &&
+      contactDialog.includes('data-agent-action="submit-contact-inquiry"'),
+    landFormHasStableFormContract:
+      landBuy.includes('data-agent-form="land-offer"') &&
+      landBuy.includes('aria-labelledby="land-offer-form-title"') &&
+      landBuy.includes('data-agent-action="submit-land-offer"'),
+    apartmentFiltersControlResults:
+      availability.includes('data-agent-surface="apartment-filters"') &&
+      availability.includes('data-agent-filter="unit-type"') &&
+      availability.includes('data-agent-filter="availability"') &&
+      availability.includes('data-agent-filter="structure"') &&
+      availability.includes('data-agent-filter="apartment-type"') &&
+      availability.includes('aria-controls="stanovi-rezultati"') &&
+      availability.includes('data-agent-surface="apartment-results"'),
+    apartmentCardsExposeEntities:
+      availability.includes('data-agent-entity="unit"') &&
+      availability.includes("data-unit-number={apartment.number}") &&
+      availability.includes("data-unit-type={getUnitLabel(apartment)}"),
+    apartmentTableExposesMachineActions:
+      listing.includes('data-agent-surface="apartment-table"') &&
+      listing.includes('data-agent-surface="apartment-table-results"') &&
+      listing.includes('data-agent-action="download-apartment-csv"') &&
+      listing.includes('data-agent-action="open-project-document"') &&
+      listing.includes("<caption className=\"sr-only\">") &&
+      listing.includes("structuredData={({") &&
+      listing.includes('"@type": "CollectionPage"'),
+    unitDetailsExposeEntityAndSchema:
+      details.includes('data-agent-entity="unit-detail"') &&
+      details.includes('data-agent-action="open-unit-floor-plan"') &&
+      details.includes("structuredData={({") &&
+      details.includes('"@type": "Product"') &&
+      details.includes('"@type": "BreadcrumbList"'),
+  };
+
+  for (const [name, ok] of Object.entries(checks)) {
+    if (!ok) {
+      fail(`Agentic browsing guardrail check failed: ${name}`);
+    }
+  }
+
+  return {
+    ...checks,
+    manifestNavigationItems: manifestNavigationPaths.size,
+    manifestActions: manifestActions.length,
+  };
 }
 
 function auditJsxGuardrails() {
@@ -1389,6 +1619,7 @@ const summary = {
   projectContent: auditProjectContentModel(),
   packageManifest: auditPackageManifest(),
   uxGuardrails: auditUxGuardrails(),
+  agenticBrowsing: auditAgenticBrowsingSurface(),
   jsxGuardrails: auditJsxGuardrails(),
 };
 

@@ -266,15 +266,17 @@ export const ApartmentAvailability = ({
   };
 
   return (
-      <section
+    <section
       className="page-section page-section--surface apartments-section"
       id="stanovi"
+      data-agent-surface="apartment-offer"
+      aria-labelledby="apartments-offer-title"
     >
       <div className="page-container">
         <div className="split-grid split-grid--end apartments-section__heading">
           <div>
             <p className="section-eyebrow">Ponuda stanova i lokala</p>
-            <h2 className="section-title section-title--medium">
+            <h2 className="section-title section-title--medium" id="apartments-offer-title">
               {compactHeading
                 ? "Pregled jedinica po spratu i tipu."
                 : "Dostupnost po spratu i tipu jedinice."}
@@ -286,13 +288,16 @@ export const ApartmentAvailability = ({
           </p>
         </div>
 
-        <div className="apartments-filters" aria-label="Filtriranje ponude">
-          <div className="apartments-filter-group apartments-filter-group--unit-type">
-            <p>Vrsta jedinice</p>
+        <div className="apartments-filters" aria-label="Filtriranje ponude" data-agent-surface="apartment-filters">
+          <div className="apartments-filter-group apartments-filter-group--unit-type" role="group" aria-labelledby="filter-unit-type-label">
+            <p id="filter-unit-type-label">Vrsta jedinice</p>
             <div className="apartments-filter-group__options">
               {unitTypeTabs.map((tab) => (
                 <button
                   aria-pressed={unitType === tab.value}
+                  aria-controls="stanovi-rezultati"
+                  data-agent-filter="unit-type"
+                  data-filter-value={tab.value}
                   className={unitType === tab.value ? "is-active" : ""}
                   key={tab.value}
                   onClick={() =>
@@ -311,12 +316,15 @@ export const ApartmentAvailability = ({
             </div>
           </div>
 
-          <div className="apartments-filter-group">
-            <p>Dostupnost</p>
+          <div className="apartments-filter-group" role="group" aria-labelledby="filter-status-label">
+            <p id="filter-status-label">Dostupnost</p>
             <div className="apartments-filter-group__options">
               {statusTabs.map((tab) => (
                 <button
                   aria-pressed={status === tab.value}
+                  aria-controls="stanovi-rezultati"
+                  data-agent-filter="availability"
+                  data-filter-value={tab.value}
                   className={status === tab.value ? "is-active" : ""}
                   key={tab.value}
                   onClick={() =>
@@ -333,12 +341,15 @@ export const ApartmentAvailability = ({
             </div>
           </div>
 
-          <div className="apartments-filter-group">
-            <p>Struktura</p>
+          <div className="apartments-filter-group" role="group" aria-labelledby="filter-structure-label">
+            <p id="filter-structure-label">Struktura</p>
             <div className="apartments-filter-group__options">
               {structureTabs.map((tab) => (
                 <button
                   aria-pressed={structure === tab.value}
+                  aria-controls="stanovi-rezultati"
+                  data-agent-filter="structure"
+                  data-filter-value={tab.value}
                   className={structure === tab.value ? "is-active" : ""}
                   key={tab.value}
                   onClick={() =>
@@ -355,11 +366,14 @@ export const ApartmentAvailability = ({
             </div>
           </div>
 
-          <div className="apartments-filter-group apartments-filter-group--type">
-            <p>Tip stana</p>
+          <div className="apartments-filter-group apartments-filter-group--type" role="group" aria-labelledby="filter-apartment-type-label">
+            <p id="filter-apartment-type-label">Tip stana</p>
             <div className="apartments-filter-group__options">
               <button
                 aria-pressed={apartmentType === "All"}
+                aria-controls="stanovi-rezultati"
+                data-agent-filter="apartment-type"
+                data-filter-value="All"
                 className={apartmentType === "All" ? "is-active" : ""}
                 onClick={() => updateSearchParams({ nextApartmentType: "All" })}
                 type="button"
@@ -369,6 +383,9 @@ export const ApartmentAvailability = ({
               {apartmentTypeGroups.map((group) => (
                 <button
                   aria-pressed={apartmentType === group.key}
+                  aria-controls="stanovi-rezultati"
+                  data-agent-filter="apartment-type"
+                  data-filter-value={group.key}
                   className={apartmentType === group.key ? "is-active" : ""}
                   key={group.key}
                   onClick={() =>
@@ -391,6 +408,8 @@ export const ApartmentAvailability = ({
             <button
               className="apartments-filters__reset"
               type="button"
+              aria-controls="stanovi-rezultati"
+              data-agent-action="reset-apartment-filters"
               onClick={resetFilters}
             >
               <X />
@@ -416,11 +435,14 @@ export const ApartmentAvailability = ({
           </Link>
         </div>
 
-        <div className="apartments-grid" id="stanovi-rezultati">
+        <div className="apartments-grid" id="stanovi-rezultati" data-agent-surface="apartment-results">
           {paginatedApartments.map((apartment) => (
             <Link
               aria-label={`Detalji za ${getUnitDisplayName(apartment)}`}
               className="apartment-card"
+              data-agent-entity="unit"
+              data-unit-number={apartment.number}
+              data-unit-type={getUnitLabel(apartment)}
               key={apartment.slug ?? apartment.number}
               to={`/projekti/heroja-pinkija-13/ponuda-stanova/${getUnitRouteSegment(apartment)}`}
             >

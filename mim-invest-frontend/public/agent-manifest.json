@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.0",
+  "type": "website-agent-manifest",
+  "name": "M & M Gradnja",
+  "language": "sr-Latn",
+  "baseUrl": "https://mimgradnja.rs",
+  "description": "Javni sajt M & M Gradnje za projekat Heroja Pinkija 13: pregled stanova i lokala, tlocrti, dokumentacija, lokacija i direktan kontakt sa prodajom.",
+  "primaryEntity": {
+    "type": "ApartmentComplex",
+    "name": "Heroja Pinkija 13",
+    "address": "Heroja Pinkija 13, Novi Sad",
+    "district": "Telep",
+    "phone": "+381642279117",
+    "email": "prodaja@mimgradnja.rs"
+  },
+  "navigation": [
+    { "label": "Početna", "path": "/" },
+    { "label": "O nama", "path": "/o-nama" },
+    { "label": "O projektu", "path": "/projekti/heroja-pinkija-13/o-projektu" },
+    { "label": "Ponuda stanova i lokala", "path": "/projekti/heroja-pinkija-13/ponuda-stanova" },
+    { "label": "Spisak stanova i lokala", "path": "/projekti/heroja-pinkija-13/spisak-stanova" },
+    { "label": "Lokacija", "path": "/lokacija" },
+    { "label": "Kontakt", "path": "/kontakt" },
+    { "label": "Kupujemo placeve", "path": "/kupujemo-placeve" },
+    { "label": "Politika privatnosti", "path": "/politika-privatnosti" }
+  ],
+  "actions": [
+    {
+      "id": "open-contact-form",
+      "label": "Pišite nam",
+      "interaction": "click",
+      "selector": "[data-agent-action=\"open-contact-form\"]",
+      "result": "Opšta kontakt forma se otvara kao modal bez promene stranice."
+    },
+    {
+      "id": "browse-apartments",
+      "label": "Pogledaj ponudu",
+      "path": "/projekti/heroja-pinkija-13/ponuda-stanova",
+      "filters": ["vrsta", "status", "struktura", "tip", "strana"]
+    },
+    {
+      "id": "browse-table",
+      "label": "Tabelarni spisak",
+      "path": "/projekti/heroja-pinkija-13/spisak-stanova",
+      "result": "Tabela sa filterima, detaljima i preuzimanjem CSV spiska."
+    },
+    {
+      "id": "open-project-document",
+      "label": "Pregledaj dokument",
+      "interaction": "click",
+      "selector": "[data-agent-action=\"open-project-document\"]",
+      "result": "PDF se otvara u okviru stranice u pristupačnom modalnom preview-u."
+    },
+    {
+      "id": "submit-land-offer",
+      "label": "Pošaljite podatke",
+      "path": "/kupujemo-placeve",
+      "formSelector": "[data-agent-form=\"land-offer\"]",
+      "requirements": ["ime", "telefon", "e-mail", "saglasnost", "captcha"]
+    }
+  ],
+  "notes": [
+    "Statusi i kvadratura na javnim karticama mogu se osvežiti iz Supabase-a.",
+    "Detalji jedinice koriste URL /projekti/heroja-pinkija-13/ponuda-stanova/{broj-ili-slug}.",
+    "Slanje bilo kog upita zahteva saglasnost za kontakt i CAPTCHA proveru."
+  ]
+}

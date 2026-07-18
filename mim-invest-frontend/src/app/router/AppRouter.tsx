@@ -70,6 +70,55 @@ const ScrollToTop = () => {
   return null;
 };
 
+const RouteAnnouncer = () => {
+  const { pathname } = useLocation();
+
+  return (
+    <div
+      className="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      data-agent-surface="route-status"
+    >
+      {getPublicRouteLabel(pathname)}
+    </div>
+  );
+};
+
+function getPublicRouteLabel(pathname: string) {
+  const routeLabels: Record<string, string> = {
+    "/": "Otvorena je početna stranica.",
+    "/o-nama": "Otvorena je stranica O nama.",
+    "/kontakt": "Otvorena je kontakt stranica.",
+    "/kupujemo-placeve": "Otvorena je stranica Kupujemo placeve.",
+    "/lokacija": "Otvorena je stranica sa lokacijom projekta.",
+    "/politika-privatnosti": "Otvorena je politika privatnosti.",
+    "/projekti/heroja-pinkija-13": "Otvorena je stranica projekta Heroja Pinkija 13.",
+    "/projekti/heroja-pinkija-13/o-projektu": "Otvorena je stranica projekta Heroja Pinkija 13.",
+    "/projekti/heroja-pinkija-13/ponuda-stanova": "Otvorena je ponuda stanova i lokala.",
+    "/projekti/heroja-pinkija-13/spisak-stanova": "Otvoren je tabelarni spisak stanova i lokala.",
+  };
+
+  if (routeLabels[pathname]) {
+    return routeLabels[pathname];
+  }
+
+  const unitMatch = pathname.match(
+    /^\/projekti\/heroja-pinkija-13\/ponuda-stanova\/([^/]+)$/,
+  );
+
+  if (unitMatch) {
+    return `Otvoreni su detalji jedinice ${decodeURIComponent(unitMatch[1])}.`;
+  }
+
+  if (pathname.startsWith("/admin")) {
+    return "Otvorena je stranica admin panela.";
+  }
+
+  return "Otvorena je nova stranica.";
+}
+
 const LegacyApartmentRedirect = () => {
   const { apartmentNumber } = useParams();
 
@@ -86,6 +135,7 @@ const AppRouter = () => {
     <BrowserRouter>
       <ContactModalProvider>
         <ScrollToTop />
+        <RouteAnnouncer />
         <RouteTransitionLoader />
         <RouteErrorBoundary>
           <Suspense fallback={<PageLoader label="Učitavanje stranice" />}>

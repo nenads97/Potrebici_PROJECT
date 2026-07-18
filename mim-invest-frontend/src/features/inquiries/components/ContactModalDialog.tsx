@@ -246,6 +246,7 @@ const ContactModalDialog = ({ isOpen, options, onClose }: ContactModalProps) => 
     <div
       className="contact-modal"
       role="presentation"
+      data-agent-surface="contact-form-overlay"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
           onClose();
@@ -253,9 +254,11 @@ const ContactModalDialog = ({ isOpen, options, onClose }: ContactModalProps) => 
       }}
     >
       <div
+        id="contact-modal-dialog"
         ref={dialogRef}
         className="contact-modal__dialog"
         role="dialog"
+        data-agent-surface="contact-form-dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
@@ -311,6 +314,7 @@ const ContactModalDialog = ({ isOpen, options, onClose }: ContactModalProps) => 
 
         <form
           className="contact-modal__form"
+          data-agent-form="contact-inquiry"
           onSubmit={handleSubmit}
           aria-busy={formStatus === "sending"}
           noValidate
@@ -495,6 +499,7 @@ const ContactModalDialog = ({ isOpen, options, onClose }: ContactModalProps) => 
               <button
                 className="site-button site-button--dark contact-modal__submit"
                 type="submit"
+                data-agent-action="submit-contact-inquiry"
                 disabled={formStatus === "sending"}
               >
                 <Send />

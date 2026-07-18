@@ -62,6 +62,16 @@ const clampHeroPlanZoom = (value: number) =>
     Math.max(heroPlanZoomMin, Number(value.toFixed(2))),
   );
 
+function getUnitSchemaAvailability(status: ApartmentStatus) {
+  const availabilityByStatus: Record<ApartmentStatus, string> = {
+    Available: "https://schema.org/InStock",
+    Reserved: "https://schema.org/LimitedAvailability",
+    Sold: "https://schema.org/SoldOut",
+  };
+
+  return availabilityByStatus[status];
+}
+
 type ApartmentCtaCopy = {
   buttonLabel: string;
   modalTitle: string;
@@ -425,7 +435,12 @@ export const ApartmentDetailsPage = () => {
   const heroPlanZoomPercent = Math.round(heroPlanZoom * 100);
 
   return (
-    <main className="apartment-detail apartment-detail--editorial">
+    <main
+      className="apartment-detail apartment-detail--editorial"
+      data-agent-entity="unit-detail"
+      data-unit-number={apartment.number}
+      data-unit-type={unitLabel}
+    >
       <PageMeta
         title={
           apartment.seoTitle ?? `${unitName} | Heroja Pinkija 13`
@@ -434,8 +449,80 @@ export const ApartmentDetailsPage = () => {
           apartment.seoDescription ??
           `Detalji za ${unitName}: ${apartment.size}, ${apartment.floor}, ${apartment.rooms}. Pogledajte tlocrt i pošaljite upit prodaji.`
         }
+        canonicalPath={`${apartmentsPath}/${getUnitRouteSegment(apartment)}`}
         image={apartment.heroFloorPlan.src}
         imageAlt={apartment.heroFloorPlan.alt}
+        structuredData={({ canonicalUrl, imageUrl, origin }) => ({
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: unitName,
+          description: apartment.description,
+          url: canonicalUrl,
+          image: imageUrl,
+          category: unitLabel,
+          brand: {
+            "@type": "Organization",
+            name: "M & M Gradnja",
+            url: origin,
+          },
+          isRelatedTo: {
+            "@type": "ApartmentComplex",
+            name: "Heroja Pinkija 13",
+            url: `${origin}/projekti/heroja-pinkija-13/o-projektu`,
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "Heroja Pinkija 13",
+              addressLocality: "Novi Sad",
+              addressCountry: "RS",
+            },
+          },
+          additionalProperty: [
+            { "@type": "PropertyValue", name: "Sprat", value: apartment.floor },
+            { "@type": "PropertyValue", name: "Površina", value: apartment.size },
+            { "@type": "PropertyValue", name: "Struktura / namena", value: apartment.rooms },
+            { "@type": "PropertyValue", name: "Orijentacija", value: apartment.orientation },
+            { "@type": "PropertyValue", name: "Status", value: statusLabel[apartment.status] },
+          ],
+          offers: {
+            "@type": "Offer",
+            availability: getUnitSchemaAvailability(apartment.status),
+            url: canonicalUrl,
+            seller: {
+              "@type": "Organization",
+              name: "M & M Gradnja",
+              url: origin,
+            },
+          },
+          breadcrumb: {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Početna",
+                item: `${origin}/`,
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Heroja Pinkija 13",
+                item: `${origin}/projekti/heroja-pinkija-13/o-projektu`,
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: "Ponuda stanova i lokala",
+                item: `${origin}${apartmentsPath}`,
+              },
+              {
+                "@type": "ListItem",
+                position: 4,
+                name: unitName,
+                item: canonicalUrl,
+              },
+            ],
+          },
+        })}
       />
       <section className="apartment-detail-hero">
         <div className="page-container">
@@ -487,6 +574,7 @@ export const ApartmentDetailsPage = () => {
             <button
               type="button"
               className="apartment-detail-hero__visual"
+              data-agent-action="open-unit-floor-plan"
               aria-label={`Otvori projektni tlocrt za ${unitName} u punoj velicini`}
               onClick={openHeroPlan}
             >
@@ -644,6 +732,8 @@ export const ApartmentDetailsPage = () => {
               <Link
                 key={item.number}
                 className="related-card related-card--editorial"
+                data-agent-entity="related-unit"
+                data-unit-number={item.number}
                 to={`${apartmentsPath}/${getUnitRouteSegment(item)}`}
               >
                 <div>

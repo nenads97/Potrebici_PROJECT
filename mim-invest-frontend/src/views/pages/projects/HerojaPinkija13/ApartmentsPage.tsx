@@ -23,6 +23,7 @@ import {
   getUnitLabel,
   getUnitRouteSegment,
   getUnitSortOrder,
+  projectInfo,
   statusLabel,
   statusVariant,
 } from "../../../../features/projects/data/herojaPinkija13.data";
@@ -147,6 +148,68 @@ const ApartmentsListingContent = ({
             ? "/projekti/heroja-pinkija-13/spisak-stanova"
             : "/projekti/heroja-pinkija-13/ponuda-stanova"
         }
+        structuredData={({ canonicalUrl, origin }) => ({
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: isTableView
+            ? "Tabelarni spisak stanova i lokala | Heroja Pinkija 13"
+            : "Ponuda stanova i lokala | Heroja Pinkija 13",
+          url: canonicalUrl,
+          about: {
+            "@type": "ApartmentComplex",
+            name: projectInfo.name,
+            address: `${projectInfo.address}, ${projectInfo.city}`,
+          },
+          breadcrumb: {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Početna",
+                item: `${origin}/`,
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Heroja Pinkija 13",
+                item: `${origin}/projekti/heroja-pinkija-13/o-projektu`,
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: isTableView ? "Spisak stanova i lokala" : "Ponuda stanova i lokala",
+                item: canonicalUrl,
+              },
+            ],
+          },
+          mainEntity: {
+            "@type": "ItemList",
+            numberOfItems: availableApartments.length,
+            itemListElement: availableApartments.map((apartment, index) => ({
+              "@type": "ListItem",
+              position: index + 1,
+              name: getUnitDisplayName(apartment),
+              url: `${origin}${"/projekti/heroja-pinkija-13/ponuda-stanova"}/${getUnitRouteSegment(apartment)}`,
+              item: {
+                "@type": "Product",
+                name: getUnitDisplayName(apartment),
+                category: getUnitLabel(apartment),
+                description: apartment.description,
+                additionalProperty: [
+                  { "@type": "PropertyValue", name: "Sprat", value: apartment.floor },
+                  { "@type": "PropertyValue", name: "Površina", value: apartment.size },
+                  { "@type": "PropertyValue", name: "Struktura / namena", value: apartment.rooms },
+                ],
+                offers: {
+                  "@type": "Offer",
+                  availability: getSchemaAvailability(apartment.status),
+                  url: `${origin}${"/projekti/heroja-pinkija-13/ponuda-stanova"}/${getUnitRouteSegment(apartment)}`,
+                },
+              },
+            })),
+          },
+        })}
       />
       <section className="apartments-listing-hero">
         <div className="page-container apartments-listing-hero__grid">
@@ -309,7 +372,7 @@ const ProjectDocumentsSection = () => {
             </p>
           </div>
 
-          <div className="project-documents-grid">
+          <div className="project-documents-grid" data-agent-surface="project-documents">
             {projectDocuments.map((projectDocument) => (
               <article className="project-document-card" key={projectDocument.id}>
                 <div className="project-document-card__icon" aria-hidden="true">
@@ -326,6 +389,8 @@ const ProjectDocumentsSection = () => {
                   <button
                     type="button"
                     className="project-document-card__preview"
+                    data-agent-action="open-project-document"
+                    aria-label={`Pregledaj dokument: ${projectDocument.title}`}
                     onClick={() => {
                       setIsDocumentFullscreen(false);
                       setActiveDocument(projectDocument);
@@ -338,6 +403,8 @@ const ProjectDocumentsSection = () => {
                     className="project-document-card__download"
                     href={projectDocument.filePath}
                     download
+                    data-agent-action="download-project-document"
+                    aria-label={`Preuzmi PDF: ${projectDocument.title}`}
                   >
                     <Download aria-hidden="true" />
                     Preuzmi PDF
@@ -518,12 +585,16 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
   };
 
   return (
-    <section className="page-section page-section--surface apartments-table-section">
+    <section
+      className="page-section page-section--surface apartments-table-section"
+      aria-labelledby="apartments-table-title"
+      data-agent-surface="apartment-table"
+    >
       <div className="page-container">
         <div className="split-grid split-grid--end apartments-table-section__heading">
           <div>
             <p className="section-eyebrow">Tabelarni pregled</p>
-            <h2 className="section-title section-title--medium">
+            <h2 className="section-title section-title--medium" id="apartments-table-title">
               Stanovi i lokali u jednom spisku.
             </h2>
           </div>
@@ -536,10 +607,14 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
         <div
           className="apartments-table-filters"
           aria-label="Filteri tabelarnog spiska stanova i lokala"
+          data-agent-surface="apartment-table-filters"
         >
           <label>
             <span>Vrsta jedinice</span>
             <select
+              name="unitType"
+              aria-controls="apartments-table-results"
+              data-agent-filter="unit-type"
               value={unitTypeFilter}
               onChange={(event) =>
                 setUnitTypeFilter(
@@ -556,6 +631,9 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
           <label>
             <span>Sprat</span>
             <select
+              name="floor"
+              aria-controls="apartments-table-results"
+              data-agent-filter="floor"
               value={floorFilter}
               onChange={(event) => setFloorFilter(event.target.value)}
             >
@@ -571,6 +649,9 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
           <label>
             <span>Struktura</span>
             <select
+              name="structure"
+              aria-controls="apartments-table-results"
+              data-agent-filter="structure"
               value={roomFilter}
               onChange={(event) => setRoomFilter(event.target.value)}
             >
@@ -586,6 +667,9 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
           <label>
             <span>status</span>
             <select
+              name="status"
+              aria-controls="apartments-table-results"
+              data-agent-filter="availability"
               value={statusFilter}
               onChange={(event) =>
                 setStatusFilter(
@@ -603,11 +687,13 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
           </label>
 
           <div className="apartments-table-filters__summary">
-            <span>
+            <span aria-live="polite">
               {filteredApartments.length} od {apartments.length} jedinica
             </span>
             <button
               type="button"
+              data-agent-action="reset-apartment-table-filters"
+              aria-controls="apartments-table-results"
               onClick={clearFilters}
               disabled={!hasActiveFilters}
             >
@@ -624,6 +710,7 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
           <div>
             <button
               type="button"
+              data-agent-action="print-apartment-table"
               onClick={printFilteredList}
               disabled={filteredApartments.length === 0}
             >
@@ -632,6 +719,7 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
             </button>
             <button
               type="button"
+              data-agent-action="download-apartment-csv"
               onClick={downloadFilteredList}
               disabled={filteredApartments.length === 0}
             >
@@ -643,11 +731,17 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
 
         <div
           className="apartments-table-wrap"
+          id="apartments-table-results"
           role="region"
           aria-label="Tabelarni spisak stanova i lokala"
+          data-agent-surface="apartment-table-results"
         >
           {filteredApartments.length > 0 ? (
             <table className="apartments-table">
+              <caption className="sr-only">
+                Stanovi i lokali u projektu Heroja Pinkija 13 sa spratom,
+                površinom, strukturom i statusom.
+              </caption>
               <thead>
                 <tr>
                   <th>Jedinica</th>
@@ -660,7 +754,12 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
               </thead>
               <tbody>
                 {filteredApartments.map((apartment) => (
-                  <tr key={apartment.slug ?? apartment.number}>
+                  <tr
+                    key={apartment.slug ?? apartment.number}
+                    data-agent-entity="unit"
+                    data-unit-number={apartment.number}
+                    data-unit-type={getUnitLabel(apartment)}
+                  >
                     <td data-label="Jedinica">
                       <strong>{getUnitDisplayName(apartment)}</strong>
                     </td>
@@ -677,6 +776,7 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
                     <td data-label="Detalji">
                       <Link
                         className="apartments-table__link"
+                        data-agent-action="open-unit-details"
                         to={`/projekti/heroja-pinkija-13/ponuda-stanova/${getUnitRouteSegment(apartment)}`}
                       >
                         Otvori {getUnitLabel(apartment).toLowerCase()}
@@ -703,6 +803,16 @@ const ApartmentTableSection = ({ apartments }: { apartments: Apartment[] }) => {
 
 function getSortNumber(value: string) {
   return Number(value.match(/\d+/)?.[0] ?? 0);
+}
+
+function getSchemaAvailability(status: Apartment["status"]) {
+  const availabilityByStatus: Record<Apartment["status"], string> = {
+    Available: "https://schema.org/InStock",
+    Reserved: "https://schema.org/LimitedAvailability",
+    Sold: "https://schema.org/SoldOut",
+  };
+
+  return availabilityByStatus[status];
 }
 
 function downloadApartmentsCsv(items: Apartment[]) {

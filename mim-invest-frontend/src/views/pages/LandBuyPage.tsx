@@ -444,6 +444,8 @@ const PropertyOfferForm = () => {
   return (
     <motion.form
       className="soft-card inquiry-form"
+      data-agent-form="land-offer"
+      aria-labelledby="land-offer-form-title"
       onSubmit={handleSubmit}
       aria-busy={formStatus === "sending"}
       noValidate
@@ -458,7 +460,7 @@ const PropertyOfferForm = () => {
       <div className="inquiry-form__head">
         <FileText className="icon-inline" />
         <div>
-          <strong>Podaci za početnu procenu</strong>
+          <strong id="land-offer-form-title">Podaci za početnu procenu</strong>
           <p>Polja označena zvezdicom su obavezna.</p>
         </div>
       </div>
@@ -672,6 +674,7 @@ const PropertyOfferForm = () => {
           <button
             className="site-button site-button--dark"
             type="submit"
+            data-agent-action="submit-land-offer"
             disabled={formStatus === "sending"}
           >
             <MessageCircle />

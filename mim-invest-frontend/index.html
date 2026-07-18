@@ -10,7 +10,14 @@
     />
     <meta name="robots" content="index,follow" />
     <meta name="theme-color" content="#363d46" />
+    <meta name="application-name" content="M & M Gradnja" />
     <link rel="canonical" href="https://mimgradnja.rs/" />
+    <link
+      rel="alternate"
+      type="application/json"
+      href="/agent-manifest.json"
+      title="Mašinski čitljiv pregled sajta"
+    />
     <meta property="og:site_name" content="M & M Gradnja" />
     <meta property="og:locale" content="sr_RS" />
     <meta property="og:type" content="website" />
@@ -38,6 +45,52 @@
       content="https://mimgradnja.rs/images/heroja-pinkija-13/gradilisna-tabla-optimized.jpg"
     />
     <meta name="twitter:image:alt" content="Gradilisna tabla projekta Heroja Pinkija 13" />
+    <script type="application/ld+json" id="site-structured-data">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://mimgradnja.rs/#organization",
+            "name": "M & M Gradnja",
+            "url": "https://mimgradnja.rs/",
+            "email": "prodaja@mimgradnja.rs",
+            "telephone": "+381642279117",
+            "logo": "https://mimgradnja.rs/images/TRADE.png",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Heroja Pinkija 13",
+              "addressLocality": "Novi Sad",
+              "addressCountry": "RS"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://mimgradnja.rs/#website",
+            "name": "M & M Gradnja",
+            "url": "https://mimgradnja.rs/",
+            "inLanguage": "sr-Latn",
+            "publisher": { "@id": "https://mimgradnja.rs/#organization" }
+          },
+          {
+            "@type": "ApartmentComplex",
+            "@id": "https://mimgradnja.rs/projekti/heroja-pinkija-13/o-projektu#project",
+            "name": "Heroja Pinkija 13",
+            "url": "https://mimgradnja.rs/projekti/heroja-pinkija-13/o-projektu",
+            "description": "Stambeno-poslovni objekat sa stanovima i lokalima na početku Telepa u Novom Sadu.",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Heroja Pinkija 13",
+              "addressLocality": "Novi Sad",
+              "addressCountry": "RS"
+            },
+            "telephone": "+381642279117",
+            "email": "prodaja@mimgradnja.rs",
+            "provider": { "@id": "https://mimgradnja.rs/#organization" }
+          }
+        ]
+      }
+    </script>
     <title>M & M Gradnja | Stanovi Heroja Pinkija 13 Novi Sad</title>
   </head>
   <body>

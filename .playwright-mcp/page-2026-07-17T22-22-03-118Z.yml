@@ -1,0 +1,380 @@
+- generic [ref=f2e2]:
+  - status [ref=f2e3]: Otvoren je tabelarni spisak stanova i lokala.
+  - generic [ref=f2e11]:
+    - link "Preskocite na glavni sadržaj":
+      - /url: "#main-content"
+    - banner [ref=f2e12]:
+      - generic [ref=f2e13]:
+        - link "M & M Gradnja početna" [ref=f2e14] [cursor=pointer]:
+          - /url: /
+          - generic [ref=f2e15]:
+            - img "M & M Gradnja" [ref=f2e17]
+            - generic [ref=f2e18]:
+              - generic [ref=f2e19]: M & M
+              - generic [ref=f2e20]: Gradnja
+        - button "Otvori navigaciju" [ref=f2e21] [cursor=pointer]
+        - generic:
+          - link "O projektu":
+            - /url: /projekti/heroja-pinkija-13/o-projektu
+          - link "Ponuda stanova":
+            - /url: /projekti/heroja-pinkija-13/ponuda-stanova
+          - link "Spisak stanova":
+            - /url: /projekti/heroja-pinkija-13/spisak-stanova
+    - button "Nazad na prethodnu stranicu" [ref=f2e23] [cursor=pointer]
+    - main [ref=f2e27]:
+      - generic [ref=f2e29]:
+        - generic [ref=f2e30]:
+          - paragraph [ref=f2e31]: Heroja Pinkija 13
+          - heading "Tabelarni spisak stanova i lokala." [level=1] [ref=f2e32]
+          - paragraph [ref=f2e33]: Pregledajte sve jedinice u jednom kompaktnom spisku za najbrže poređenje sprata, kvadrature i statusa.
+          - generic [ref=f2e34]:
+            - button "Pišite nam" [ref=f2e35] [cursor=pointer]
+            - link "Karticni pregled" [ref=f2e38] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/ponuda-stanova
+        - generic [ref=f2e42]:
+          - generic [ref=f2e43]:
+            - term [ref=f2e47]: Ukupna ponuda
+            - definition [ref=f2e48]: 17 jedinica
+          - generic [ref=f2e49]:
+            - term [ref=f2e54]: stambene etaže
+            - definition [ref=f2e55]: 3 etaže
+          - generic [ref=f2e56]:
+            - term [ref=f2e61]: Raspored
+            - definition [ref=f2e62]: 15 stanova i 2 lokala
+          - generic [ref=f2e63]:
+            - term [ref=f2e67]: Lokacija
+            - definition [ref=f2e68]: Početak Telepa
+      - region [ref=f2e69]:
+        - generic [ref=f2e70]:
+          - generic [ref=f2e71]:
+            - generic [ref=f2e72]:
+              - paragraph [ref=f2e73]: Dokumentacija projekta
+              - heading "Sve važne informacije na jednom mestu." [level=2] [ref=f2e74]
+            - paragraph [ref=f2e75]: Pregledajte originalnu dokumentaciju projekta pre nego što otvorite detalje konkretne jedinice.
+          - generic [ref=f2e76]:
+            - article [ref=f2e77]:
+              - generic [ref=f2e82]:
+                - paragraph [ref=f2e83]: 2 strane
+                - heading "Osnovna dokumentacija projekta" [level=3] [ref=f2e84]
+                - paragraph [ref=f2e85]: Sažet pregled objekta sa osnovnim podacima, lokalima, stanovima, garažnim mestima i ostavama.
+              - generic [ref=f2e86]:
+                - 'button "Pregledaj dokument: Osnovna dokumentacija projekta" [ref=f2e87] [cursor=pointer]': Pregledaj dokument
+                - 'link "Preuzmi PDF: Osnovna dokumentacija projekta" [ref=f2e91] [cursor=pointer]':
+                  - /url: /documents/project/basic-project-documentation.pdf
+                  - text: Preuzmi PDF
+            - article [ref=f2e95]:
+              - generic [ref=f2e100]:
+                - paragraph [ref=f2e101]: 13 strane
+                - heading "Skica svih objekata po spratovima" [level=3] [ref=f2e102]
+                - paragraph [ref=f2e103]: Kompletan tehnički pregled temelja, podruma, prizemlja, galerije, spratova, krova i izgleda objekta.
+              - generic [ref=f2e104]:
+                - 'button "Pregledaj dokument: Skica svih objekata po spratovima" [ref=f2e105] [cursor=pointer]': Pregledaj dokument
+                - 'link "Preuzmi PDF: Skica svih objekata po spratovima" [ref=f2e109] [cursor=pointer]':
+                  - /url: /documents/project/building-floor-plans.pdf
+                  - text: Preuzmi PDF
+            - article [ref=f2e113]:
+              - generic [ref=f2e118]:
+                - paragraph [ref=f2e119]: 1 strana
+                - heading "Osnova podruma sa ostavama" [level=3] [ref=f2e120]
+                - paragraph [ref=f2e121]: Pregled rasporeda garažnih mesta, ostava, komunikacija i prostora u podrumu objekta.
+              - generic [ref=f2e122]:
+                - 'button "Pregledaj dokument: Osnova podruma sa ostavama" [ref=f2e123] [cursor=pointer]': Pregledaj dokument
+                - 'link "Preuzmi PDF: Osnova podruma sa ostavama" [ref=f2e127] [cursor=pointer]':
+                  - /url: /documents/project/basement-storage-plan.pdf
+                  - text: Preuzmi PDF
+      - region [ref=f2e131]:
+        - generic [ref=f2e132]:
+          - generic [ref=f2e133]:
+            - generic [ref=f2e134]:
+              - paragraph [ref=f2e135]: Tabelarni pregled
+              - heading "Stanovi i lokali u jednom spisku." [level=2] [ref=f2e136]
+            - paragraph [ref=f2e137]: Tabela je namenjena brzom poređenju. Za tlocrt, opis i slanje upita otvorite detalje konkretne jedinice.
+          - generic "Filteri tabelarnog spiska stanova i lokala" [ref=f2e138]:
+            - generic [ref=f2e139]:
+              - generic [ref=f2e140]: Vrsta jedinice
+              - combobox "Vrsta jedinice" [ref=f2e141]:
+                - option "Sve jedinice" [selected]
+                - option "Stanovi"
+                - option "Lokali"
+            - generic [ref=f2e142]:
+              - generic [ref=f2e143]: Sprat
+              - combobox "Sprat" [ref=f2e144]:
+                - option "Svi spratovi" [selected]
+                - option "Prizemlje"
+                - option "1. etaža"
+                - option "2. etaža"
+                - option "3. etaža"
+            - generic [ref=f2e145]:
+              - generic [ref=f2e146]: Struktura
+              - combobox "Struktura" [ref=f2e147]:
+                - option "Sve strukture" [selected]
+                - option "Dvosoban"
+                - option "Garsonjera"
+                - option "Poslovni prostor"
+                - option "Trosoban"
+            - generic [ref=f2e148]:
+              - generic [ref=f2e149]: status
+              - combobox "status" [ref=f2e150]:
+                - option "Svi statusi" [selected]
+                - option "Rezervisan"
+                - option "Slobodan"
+                - option "Prodat"
+            - generic [ref=f2e151]:
+              - generic [ref=f2e152]: 17 od 17 jedinica
+              - button "Poništi filtere" [disabled] [ref=f2e153]
+          - generic "Akcije za tabelarni spisak stanova i lokala" [ref=f2e154]:
+            - paragraph [ref=f2e155]: Akcije koriste trenutno izabrane filtere.
+            - generic [ref=f2e156]:
+              - button "Štampaj spisak" [ref=f2e157] [cursor=pointer]
+              - button "Preuzmi CSV" [ref=f2e162] [cursor=pointer]
+          - region "Tabelarni spisak stanova i lokala" [ref=f2e166]:
+            - table [ref=f2e167]:
+              - caption [ref=f2e168]: Stanovi i lokali u projektu Heroja Pinkija 13 sa spratom, površinom, strukturom i statusom.
+              - rowgroup [ref=f2e169]:
+                - row [ref=f2e170]:
+                  - columnheader "Jedinica" [ref=f2e171]
+                  - columnheader "Sprat" [ref=f2e172]
+                  - columnheader "Površina" [ref=f2e173]
+                  - columnheader "Namena / struktura" [ref=f2e174]
+                  - columnheader "status" [ref=f2e175]
+                  - columnheader "Detalji" [ref=f2e176]
+              - rowgroup [ref=f2e177]:
+                - row [ref=f2e178]:
+                  - cell [ref=f2e179]:
+                    - strong [ref=f2e180]: Stan 1
+                  - cell "1. etaža" [ref=f2e181]
+                  - cell "62.15 m2" [ref=f2e182]
+                  - cell "Trosoban" [ref=f2e183]
+                  - cell "Rezervisan" [ref=f2e184]
+                  - cell [ref=f2e186]:
+                    - link "Otvori stan" [ref=f2e187] [cursor=pointer]:
+                      - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-1
+                - row [ref=f2e191]:
+                  - cell [ref=f2e192]:
+                    - strong [ref=f2e193]: Stan 2
+                  - cell "1. etaža" [ref=f2e194]
+                  - cell "58.26 m2" [ref=f2e195]
+                  - cell "Trosoban" [ref=f2e196]
+                  - cell "Slobodan" [ref=f2e197]
+                  - cell [ref=f2e199]:
+                    - link "Otvori stan" [ref=f2e200] [cursor=pointer]:
+                      - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-2
+                - row [ref=f2e204]:
+                  - cell [ref=f2e205]:
+                    - strong [ref=f2e206]: Stan 3
+                  - cell "1. etaža" [ref=f2e207]
+                  - cell "28.55 m2" [ref=f2e208]
+                  - cell "Garsonjera" [ref=f2e209]
+                  - cell "Prodat" [ref=f2e210]
+                  - cell [ref=f2e212]:
+                    - link "Otvori stan" [ref=f2e213] [cursor=pointer]:
+                      - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-3
+                - row [ref=f2e217]:
+                  - cell [ref=f2e218]:
+                    - strong [ref=f2e219]: Stan 4
+                  - cell "1. etaža" [ref=f2e220]
+                  - cell "46.95 m2" [ref=f2e221]
+                  - cell "Dvosoban" [ref=f2e222]
+                  - cell "Prodat" [ref=f2e223]
+                  - cell [ref=f2e225]:
+                    - link "Otvori stan" [ref=f2e226] [cursor=pointer]:
+                      - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-4
+                - row [ref=f2e230]:
+                  - cell [ref=f2e231]:
+                    - strong [ref=f2e232]: Stan 5
+                  - cell "1. etaža" [ref=f2e233]
+                  - cell "42.57 m2" [ref=f2e234]
+                  - cell "Dvosoban" [ref=f2e235]
+                  - cell "Slobodan" [ref=f2e236]
+                  - cell [ref=f2e238]:
+                    - link "Otvori stan" [ref=f2e239] [cursor=pointer]:
+                      - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-5
+                - row [ref=f2e243]:
+                  - cell [ref=f2e244]:
+                    - strong [ref=f2e245]: Stan 6
+                  - cell "2. etaža" [ref=f2e246]
+                  - cell "60.29 m2" [ref=f2e247]
+                  - cell "Trosoban" [ref=f2e248]
+                  - cell "Slobodan" [ref=f2e249]
+                  - cell [ref=f2e251]:
+                    - link "Otvori stan" [ref=f2e252] [cursor=pointer]:
+                      - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-6
+                - row [ref=f2e256]:
+                  - cell [ref=f2e257]:
+                    - strong [ref=f2e258]: Stan 7
+                  - cell "2. etaža" [ref=f2e259]
+                  - cell "56.5 m2" [ref=f2e260]
+                  - cell "Trosoban" [ref=f2e261]
+                  - cell "Slobodan" [ref=f2e262]
+                  - cell [ref=f2e264]:
+                    - link "Otvori stan" [ref=f2e265] [cursor=pointer]:
+                      - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-7
+                - row [ref=f2e269]:
+                  - cell [ref=f2e270]:
+                    - strong [ref=f2e271]: Stan 8
+                  - cell "2. etaža" [ref=f2e272]
+                  - cell "27.69 m2" [ref=f2e273]
+                  - cell "Garsonjera" [ref=f2e274]
+                  - cell "Slobodan" [ref=f2e275]
+                  - cell [ref=f2e277]:
+                    - link "Otvori stan" [ref=f2e278] [cursor=pointer]:
+                      - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-8
+                - row [ref=f2e282]:
+                  - cell [ref=f2e283]:
+                    - strong [ref=f2e284]: Stan 9
+                  - cell "2. etaža" [ref=f2e285]
+                  - cell "45.54 m2" [ref=f2e286]
+                  - cell "Dvosoban" [ref=f2e287]
+                  - cell "Slobodan" [ref=f2e288]
+                  - cell [ref=f2e290]:
+                    - link "Otvori stan" [ref=f2e291] [cursor=pointer]:
+                      - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-9
+                - row [ref=f2e295]:
+                  - cell [ref=f2e296]:
+                    - strong [ref=f2e297]: Stan 10
+                  - cell "2. etaža" [ref=f2e298]
+                  - cell "41.29 m2" [ref=f2e299]
+                  - cell "Dvosoban" [ref=f2e300]
+                  - cell "Slobodan" [ref=f2e301]
+                  - cell [ref=f2e303]:
+                    - link "Otvori stan" [ref=f2e304] [cursor=pointer]:
+                      - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-10
+                - row [ref=f2e308]:
+                  - cell [ref=f2e309]:
+                    - strong [ref=f2e310]: Stan 11
+                  - cell "3. etaža" [ref=f2e311]
+                  - cell "60.29 m2" [ref=f2e312]
+                  - cell "Trosoban" [ref=f2e313]
+                  - cell "Slobodan" [ref=f2e314]
+                  - cell [ref=f2e316]:
+                    - link "Otvori stan" [ref=f2e317] [cursor=pointer]:
+                      - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-11
+                - row [ref=f2e321]:
+                  - cell [ref=f2e322]:
+                    - strong [ref=f2e323]: Stan 12
+                  - cell "3. etaža" [ref=f2e324]
+                  - cell "56.5 m2" [ref=f2e325]
+                  - cell "Trosoban" [ref=f2e326]
+                  - cell "Slobodan" [ref=f2e327]
+                  - cell [ref=f2e329]:
+                    - link "Otvori stan" [ref=f2e330] [cursor=pointer]:
+                      - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-12
+                - row [ref=f2e334]:
+                  - cell [ref=f2e335]:
+                    - strong [ref=f2e336]: Stan 13
+                  - cell "3. etaža" [ref=f2e337]
+                  - cell "27.69 m2" [ref=f2e338]
+                  - cell "Garsonjera" [ref=f2e339]
+                  - cell "Slobodan" [ref=f2e340]
+                  - cell [ref=f2e342]:
+                    - link "Otvori stan" [ref=f2e343] [cursor=pointer]:
+                      - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-13
+                - row [ref=f2e347]:
+                  - cell [ref=f2e348]:
+                    - strong [ref=f2e349]: Stan 14
+                  - cell "3. etaža" [ref=f2e350]
+                  - cell "45.54 m2" [ref=f2e351]
+                  - cell "Dvosoban" [ref=f2e352]
+                  - cell "Slobodan" [ref=f2e353]
+                  - cell [ref=f2e355]:
+                    - link "Otvori stan" [ref=f2e356] [cursor=pointer]:
+                      - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-14
+                - row [ref=f2e360]:
+                  - cell [ref=f2e361]:
+                    - strong [ref=f2e362]: Stan 15
+                  - cell "3. etaža" [ref=f2e363]
+                  - cell "41.29 m2" [ref=f2e364]
+                  - cell "Dvosoban" [ref=f2e365]
+                  - cell "Slobodan" [ref=f2e366]
+                  - cell [ref=f2e368]:
+                    - link "Otvori stan" [ref=f2e369] [cursor=pointer]:
+                      - /url: /projekti/heroja-pinkija-13/ponuda-stanova/stan-15
+                - row [ref=f2e373]:
+                  - cell [ref=f2e374]:
+                    - strong [ref=f2e375]: Lokal 1
+                  - cell "Prizemlje" [ref=f2e376]
+                  - cell "73.71 m2" [ref=f2e377]
+                  - cell "Poslovni prostor" [ref=f2e378]
+                  - cell "Slobodan" [ref=f2e379]
+                  - cell [ref=f2e381]:
+                    - link "Otvori lokal" [ref=f2e382] [cursor=pointer]:
+                      - /url: /projekti/heroja-pinkija-13/ponuda-stanova/lokal-1
+                - row [ref=f2e386]:
+                  - cell [ref=f2e387]:
+                    - strong [ref=f2e388]: Lokal 2
+                  - cell "Prizemlje" [ref=f2e389]
+                  - cell "47.65 m2" [ref=f2e390]
+                  - cell "Poslovni prostor" [ref=f2e391]
+                  - cell "Slobodan" [ref=f2e392]
+                  - cell [ref=f2e394]:
+                    - link "Otvori lokal" [ref=f2e395] [cursor=pointer]:
+                      - /url: /projekti/heroja-pinkija-13/ponuda-stanova/lokal-2
+      - generic [ref=f2e400]:
+        - generic [ref=f2e401]:
+          - paragraph [ref=f2e402]: Pomoć pri izboru
+          - heading "Niste sigurni koja jedinica najbolje odgovara vašim potrebama?" [level=2] [ref=f2e403]
+          - paragraph [ref=f2e404]: Prodajni tim može vam pomoći da uporedite rasporede, kvadrature i aktuelnu dostupnost.
+        - generic [ref=f2e405]:
+          - button "Pišite nam" [ref=f2e406] [cursor=pointer]
+          - link "Karticni pregled" [ref=f2e409] [cursor=pointer]:
+            - /url: /projekti/heroja-pinkija-13/ponuda-stanova
+    - contentinfo [ref=f2e413]:
+      - generic [ref=f2e415]:
+        - generic [ref=f2e416]:
+          - generic [ref=f2e417]: Zainteresovani ste za stan?
+          - heading "Razgovarajte direktno sa našim prodajnim timom." [level=2] [ref=f2e418]
+        - button "Pišite nam" [ref=f2e419] [cursor=pointer]
+      - generic [ref=f2e422]:
+        - generic [ref=f2e423]:
+          - img "M & M Gradnja" [ref=f2e426]
+          - generic [ref=f2e427]:
+            - strong [ref=f2e428]: M & M Gradnja
+            - paragraph [ref=f2e429]: Gradimo pažljivo osmišljene prostore za savremen i udoban život u Novom Sadu.
+            - link "Upoznajte kompaniju" [ref=f2e430] [cursor=pointer]:
+              - /url: /o-nama
+        - navigation [ref=f2e434]:
+          - heading "Kompanija" [level=2] [ref=f2e435]
+          - generic [ref=f2e436]:
+            - link "Početna" [ref=f2e437] [cursor=pointer]:
+              - /url: /
+            - link "O nama" [ref=f2e438] [cursor=pointer]:
+              - /url: /o-nama
+            - link "Kupujemo placeve" [ref=f2e439] [cursor=pointer]:
+              - /url: /kupujemo-placeve
+            - link "Lokacija" [ref=f2e440] [cursor=pointer]:
+              - /url: /lokacija
+        - navigation [ref=f2e441]:
+          - heading "Aktuelni projekat" [level=2] [ref=f2e442]
+          - generic [ref=f2e443]:
+            - link "Heroja Pinkija 13" [ref=f2e444] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/o-projektu
+            - link "Ponuda stanova" [ref=f2e445] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/ponuda-stanova
+            - link "Spisak stanova" [ref=f2e446] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/spisak-stanova
+        - generic [ref=f2e447]:
+          - heading "Kontakt" [level=2] [ref=f2e448]
+          - generic [ref=f2e449]:
+            - link "Telefon prodaje 064 227 9117" [ref=f2e450] [cursor=pointer]:
+              - /url: tel:0642279117
+              - generic [ref=f2e453]:
+                - generic [ref=f2e454]: Telefon prodaje
+                - strong [ref=f2e455]: 064 227 9117
+            - link "Email prodaja@mimgradnja.rs" [ref=f2e456] [cursor=pointer]:
+              - /url: mailto:prodaja@mimgradnja.rs
+              - generic [ref=f2e460]:
+                - generic [ref=f2e461]: Email
+                - strong [ref=f2e462]: prodaja@mimgradnja.rs
+            - link "Adresa projekta Heroja Pinkija 13, Novi Sad" [ref=f2e463] [cursor=pointer]:
+              - /url: /lokacija
+              - generic [ref=f2e467]:
+                - generic [ref=f2e468]: Adresa projekta
+                - strong [ref=f2e469]: Heroja Pinkija 13, Novi Sad
+      - generic [ref=f2e471]:
+        - generic [ref=f2e472]: (c) 2026 M & M Gradnja. Sva prava zadržana.
+        - generic [ref=f2e473]:
+          - link "Politika privatnosti" [ref=f2e474] [cursor=pointer]:
+            - /url: /politika-privatnosti
+          - link "Kontakt" [ref=f2e475] [cursor=pointer]:
+            - /url: /kontakt
+          - button "Podešavanja privatnosti" [ref=f2e476] [cursor=pointer]

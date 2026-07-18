@@ -153,6 +153,12 @@ const landAcquisitionFacts = [
 
 type ProjectTab = "active" | "upcoming" | "completed";
 
+const projectTabLabels: Record<ProjectTab, string> = {
+  active: "Aktuelni projekti",
+  upcoming: "Projekti u pripremi",
+  completed: "Realizovani projekti",
+};
+
 export const HomePage = () => {
   const [activeTab, setActiveTab] = useState<ProjectTab>("active");
   const [projectMedia, setProjectMedia] = useState<ProjectMediaItem[]>([]);
@@ -214,7 +220,7 @@ export const HomePage = () => {
           },
         })}
       />
-      <section className="home-hero">
+      <section className="home-hero" data-agent-surface="home-hero">
         <motion.img
           src={images.hero}
           alt="Gradilišna tabla projekta Heroja Pinkija 13"
@@ -258,6 +264,7 @@ export const HomePage = () => {
             <Link
               className="site-button site-button--accent"
               to="/projekti/heroja-pinkija-13/ponuda-stanova"
+              data-agent-action="browse-apartments"
             >
               <Home />
               Pogledaj stanove
@@ -349,6 +356,9 @@ export const HomePage = () => {
               type="button"
               role="tab"
               aria-selected={activeTab === "active"}
+              aria-controls="project-portfolio-panel"
+              data-agent-filter="project-status"
+              data-filter-value="active"
               onClick={() => setActiveTab("active")}
             >
               Aktuelni
@@ -358,6 +368,9 @@ export const HomePage = () => {
               type="button"
               role="tab"
               aria-selected={activeTab === "upcoming"}
+              aria-controls="project-portfolio-panel"
+              data-agent-filter="project-status"
+              data-filter-value="upcoming"
               onClick={() => setActiveTab("upcoming")}
             >
               U pripremi
@@ -367,33 +380,44 @@ export const HomePage = () => {
               type="button"
               role="tab"
               aria-selected={activeTab === "completed"}
+              aria-controls="project-portfolio-panel"
+              data-agent-filter="project-status"
+              data-filter-value="completed"
               onClick={() => setActiveTab("completed")}
             >
               Realizovani
             </button>
           </motion.div>
 
-          <AnimatePresence mode="wait">
-            {activeTab === "active" ? (
-              <ActiveProjectCard
-                key="active"
-                projectMedia={projectMedia}
-                reduceMotion={Boolean(reduceMotion)}
-              />
-            ) : null}
-            {activeTab === "upcoming" ? (
-              <UpcomingProjectsCard
-                key="upcoming"
-                reduceMotion={Boolean(reduceMotion)}
-              />
-            ) : null}
-            {activeTab === "completed" ? (
-              <CompletedProjectsCard
-                key="completed"
-                reduceMotion={Boolean(reduceMotion)}
-              />
-            ) : null}
-          </AnimatePresence>
+          <div
+            id="project-portfolio-panel"
+            role="tabpanel"
+            aria-live="polite"
+            aria-label={projectTabLabels[activeTab]}
+            data-agent-surface="project-results"
+          >
+            <AnimatePresence mode="wait">
+              {activeTab === "active" ? (
+                <ActiveProjectCard
+                  key="active"
+                  projectMedia={projectMedia}
+                  reduceMotion={Boolean(reduceMotion)}
+                />
+              ) : null}
+              {activeTab === "upcoming" ? (
+                <UpcomingProjectsCard
+                  key="upcoming"
+                  reduceMotion={Boolean(reduceMotion)}
+                />
+              ) : null}
+              {activeTab === "completed" ? (
+                <CompletedProjectsCard
+                  key="completed"
+                  reduceMotion={Boolean(reduceMotion)}
+                />
+              ) : null}
+            </AnimatePresence>
+          </div>
         </div>
       </section>
 

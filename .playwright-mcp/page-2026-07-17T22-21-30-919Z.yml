@@ -1,0 +1,269 @@
+- generic [ref=f1e2]:
+  - status [ref=f1e3]: Otvoreni su detalji jedinice lokal-1.
+  - generic [ref=f1e11]:
+    - link "Preskocite na glavni sadržaj":
+      - /url: "#main-content"
+    - banner [ref=f1e12]:
+      - generic [ref=f1e13]:
+        - link "M & M Gradnja početna" [ref=f1e14] [cursor=pointer]:
+          - /url: /
+          - generic [ref=f1e15]:
+            - img "M & M Gradnja" [ref=f1e17]
+            - generic [ref=f1e18]:
+              - generic [ref=f1e19]: M & M
+              - generic [ref=f1e20]: Gradnja
+        - button "Otvori navigaciju" [ref=f1e21] [cursor=pointer]
+        - generic:
+          - link "O projektu":
+            - /url: /projekti/heroja-pinkija-13/o-projektu
+          - link "Ponuda stanova":
+            - /url: /projekti/heroja-pinkija-13/ponuda-stanova
+          - link "Spisak stanova":
+            - /url: /projekti/heroja-pinkija-13/spisak-stanova
+    - button "Nazad na prethodnu stranicu" [ref=f1e23] [cursor=pointer]
+    - main [ref=f1e471]:
+      - generic [ref=f1e473]:
+        - navigation "Putanja stranice" [ref=f1e474]:
+          - link "Heroja Pinkija 13" [ref=f1e475] [cursor=pointer]:
+            - /url: /projekti/heroja-pinkija-13
+          - generic [ref=f1e476]: /
+          - link "Ponuda stanova i lokala" [ref=f1e477] [cursor=pointer]:
+            - /url: /projekti/heroja-pinkija-13/ponuda-stanova
+          - generic [ref=f1e478]: /
+          - generic [ref=f1e479]: Lokal 1
+        - generic [ref=f1e480]:
+          - generic [ref=f1e481]:
+            - generic [ref=f1e482]: Slobodan
+            - paragraph [ref=f1e483]: Detalji jedinice
+            - heading "Lokal 1" [level=1] [ref=f1e484]
+            - paragraph [ref=f1e485]: Lokal 1 je poslovni prostor u prizemlju objekta, sa 73.71 m2 obračunske neto površine i zasebnim toaletom.
+            - generic [ref=f1e486]:
+              - generic [ref=f1e487]: 73.71 m2
+              - generic [ref=f1e488]: Prizemlje
+              - generic [ref=f1e489]: Poslovni prostor
+            - generic [ref=f1e490]:
+              - button "Pišite nam" [ref=f1e491] [cursor=pointer]
+              - link "Pozovite prodaju" [ref=f1e494] [cursor=pointer]:
+                - /url: tel:0642279117
+          - button "Otvori projektni tlocrt za Lokal 1 u punoj velicini" [ref=f1e497]:
+            - img "Originalna projektna dokumentacija za Lokal 1" [ref=f1e498]
+            - generic [ref=f1e499]:
+              - generic [ref=f1e500]: Projektni tlocrt
+              - strong [ref=f1e501]: Lokal 1
+      - region "Osnovni podaci o jedinici" [ref=f1e505]:
+        - generic [ref=f1e506]:
+          - generic [ref=f1e507]:
+            - term [ref=f1e512]: Lokal
+            - definition [ref=f1e513]: Lokal 1
+          - generic [ref=f1e514]:
+            - term [ref=f1e519]: Sprat
+            - definition [ref=f1e520]: Prizemlje
+          - generic [ref=f1e521]:
+            - term [ref=f1e528]: Površina
+            - definition [ref=f1e529]: 73.71 m2
+          - generic [ref=f1e530]:
+            - term [ref=f1e534]: Struktura
+            - definition [ref=f1e535]: Poslovni prostor
+          - generic [ref=f1e536]:
+            - term [ref=f1e540]: Kupatila
+            - definition [ref=f1e541]: 1 toalet
+          - generic [ref=f1e542]:
+            - term [ref=f1e547]: Terasa
+            - definition [ref=f1e548]: Bez terase
+          - generic [ref=f1e549]:
+            - term [ref=f1e553]: status
+            - definition [ref=f1e554]: Slobodan
+      - generic [ref=f1e556]:
+        - generic [ref=f1e557]:
+          - generic [ref=f1e558]:
+            - paragraph [ref=f1e559]: Raspored lokala
+            - heading "Dva pogleda na isti prostor." [level=2] [ref=f1e560]
+          - paragraph [ref=f1e561]: Interaktivni grid olakšava razumevanje odnosa prostorija, dok originalni projektni tlocrt čuva precizne arhitektonske detalje.
+        - generic [ref=f1e562]:
+          - article [ref=f1e563]:
+            - generic [ref=f1e564]:
+              - generic [ref=f1e565]:
+                - text: Interaktivni prikaz
+                - heading "Grid prostorija" [level=3] [ref=f1e566]
+              - generic [ref=f1e567]: Poslovni prostor
+            - generic "Raspored prostorija za Lokal 1" [ref=f1e569]:
+              - img "Raspored prostorija skaliran prema kvadraturi" [ref=f1e570]:
+                - 'button "1. Poslovni prostor: 73.24 m2" [ref=f1e571] [cursor=pointer]':
+                  - generic: "1"
+                  - generic: Poslovni prostor
+                  - generic: 73.24 m2
+                - 'button "2. Toalet: 2.75 m2" [ref=f1e573] [cursor=pointer]':
+                  - generic: "2"
+                  - generic: Toalet
+                  - generic: 2.75 m2
+            - paragraph [ref=f1e575]: Izaberite prostoriju za naziv i površinu.
+          - figure "Lokal 1 · Prizemlje Poredjenje sa gridom prostorija Preuzmite dokumentaciju" [ref=f1e576]:
+            - generic [ref=f1e577]:
+              - generic [ref=f1e578]:
+                - text: Originalna dokumentacija
+                - heading "Projektni tlocrt" [level=3] [ref=f1e579]
+              - generic [ref=f1e580]: 73.71 m2
+            - img "Izolovani tlocrt Lokala 1 za poređenje sa gridom prostorija" [ref=f1e582]
+            - generic [ref=f1e583]:
+              - generic [ref=f1e584]: Lokal 1 · Prizemlje
+              - generic [ref=f1e585]: Poredjenje sa gridom prostorija
+              - link "Preuzmite dokumentaciju" [ref=f1e586] [cursor=pointer]:
+                - /url: /documents/commercial-spaces/lokal-1.pdf
+        - region [ref=f1e587]:
+          - generic [ref=f1e588]:
+            - generic [ref=f1e589]:
+              - generic [ref=f1e590]:
+                - paragraph [ref=f1e591]: Prednosti lokal
+                - heading "Lokacija i funkcionalnost na jednom mestu." [level=3] [ref=f1e592]
+              - paragraph [ref=f1e593]: Lokal se posmatra kroz poziciju, raspored prostora i praktične karakteristike važne za poslovanje.
+            - generic [ref=f1e594]:
+              - article [ref=f1e595]:
+                - generic [ref=f1e596]:
+                  - generic [ref=f1e597]: Lokacija
+                  - heading "Okruženje za svakodnevni život" [level=4] [ref=f1e598]
+                - list [ref=f1e599]:
+                  - listitem [ref=f1e600]:
+                    - generic [ref=f1e604]: Početak Telepa
+                  - listitem [ref=f1e605]:
+                    - generic [ref=f1e609]: Linija 12 ka centru
+                  - listitem [ref=f1e610]:
+                    - generic [ref=f1e614]: Lidl u blizini
+                  - listitem [ref=f1e615]:
+                    - generic [ref=f1e619]: Gimnazija Laza Kostić u blizini
+                  - listitem [ref=f1e620]:
+                    - generic [ref=f1e624]: Kej, Ribarac, Šodroš i parkovi
+                  - listitem [ref=f1e625]:
+                    - generic [ref=f1e629]: Planirana veza prema Fruškoj gori
+              - article [ref=f1e630]:
+                - generic [ref=f1e631]:
+                  - generic [ref=f1e632]: Lokal
+                  - heading "Karakteristike koje olakšavaju izbor" [level=4] [ref=f1e633]
+                - list [ref=f1e634]:
+                  - listitem [ref=f1e635]:
+                    - generic [ref=f1e639]: 73.71 m2 obračunske neto površine
+                  - listitem [ref=f1e640]:
+                    - generic [ref=f1e644]: Prostran poslovni prostor
+                  - listitem [ref=f1e645]:
+                    - generic [ref=f1e649]: Zaseban toalet
+                  - listitem [ref=f1e650]:
+                    - generic [ref=f1e654]: Prizemna pozicija sa ulazom iz ulice
+            - generic [ref=f1e655]:
+              - generic [ref=f1e656]:
+                - term [ref=f1e657]: Lokacija
+                - definition [ref=f1e658]: Heroja Pinkija 13
+              - generic [ref=f1e659]:
+                - term [ref=f1e660]: Izgradnja
+                - definition [ref=f1e661]: u toku od 2026.
+              - generic [ref=f1e662]:
+                - term [ref=f1e663]: Planirano
+                - definition [ref=f1e664]: 15.11.2027.
+              - generic [ref=f1e665]:
+                - term [ref=f1e666]: Opcije
+                - definition [ref=f1e667]: Poslovni prostor u prizemlju
+          - complementary [ref=f1e668]:
+            - generic [ref=f1e669]:
+              - paragraph [ref=f1e670]: Informacije o kupovini
+              - heading "Direktan sledeći korak." [level=3] [ref=f1e671]
+              - paragraph [ref=f1e672]: Za cenu, uslove kupovine i mogućnost prilagođavanja prostora kontaktirajte prodaju.
+            - generic [ref=f1e673]:
+              - generic [ref=f1e674]:
+                - term [ref=f1e675]: Cena
+                - definition [ref=f1e676]: Na upit
+              - generic [ref=f1e677]:
+                - term [ref=f1e678]: status
+                - definition [ref=f1e679]: Slobodan
+              - generic [ref=f1e680]:
+                - term [ref=f1e681]: Pozicija
+                - definition [ref=f1e682]: Prizemlje
+            - list "Kako izgleda sledeći korak" [ref=f1e683]:
+              - listitem [ref=f1e684]:
+                - generic [ref=f1e685]: "01"
+                - strong [ref=f1e686]: Pošaljete upit za ovaj lokal.
+              - listitem [ref=f1e687]:
+                - generic [ref=f1e688]: "02"
+                - strong [ref=f1e689]: Dobijate cenu, dostupnost i uslove kupovine.
+              - listitem [ref=f1e690]:
+                - generic [ref=f1e691]: "03"
+                - strong [ref=f1e692]: Dogovaramo razgovor ili obilazak lokacije.
+            - generic [ref=f1e693]:
+              - button "Pišite nam" [ref=f1e694] [cursor=pointer]
+              - link "064 227 9117" [ref=f1e697] [cursor=pointer]:
+                - /url: tel:0642279117
+      - generic [ref=f1e701]:
+        - generic [ref=f1e702]:
+          - generic [ref=f1e703]:
+            - paragraph [ref=f1e704]: Još jedinica u ponudi
+            - heading "Uporedite jedinice iz istog projekta." [level=2] [ref=f1e705]
+          - link "Kompletna ponuda" [ref=f1e706] [cursor=pointer]:
+            - /url: /projekti/heroja-pinkija-13/ponuda-stanova
+        - link "Lokal Lokal 2 Sprat Prizemlje Površina 47.65 m2 Struktura Poslovni prostor Detalji lokal" [ref=f1e710] [cursor=pointer]:
+          - /url: /projekti/heroja-pinkija-13/ponuda-stanova/lokal-2
+          - generic [ref=f1e711]:
+            - generic [ref=f1e712]: Lokal
+            - strong [ref=f1e713]: Lokal 2
+          - generic [ref=f1e714]:
+            - generic [ref=f1e715]:
+              - term [ref=f1e716]: Sprat
+              - definition [ref=f1e717]: Prizemlje
+            - generic [ref=f1e718]:
+              - term [ref=f1e719]: Površina
+              - definition [ref=f1e720]: 47.65 m2
+            - generic [ref=f1e721]:
+              - term [ref=f1e722]: Struktura
+              - definition [ref=f1e723]: Poslovni prostor
+          - generic [ref=f1e724]: Detalji lokal
+    - contentinfo [ref=f1e333]:
+      - generic [ref=f1e342]:
+        - generic [ref=f1e343]:
+          - img "M & M Gradnja" [ref=f1e346]
+          - generic [ref=f1e347]:
+            - strong [ref=f1e348]: M & M Gradnja
+            - paragraph [ref=f1e349]: Gradimo pažljivo osmišljene prostore za savremen i udoban život u Novom Sadu.
+            - link "Upoznajte kompaniju" [ref=f1e350] [cursor=pointer]:
+              - /url: /o-nama
+        - navigation [ref=f1e354]:
+          - heading "Kompanija" [level=2] [ref=f1e355]
+          - generic [ref=f1e356]:
+            - link "Početna" [ref=f1e357] [cursor=pointer]:
+              - /url: /
+            - link "O nama" [ref=f1e358] [cursor=pointer]:
+              - /url: /o-nama
+            - link "Kupujemo placeve" [ref=f1e359] [cursor=pointer]:
+              - /url: /kupujemo-placeve
+            - link "Lokacija" [ref=f1e360] [cursor=pointer]:
+              - /url: /lokacija
+        - navigation [ref=f1e361]:
+          - heading "Aktuelni projekat" [level=2] [ref=f1e362]
+          - generic [ref=f1e363]:
+            - link "Heroja Pinkija 13" [ref=f1e364] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/o-projektu
+            - link "Ponuda stanova" [ref=f1e365] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/ponuda-stanova
+            - link "Spisak stanova" [ref=f1e366] [cursor=pointer]:
+              - /url: /projekti/heroja-pinkija-13/spisak-stanova
+        - generic [ref=f1e367]:
+          - heading "Kontakt" [level=2] [ref=f1e368]
+          - generic [ref=f1e369]:
+            - link "Telefon prodaje 064 227 9117" [ref=f1e370] [cursor=pointer]:
+              - /url: tel:0642279117
+              - generic [ref=f1e373]:
+                - generic [ref=f1e374]: Telefon prodaje
+                - strong [ref=f1e375]: 064 227 9117
+            - link "Email prodaja@mimgradnja.rs" [ref=f1e376] [cursor=pointer]:
+              - /url: mailto:prodaja@mimgradnja.rs
+              - generic [ref=f1e380]:
+                - generic [ref=f1e381]: Email
+                - strong [ref=f1e382]: prodaja@mimgradnja.rs
+            - link "Adresa projekta Heroja Pinkija 13, Novi Sad" [ref=f1e383] [cursor=pointer]:
+              - /url: /lokacija
+              - generic [ref=f1e387]:
+                - generic [ref=f1e388]: Adresa projekta
+                - strong [ref=f1e389]: Heroja Pinkija 13, Novi Sad
+      - generic [ref=f1e391]:
+        - generic [ref=f1e392]: (c) 2026 M & M Gradnja. Sva prava zadržana.
+        - generic [ref=f1e393]:
+          - link "Politika privatnosti" [ref=f1e394] [cursor=pointer]:
+            - /url: /politika-privatnosti
+          - link "Kontakt" [ref=f1e395] [cursor=pointer]:
+            - /url: /kontakt
+          - button "Podešavanja privatnosti" [ref=f1e396] [cursor=pointer]

@@ -42,7 +42,11 @@ export const AdminLayout = () => {
           <span>Admin panel</span>
         </div>
 
-        <nav className="admin-sidebar__nav">
+        <nav
+          className="admin-sidebar__nav"
+          aria-label="Sekcije admin panela"
+          data-agent-surface="admin-navigation"
+        >
           {adminLinks.map((link) => {
             const Icon = link.icon;
 

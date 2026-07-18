@@ -1760,11 +1760,11 @@ const UnitPanel = ({ units, onUpdate, onPersist }: UnitPanelProps) => {
           </span>
         ))}
         <span className="admin-unit-status-legend__hint">
-          Izaberite novi status direktno u tabeli.
+          Izaberite novi status na kartici svakog stana.
         </span>
       </div>
 
-      <div className="admin-table-wrap">
+      <div className="admin-table-wrap admin-unit-list-wrap">
         <table className="admin-table admin-unit-table">
           <caption className="sr-only">
             Upravljanje statusima, sadržajem i objavom stanova

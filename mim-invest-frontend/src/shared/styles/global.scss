@@ -10352,6 +10352,252 @@ body.is-project-document-viewer-open .back-to-top {
   font-weight: 800;
 }
 
+/* Units are managed as responsive work cards instead of a wide data table. */
+.admin-unit-list-wrap {
+  max-width: 100%;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.admin-unit-list-wrap .admin-unit-table {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  border-collapse: separate;
+}
+
+.admin-unit-table thead {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.admin-unit-table tbody {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  gap: 18px;
+}
+
+.admin-unit-table tbody > tr:not(.admin-unit-content-row) {
+  display: grid;
+  grid-template-columns:
+    minmax(180px, 0.72fr)
+    minmax(220px, 0.9fr)
+    minmax(220px, 0.78fr);
+  grid-template-areas:
+    "identity facts status"
+    "description description assets"
+    "description description publication";
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--site-border);
+  border-radius: 8px;
+  background: var(--site-card);
+  box-shadow: 0 14px 38px rgba(31, 28, 21, 0.07);
+}
+
+.admin-unit-table tbody > tr:not(.admin-unit-content-row):has(
+    + .admin-unit-content-row
+  ) {
+  border-radius: 8px 8px 0 0;
+}
+
+.admin-unit-table tbody > tr:not(.admin-unit-content-row) > td {
+  min-width: 0;
+  padding: 19px 20px;
+  border: 0;
+  background: transparent;
+}
+
+.admin-unit-table tbody > tr:not(.admin-unit-content-row) > td:nth-child(1) {
+  grid-area: identity;
+  border-right: 1px solid var(--site-border);
+  border-bottom: 1px solid var(--site-border);
+}
+
+.admin-unit-table tbody > tr:not(.admin-unit-content-row) > td:nth-child(2) {
+  grid-area: facts;
+  border-right: 1px solid var(--site-border);
+  border-bottom: 1px solid var(--site-border);
+}
+
+.admin-unit-table tbody > tr:not(.admin-unit-content-row) > td:nth-child(3) {
+  grid-area: status;
+  border-bottom: 1px solid var(--site-border);
+  background: rgba(248, 246, 242, 0.72);
+}
+
+.admin-unit-table tbody > tr:not(.admin-unit-content-row) > td:nth-child(4) {
+  grid-area: description;
+}
+
+.admin-unit-table tbody > tr:not(.admin-unit-content-row) > td:nth-child(5) {
+  grid-area: assets;
+  border-left: 1px solid var(--site-border);
+  border-bottom: 1px solid var(--site-border);
+}
+
+.admin-unit-table tbody > tr:not(.admin-unit-content-row) > td:nth-child(6) {
+  grid-area: publication;
+  border-left: 1px solid var(--site-border);
+}
+
+.admin-unit-table tbody > tr:not(.admin-unit-content-row) > td:nth-child(5)::before,
+.admin-unit-table tbody > tr:not(.admin-unit-content-row) > td:nth-child(6)::before {
+  display: block;
+  margin-bottom: 11px;
+  color: var(--site-ink-muted);
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.11em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.admin-unit-table tbody > tr:not(.admin-unit-content-row) > td:nth-child(5)::before {
+  content: "Tlocrt i sadržaj";
+}
+
+.admin-unit-table tbody > tr:not(.admin-unit-content-row) > td:nth-child(6)::before {
+  content: "Objava stana";
+}
+
+.admin-unit-table tbody > tr:not(.admin-unit-content-row) > td:first-child > strong {
+  color: var(--site-footer);
+  font-size: 1.2rem;
+  line-height: 1.25;
+  text-transform: capitalize;
+}
+
+.admin-unit-table tbody > tr:not(.admin-unit-content-row) > td:first-child > span {
+  margin-top: 5px;
+  font-size: 0.84rem;
+  font-weight: 750;
+}
+
+.admin-unit-table .admin-unit-facts {
+  min-width: 0;
+  height: 100%;
+  align-content: center;
+}
+
+.admin-unit-table .admin-unit-status-cell {
+  min-width: 0;
+}
+
+.admin-unit-table .admin-unit-status-control {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  align-content: center;
+}
+
+.admin-unit-table .admin-unit-description {
+  min-width: 0;
+}
+
+.admin-unit-table .admin-unit-description textarea {
+  width: 100%;
+  min-height: 112px;
+}
+
+.admin-unit-table .admin-unit-assets {
+  min-width: 0;
+}
+
+.admin-unit-table .admin-unit-assets a,
+.admin-unit-table .admin-table-secondary-action,
+.admin-unit-table .admin-unit-warning {
+  max-width: 100%;
+}
+
+.admin-unit-table tbody > tr:not(.admin-unit-content-row) > td:nth-child(6) .admin-toggle {
+  display: flex;
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 13px;
+  border: 1px solid var(--site-border);
+  border-radius: 8px;
+  background: var(--site-bg);
+}
+
+.admin-unit-table tbody > tr:not(.admin-unit-content-row) > td:nth-child(6) .admin-toggle span {
+  margin: 0;
+  color: var(--site-footer);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.admin-unit-table tbody > .admin-unit-content-row {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin-top: -19px;
+  overflow: hidden;
+  border: 1px solid var(--site-border);
+  border-top: 0;
+  border-radius: 0 0 8px 8px;
+  background: var(--site-card);
+}
+
+.admin-unit-table tbody > .admin-unit-content-row > td {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+}
+
+@media (max-width: 1500px) {
+  .admin-unit-table tbody > tr:not(.admin-unit-content-row) {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.55fr);
+    grid-template-areas:
+      "identity status"
+      "facts status"
+      "description assets"
+      "description publication";
+  }
+
+  .admin-unit-table tbody > tr:not(.admin-unit-content-row) > td:nth-child(1),
+  .admin-unit-table tbody > tr:not(.admin-unit-content-row) > td:nth-child(2) {
+    border-right: 1px solid var(--site-border);
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .admin-unit-table tbody > tr:not(.admin-unit-content-row) > td:nth-child(3) {
+    border-bottom: 1px solid var(--site-border);
+  }
+}
+
+@media (max-width: 900px) {
+  .admin-unit-table tbody > tr:not(.admin-unit-content-row) {
+    display: block;
+  }
+
+  .admin-unit-table tbody > tr:not(.admin-unit-content-row) > td {
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .admin-unit-table tbody > tr:not(.admin-unit-content-row) > td:last-child {
+    border-bottom: 0;
+  }
+
+  .admin-unit-table .admin-unit-status-control {
+    height: auto;
+  }
+}
+
 .admin-toggle {
   display: inline-flex;
   align-items: center;

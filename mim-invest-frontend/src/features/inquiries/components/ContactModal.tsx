@@ -49,7 +49,11 @@ export const ContactModalProvider = ({ children }: PropsWithChildren) => {
       {isOpen ? (
         <Suspense
           fallback={
-            <div className="contact-modal__loading" role="status">
+            <div
+              className="contact-modal__loading"
+              role="status"
+              data-agent-surface="contact-form-loading"
+            >
               Učitavanje forme…
             </div>
           }
@@ -87,6 +91,9 @@ export const ContactModalButton = ({
       {...buttonProps}
       className={buttonClassName}
       type={type}
+      aria-haspopup="dialog"
+      aria-controls="contact-modal-dialog"
+      data-agent-action="open-contact-form"
       onClick={(event) => {
         onClick?.(event);
         if (!event.defaultPrevented) {

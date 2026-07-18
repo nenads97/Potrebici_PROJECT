@@ -122,11 +122,12 @@ export const MainLayout = () => {
         Preskocite na glavni sadržaj
       </a>
 
-      <header className="site-header-wrap">
+      <header className="site-header-wrap" data-agent-surface="site-header">
         <div className="site-header">
           <Link
             className="site-header__brand"
             to="/"
+            data-agent-route="home"
             aria-label="M & M Gradnja početna"
           >
             <BrandLogo />
@@ -148,6 +149,7 @@ export const MainLayout = () => {
             className={`site-nav${isNavOpen ? " site-nav--open" : ""}`}
             id="site-navigation"
             aria-label="Glavna navigacija"
+            data-agent-surface="site-navigation"
             onClick={(event) => {
               if (
                 event.target instanceof Element &&
@@ -209,11 +211,16 @@ export const MainLayout = () => {
         </button>
       ) : null}
 
-      <div id="main-content" className="main-content-anchor" tabIndex={-1}>
+      <div
+        id="main-content"
+        className="main-content-anchor"
+        tabIndex={-1}
+        data-agent-surface="page-content"
+      >
         <Outlet />
       </div>
 
-      <footer className="site-footer">
+      <footer className="site-footer" data-agent-surface="site-footer">
         {shouldShowFooterCta ? (
           <div className="site-footer__cta">
             <div className="site-footer__cta-inner">
